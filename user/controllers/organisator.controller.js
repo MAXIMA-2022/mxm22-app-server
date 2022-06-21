@@ -5,26 +5,31 @@ const jwt = require('jsonwebtoken')
 exports.register = async(req, res) => {
     const { nim, name, email, password, stateID } = req.body
     const hashPass = await bcrypt.hashSync(password, 8)
+    const cekNIM = await OrgDB.query().where({ nim: nim })
     const verified2 = 0
-
+    
     try{
-        await OrgDB.query().insert({
-            name: name,
-            nim: nim,
-            email: email,
-            password: hashPass,
-            stateID: stateID,
-            verified: verified2
-        })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null){
+            await OrgDB.query().insert({
+                name: name,
+                nim: nim,
+                email: email,
+                password: hashPass,
+                stateID: stateID,
+                verified: verified2
+            })
 
-        return res.status(200).send({ message: 'User berhasil ditambahkan' })
+            return res.status(200).send({ message: 'Akun baru berhasil ditambahkan'  })
+        }
+        else
+        return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
     }
     catch(err){
         return res.status(500).send({ message: err.message })
     }
 }
 
-exports.login = async(req, res)=>{
+exports.login = async(req, res) => {
     const { nim, password } = req.body;
     const checkingNim = await OrgDB.query().where({ nim: nim })
 

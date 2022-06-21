@@ -5,22 +5,28 @@ const jwt = require('jsonwebtoken')
 exports.register = async(req, res) => {
     const { name, nim, password, email, divisiID, verified } = req.body
     const hashPass = await bcrypt.hashSync(password, 8)
+    const cekNIM = await PanitDB.query().where({ nim: nim })
     const verified2 = 0
+    
 
     try{
-        await PanitDB.query().insert({
-            name: name,
-            nim: nim,
-            password: hashPass,
-            email: email,
-            divisiID: divisiID, 
-            verified: verified2
-        })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null){
+            if (divisiID === 'D01')
+                return res.status(401).send({ message: 'Anda tidak dapat mendaftar pada divisi tersebut' })
+            
+            await PanitDB.query().insert({
+                name: name,
+                nim: nim,
+                password: hashPass,
+                email: email,
+                divisiID: divisiID, 
+                verified: verified2
+            })
 
-        if (divisiID === 'D01')
-            return res.status(401).send({ message: 'Anda tidak dapat mendaftar pada divisi tersebut' })
-        
-        return res.status(200).send({ message: 'User berhasil ditambahkan' })
+            return res.status(200).send({ message: 'Akun baru berhasil ditambahkan'  })
+        }
+        else
+            return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
     }
     catch(err){
         return res.status(500).send({ message: err.message })

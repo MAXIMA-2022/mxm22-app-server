@@ -5,23 +5,28 @@ const jwt = require('jsonwebtoken')
 exports.register = async(req, res) => {
     const { name, nim, password, whatsapp, email, idInstagram, idLine, tanggalLahir, tempatLahir, jenisKelamin, prodi } = req.body
     const hashPass = await bcrypt.hashSync(password, 8)
+    const cekNIM = await MhsDB.query().where({ nim: nim })
 
     try{
-        await MhsDB.query().insert({
-            name: name,
-            nim: nim, 
-            password: hashPass,
-            whatsapp: whatsapp,
-            email: email,
-            idInstagram: idInstagram,
-            idLine: idLine,
-            tanggalLahir: tanggalLahir,
-            tempatLahir: tempatLahir,
-            jenisKelamin: jenisKelamin,
-            prodi: prodi
-        })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null){
+            await MhsDB.query().insert({
+                name: name,
+                nim: nim, 
+                password: hashPass,
+                whatsapp: whatsapp,
+                email: email,
+                idInstagram: idInstagram,
+                idLine: idLine,
+                tanggalLahir: tanggalLahir,
+                tempatLahir: tempatLahir,
+                jenisKelamin: jenisKelamin,
+                prodi: prodi
+            })
 
-        return res.status(200).send({ message: 'User berhasil ditambahkan' })
+            return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
+        }
+        else
+            return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
     }
     catch(err){
         return res.status(500).send({ message: err.message })

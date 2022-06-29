@@ -1,14 +1,19 @@
 const sActDB = require('../model/state_activities.model')
 
 exports.readAllState = async(req, res) => {
-    const result = await sActDB.query()
-    return res.status(200).send(result)
+    try {
+        const result = await sActDB.query()
+        return res.status(200).send(result)      
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
 }
+
 exports.readSpecificState = async(req, res) => {
     const { stateID } = req.params
     const cekSTATE = await sActDB.query().where({ stateID: stateID })
     
-    if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null){
+    if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
         const result = await sActDB.query().where({ 
             stateID: stateID
         })
@@ -53,7 +58,7 @@ exports.updateState = async(req, res) => {
         const { name, zoomLink, day, stateLogo, quota, registered, attendanceCode, identifier, category, shortDesc, coverPhoto } = req.body
         const cekSTATE = await sActDB.query().where({ stateID: stateID })
 
-        if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null){
+        if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
             await sActDB.query().update({
                 name: name,
                 zoomLink: zoomLink,
@@ -84,7 +89,7 @@ exports.deleteState = async(req, res) => {
     try{
         const cekSTATE = await sActDB.query().where({ stateID: stateID })
 
-        if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null){
+        if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
             await sActDB.query().delete().where({
                 stateID: stateID
             })

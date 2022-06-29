@@ -3,12 +3,25 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 exports.register = async(req, res) => {
-    const { name, nim, password, whatsapp, email, idInstagram, idLine, tanggalLahir, tempatLahir, jenisKelamin, prodi } = req.body
+    const { 
+        name, 
+        nim, 
+        password, 
+        whatsapp, 
+        email, 
+        idInstagram, 
+        idLine, 
+        tanggalLahir, 
+        tempatLahir, 
+        jenisKelamin, 
+        prodi 
+    } = req.body
+
     const hashPass = await bcrypt.hashSync(password, 8)
     const cekNIM = await MhsDB.query().where({ nim: nim })
 
     try{
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null){
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             await MhsDB.query().insert({
                 name: name,
                 nim: nim, 
@@ -67,8 +80,13 @@ exports.login = async(req, res) => {
 
 
 exports.readAllData = async(req, res) => {
-    const result = await MhsDB.query()
-    return res.status(200).send(result)
+    try {
+        const result = await MhsDB.query()
+        return res.status(200).send(result)
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+
 }
 exports.readSpecificData = async(req, res) => {
     const { nim } = req.params
@@ -76,7 +94,7 @@ exports.readSpecificData = async(req, res) => {
     try{
         const cekNIM = await MhsDB.query().where({ nim: nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             const result = await MhsDB.query().where({ 
                 nim: nim
             })
@@ -94,7 +112,18 @@ exports.readSpecificData = async(req, res) => {
 
 exports.updateData = async(req, res) => {
     const { nim } = req.params
-    const { name, whatsapp, email, idInstagram, idLine, tanggalLahir, tempatLahir, jenisKelamin, prodi } = req.body
+    const { 
+        name, 
+        whatsapp, 
+        email, 
+        idInstagram, 
+        idLine, 
+        tanggalLahir, 
+        tempatLahir, 
+        jenisKelamin, 
+        prodi 
+    } = req.body
+
     const authorizedDiv = ['D01', 'D02']
     const division = req.division
 
@@ -107,7 +136,7 @@ exports.updateData = async(req, res) => {
 
         const cekNIM = await MhsDB.query().where({ nim: nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             await MhsDB.query().update({
                 name: name,
                 whatsapp: whatsapp,
@@ -145,7 +174,7 @@ exports.deleteData = async(req, res) => {
 
         const cekNIM = await MhsDB.query().where({ nim: nim })
         
-        if(cekNIM.length !== 0 || cekNIM !== [] || cekNIM !== null){
+        if(cekNIM.length !== 0 || cekNIM !== [] || cekNIM !== null || cekNIM !== undefined){
             await MhsDB.query().delete().where({
                 nim: nim
             })

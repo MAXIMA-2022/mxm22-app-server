@@ -9,7 +9,7 @@ exports.register = async(req, res) => {
     const verified2 = 0
     
     try{
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null){
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             await OrgDB.query().insert({
                 name: name,
                 nim: nim,
@@ -61,16 +61,21 @@ exports.login = async(req, res) => {
 
 
 exports.readAllData = async(req, res) => {
-    const result = await OrgDB.query()
-    return res.status(200).send(result)
+    try {
+        const result = await OrgDB.query()
+        return res.status(200).send(result)
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
 }
+
 exports.readSpecificData = async(req, res) => {
     const { nim } = req.params
 
     try{
         const cekNIM = await OrgDB.query().where({ nim: nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             const result = await OrgDB.query().where({
                 nim: nim
             })
@@ -101,7 +106,7 @@ exports.updateData = async(req, res) => {
 
         const cekNIM = await OrgDB.query().where({ nim: nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             await OrgDB.query().update({
                 name: name,
                 email: email,
@@ -134,7 +139,7 @@ exports.deleteData = async(req, res) => {
         
         const cekNIM = await OrgDB.query().where({ nim: nim })
         
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             await OrgDB.query().delete().where({
                 nim: nim
             })

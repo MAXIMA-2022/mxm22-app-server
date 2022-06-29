@@ -10,7 +10,7 @@ exports.register = async(req, res) => {
     
 
     try{
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null){
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             if (divisiID === 'D01')
                 return res.status(401).send({ message: 'Anda tidak dapat mendaftar pada divisi tersebut' })
             
@@ -69,16 +69,21 @@ exports.login = async(req, res)=>{
 
 
 exports.readAllData = async(req, res) => {
-    const result = await PanitDB.query()
-    return res.status(200).send(result)
+    try {
+        const result = await PanitDB.query()
+        return res.status(200).send(result)    
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
 }
+
 exports.readSpecificData = async(req, res) => {
     const { nim } = req.params
 
     try {
         const cekNIM = await PanitDB.query().where({ nim: nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             const result = await PanitDB.query().where({
                 nim: nim
             })
@@ -109,7 +114,7 @@ exports.updateData = async(req,res)=>{
 
         const cekNIM = await PanitDB.query().where({ nim: nim })
         
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             await PanitDB.query().update({
                 name: name,
                 email: email,
@@ -142,7 +147,7 @@ exports.deleteData = async(req, res) => {
 
         const cekNIM = await PanitDB.query().where({ nim: nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null){
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             await PanitDB.query().delete().where({
                 nim: nim
             })

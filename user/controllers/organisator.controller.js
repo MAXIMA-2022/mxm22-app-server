@@ -3,7 +3,13 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 exports.register = async(req, res) => {
-    const { nim, name, email, password, stateID } = req.body
+    const { 
+        nim, 
+        name, 
+        email, 
+        password, 
+        stateID 
+    } = req.body
     const hashPass = await bcrypt.hashSync(password, 8)
     const cekNIM = await OrgDB.query().where({ nim: nim })
     const verified2 = 0
@@ -93,7 +99,12 @@ exports.readSpecificData = async(req, res) => {
 
 exports.updateData = async(req, res) => {
     const { nim } = req.params
-    const { name, email, stateID, verified } = req.body
+    const { 
+        name,
+        email, 
+        stateID, 
+        verified 
+    } = req.body
     const authorizedDiv = ['D01', 'D02']
     const division = req.division
 

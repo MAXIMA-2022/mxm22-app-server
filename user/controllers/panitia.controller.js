@@ -3,7 +3,14 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 exports.register = async(req, res) => {
-    const { name, nim, password, email, divisiID, verified } = req.body
+    const { 
+        name, 
+        nim, 
+        password, 
+        email, 
+        divisiID, 
+        verified 
+    } = req.body
     const hashPass = await bcrypt.hashSync(password, 8)
     const cekNIM = await PanitDB.query().where({ nim: nim })
     const verified2 = 0
@@ -101,7 +108,12 @@ exports.readSpecificData = async(req, res) => {
 
 exports.updateData = async(req,res)=>{
     const { nim } = req.params
-    const { name, email, divisiID, verified } = req.body
+    const { 
+        name, 
+        email, 
+        divisiID, 
+        verified 
+    } = req.body
     const authorizedDiv = ['D01', 'D02']
     const division = req.division
    

@@ -91,7 +91,7 @@ exports.readSpecificData = async(req, res) => {
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
     }
     catch (err) {
-        return res.status(500).send({message: err.message})
+        return res.status(500).send({ message: err.message })
     }
 }
 
@@ -131,7 +131,7 @@ exports.updateData = async(req, res) => {
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!' }) 
     }
     catch (err) {
-        return res.status(500).send({message: err.message})
+        return res.status(500).send({ message: err.message })
     }
 }
 
@@ -159,6 +159,6 @@ exports.deleteData = async(req, res) => {
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
     }
     catch (err) {
-        return res.status(500).send({message: err.message})
+        return res.status(500).send({ message: err.message })
     }
 }

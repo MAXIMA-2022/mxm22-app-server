@@ -24,7 +24,7 @@ exports.verifyJWT = async(req, res, next)=>{
 exports.isPanitia = async(req, res, next)=>{
     try{
         const nim = req.decoded_nim
-        const data = await PanitDB.query().where({nim:nim})
+        const data = await PanitDB.query().where({ nim })
 
         if(data.length === 0){
             return res.status(200).send({ message: "Anda tidak punya hak untuk akses ke halaman ini!" })
@@ -41,7 +41,7 @@ exports.isPanitia = async(req, res, next)=>{
 exports.isMahasiswa = async(req, res, next)=>{
     try{
         const nim = req.decoded_nim
-        const data = await MhsDB.query().where({ nim: nim })
+        const data = await MhsDB.query().where({ nim })
 
         if(data.length === 0){
             return res.status(200).send({ message: "Anda tidak punya hak untuk akses ke halaman ini!" })
@@ -57,7 +57,7 @@ exports.isMahasiswa = async(req, res, next)=>{
 exports.isOrganisator = async(req, res, next)=>{
     try{
         const nim = req.decoded_nim
-        const data = await OrgDB.query().where({ nim:nim })
+        const data = await OrgDB.query().where({ nim })
 
         if(data.length === 0){
             return res.status(200).send({ message: "Anda tidak punya hak untuk akses ke halaman ini!" })

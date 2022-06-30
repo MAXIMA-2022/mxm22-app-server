@@ -16,6 +16,7 @@ module.exports = function(app){
 
     app.get(
         '/api/panit',
+        middleware.verifyJWT, middleware.isPanitia,
         PanitController.readAllData
     )
     app.get(

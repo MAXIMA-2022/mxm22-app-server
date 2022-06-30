@@ -16,11 +16,12 @@ module.exports = function(app){
 
     app.get(
         '/api/mhs',
+        middleware.verifyJWT, middleware.isPanitia,
         MhsController.readAllData
     )
     app.get(
         '/api/mhs/:nim',
-        middleware.verifyJWT, middleware.isMahasiswa,
+        middleware.verifyJWT, middleware.isPanitia,
         MhsController.readSpecificData
     )
 

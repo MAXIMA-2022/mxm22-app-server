@@ -16,12 +16,13 @@ module.exports = function(app){
 
     app.get(
         '/api/org',
+        middleware.verifyJWT, middleware.isPanitia,
         OrgController.readAllData
     )
 
     app.get(
         '/api/org/:nim',
-        middleware.verifyJWT, middleware.isOrganisator,
+        middleware.verifyJWT, middleware.isPanitia,
         OrgController.readSpecificData
     )
 

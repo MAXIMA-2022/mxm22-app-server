@@ -10,18 +10,19 @@ exports.register = async(req, res) => {
         password, 
         stateID 
     } = req.body
+
     const hashPass = await bcrypt.hashSync(password, 8)
-    const cekNIM = await OrgDB.query().where({ nim: nim })
+    const cekNIM = await OrgDB.query().where({ nim })
     const verified2 = 0
     
     try{
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             await OrgDB.query().insert({
-                name: name,
-                nim: nim,
-                email: email,
+                name,
+                nim,
+                email,
                 password: hashPass,
-                stateID: stateID,
+                stateID,
                 verified: verified2
             })
 
@@ -38,7 +39,7 @@ exports.register = async(req, res) => {
 
 exports.login = async(req, res) => {
     const { nim, password } = req.body;
-    const checkingNim = await OrgDB.query().where({ nim: nim })
+    const checkingNim = await OrgDB.query().where({ nim })
 
     try{
         if(checkingNim.length === 0){
@@ -79,12 +80,10 @@ exports.readSpecificData = async(req, res) => {
     const { nim } = req.params
 
     try{
-        const cekNIM = await OrgDB.query().where({ nim: nim })
+        const cekNIM = await OrgDB.query().where({ nim })
 
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            const result = await OrgDB.query().where({
-                nim: nim
-            })
+            const result = await OrgDB.query().where({ nim })
             
             return res.status(200).send(result)
         }
@@ -105,6 +104,7 @@ exports.updateData = async(req, res) => {
         stateID, 
         verified 
     } = req.body
+
     const authorizedDiv = ['D01', 'D02']
     const division = req.division
 
@@ -115,15 +115,15 @@ exports.updateData = async(req, res) => {
             })
         }
 
-        const cekNIM = await OrgDB.query().where({ nim: nim })
+        const cekNIM = await OrgDB.query().where({ nim })
 
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             await OrgDB.query().update({
-                name: name,
-                email: email,
-                stateID: stateID,
-                verified: verified
-            }).where({ nim: nim })
+                name,
+                email,
+                stateID,
+                verified
+            }).where({ nim })
 
             return res.status(200).send({ message: 'Data berhasil diupdate' })
         }
@@ -148,12 +148,10 @@ exports.deleteData = async(req, res) => {
             })
         }
         
-        const cekNIM = await OrgDB.query().where({ nim: nim })
+        const cekNIM = await OrgDB.query().where({ nim })
         
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            await OrgDB.query().delete().where({
-                nim: nim
-            })
+            await OrgDB.query().delete().where({ nim })
             
             return res.status(200).send({ message: 'Data berhasil dihapus' })
         }

@@ -18,22 +18,22 @@ exports.register = async(req, res) => {
     } = req.body
 
     const hashPass = await bcrypt.hashSync(password, 8)
-    const cekNIM = await MhsDB.query().where({ nim: nim })
+    const cekNIM = await MhsDB.query().where({ nim })
 
     try{
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             await MhsDB.query().insert({
-                name: name,
-                nim: nim, 
-                password: hashPass,
-                whatsapp: whatsapp,
-                email: email,
-                idInstagram: idInstagram,
-                idLine: idLine,
-                tanggalLahir: tanggalLahir,
-                tempatLahir: tempatLahir,
-                jenisKelamin: jenisKelamin,
-                prodi: prodi
+                name,
+                nim, 
+                hashPass,
+                whatsapp,
+                email,
+                idInstagram,
+                idLine,
+                tanggalLahir,
+                tempatLahir,
+                jenisKelamin,
+                prodi
             })
 
             return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
@@ -49,7 +49,7 @@ exports.register = async(req, res) => {
 
 exports.login = async(req, res) => {
     const { nim, password } = req.body;
-    const checkingNim = await MhsDB.query().where({ nim: nim })
+    const checkingNim = await MhsDB.query().where({ nim })
 
     try{
         if(checkingNim.length === 0){
@@ -92,12 +92,10 @@ exports.readSpecificData = async(req, res) => {
     const { nim } = req.params
 
     try{
-        const cekNIM = await MhsDB.query().where({ nim: nim })
+        const cekNIM = await MhsDB.query().where({ nim })
 
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            const result = await MhsDB.query().where({ 
-                nim: nim
-            })
+            const result = await MhsDB.query().where({ nim })
 
             return res.status(200).send(result)
         }
@@ -134,20 +132,20 @@ exports.updateData = async(req, res) => {
             })
         }
 
-        const cekNIM = await MhsDB.query().where({ nim: nim })
+        const cekNIM = await MhsDB.query().where({ nim })
 
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             await MhsDB.query().update({
-                name: name,
-                whatsapp: whatsapp,
-                email: email,
-                idInstagram: idInstagram,
-                idLine: idLine,
-                tanggalLahir: tanggalLahir,
-                tempatLahir: tempatLahir,
-                jenisKelamin: jenisKelamin,
-                prodi: prodi
-            }).where({ nim: nim })
+                name,
+                whatsapp,
+                email,
+                idInstagram,
+                idLine,
+                tanggalLahir,
+                tempatLahir,
+                jenisKelamin,
+                prodi
+            }).where({ nim })
 
             return res.status(200).send({ message: 'Data berhasil diupdate' })
         }
@@ -172,12 +170,10 @@ exports.deleteData = async(req, res) => {
             })
         }
 
-        const cekNIM = await MhsDB.query().where({ nim: nim })
+        const cekNIM = await MhsDB.query().where({ nim })
         
         if(cekNIM.length !== 0 || cekNIM !== [] || cekNIM !== null || cekNIM !== undefined){
-            await MhsDB.query().delete().where({
-                nim: nim
-            })
+            await MhsDB.query().delete().where({ nim })
 
             return res.status(200).send({ message: 'Data berhasil dihapus' })
         }

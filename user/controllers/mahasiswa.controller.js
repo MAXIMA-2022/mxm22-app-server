@@ -25,7 +25,7 @@ exports.register = async(req, res) => {
             await MhsDB.query().insert({
                 name,
                 nim, 
-                hashPass,
+                password: hashPass,
                 whatsapp,
                 email,
                 idInstagram,

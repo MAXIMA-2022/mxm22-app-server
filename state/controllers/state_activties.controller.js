@@ -1,4 +1,5 @@
 const sActDB = require('../model/state_activities.model')
+const helper = require('../../helpers/helper')
 
 exports.readAllState = async(req, res) => {
     try {
@@ -24,29 +25,41 @@ exports.readSpecificState = async(req, res) => {
 
 
 exports.createState = async(req, res) => {
+    const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
+    const division = req.division
+    
     try{
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }
+        
         const { 
             name, 
             zoomLink, 
             day, 
             stateLogo, 
-            quota, 
-            registered, 
-            attendanceCode, 
+            quota,
             identifier, 
             category, 
             shortDesc, 
             coverPhoto 
         } = req.body
 
+        const fixName = helper.toTitleCase(name).trim()
+        const attendanceCode = helper.createAttendanceCode(name)
+        const attendanceCode2 = helper.createAttendanceCode(name)
+
         await sActDB.query().insert({
-            name,
+            name: fixName,
             zoomLink,
             day,
             stateLogo,
             quota,
-            registered,
+            registered : 0,
             attendanceCode,
+            attendanceCode2,
             identifier,
             category,
             shortDesc,

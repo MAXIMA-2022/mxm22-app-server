@@ -10,7 +10,7 @@ exports.verifyJWT = async(req, res, next)=>{
         return res.status(403).send({ message: "Harap login terlebih dahulu!" })
     }
 
-    await jwt.verify(token, process.env.SECRET_KEY, (err, decoded)=>{
+    await jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
         if(err){
             return res.status(401).send({ message: "Unauthorized!" })
         }
@@ -31,6 +31,7 @@ exports.isPanitia = async(req, res, next)=>{
         }
 
         req.division = data[0].divisiID 
+        
         next()
     }
     catch(err){

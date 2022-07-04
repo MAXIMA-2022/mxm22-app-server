@@ -22,6 +22,19 @@ exports.updateStateActValidation = [
     check('coverPhoto').notEmpty().withMessage('Cover foto STATE tidak boleh kosong') 
 ]
 
+exports.createStateRegisValidation = [
+  check('nim').notEmpty().withMessage('NIM tidak boleh kosong'),
+  check('queueNo').notEmpty().withMessage('Queue Number tidak boleh kosong'),
+  check('attendanceCode').notEmpty().withMessage('Attendance Code tidak boleh kosong'),
+  check('inEventAttendance').notEmpty().withMessage('In Event Attendance tidak boleh kosong'),
+  check('exitAttendance').notEmpty().withMessage('Exit Event Attendance tidak boleh kosong')
+]
+
+exports.verifyAttendance2 = [
+  check('attendanceCode2').notEmpty().withMessage('Token tidak boleh kosong'),
+]
+
+
 exports.runValidation = (req, res, next) => {
   const errors = validationResult(req).errors
   const listErrors = []

@@ -12,39 +12,43 @@ exports.register = async(req, res) => {
         divisiID
     } = req.body
 
-    const hashPass = await bcrypt.hashSync(password, 8)
-    const cekNIM = await PanitDB.query().where({ nim })
-    const cekDiv = await DivisiDB.query().where({ divisiID })
-    const verified2 = 0
-
     try{
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            if(cekDiv.length !== 0 && cekDiv !== [] && cekDiv !== null && cekDiv !== undefined){
-                if (divisiID === 'D01')
-                    return res.status(401).send({ message: 'Anda tidak dapat mendaftar pada divisi tersebut' })
-            
-                await PanitDB.query().insert({
-                    name,
-                    nim,
-                    password: hashPass,
-                    email,
-                    divisiID, 
-                    verified: verified2
-                })
+        const hashPass = await bcrypt.hashSync(password, 8)
+        const cekNIM = await PanitDB.query().where({ nim })
+        const cekDiv = await DivisiDB.query().where({ divisiID })
+        const verified2 = 0
 
-                return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
-            }
-            else 
-                return res.status(409).send({ message: 'Divisi yang kamu input belum/ tidak terdaftar!' })       
+        if(cekNIM.length !== 0){
+            return res.status(400).send({
+                message: 'NIM sudah terdaftar!'
+            })
         }
-        else
-            return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
+
+        if(cekDiv.length === 0){
+            return res.status(409).send({ 
+                message: 'Divisi yang kamu input tidak terdaftar!' 
+            })       
+        }
+
+        if(divisiID === 'D01'){
+            return res.status(401).send({ 
+                message: 'Anda tidak dapat mendaftar pada divisi tersebut' 
+            })
+        }
+
+        await PanitDB.query().insert({
+            name,
+            nim,
+            password: hashPass,
+            email,
+            divisiID, 
+            verified: verified2
+        })
     }
     catch(err){
         return res.status(500).send({ message: err.message })
     }
 }
-
 
 exports.login = async(req, res)=>{
     const { nim, password } = req.body;

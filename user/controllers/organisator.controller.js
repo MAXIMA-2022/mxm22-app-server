@@ -1,4 +1,5 @@
 const OrgDB = require('../model/organisator.model')
+const StateDB = require('../../state/model/state_activities.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -13,20 +14,25 @@ exports.register = async(req, res) => {
 
     const hashPass = await bcrypt.hashSync(password, 8)
     const cekNIM = await OrgDB.query().where({ nim })
+    const cekSTATE = await StateDB.query().where({ stateID })
     const verified2 = 0
     
     try{
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            await OrgDB.query().insert({
-                name,
-                nim,
-                email,
-                password: hashPass,
-                stateID,
-                verified: verified2
-            })
+            if(cekSTATE.length !== 0 || cekSTATE !== [] || cekSTATE !== null || cekSTATE !== undefined){
+                await OrgDB.query().insert({
+                    name,
+                    nim,
+                    email,
+                    password: hashPass,
+                    stateID,
+                    verified: verified2
+                })
 
-            return res.status(200).send({ message: 'Akun baru berhasil ditambahkan'  })
+                return res.status(200).send({ message: 'Akun baru berhasil ditambahkan'  })
+            }
+            else 
+                return res.status(404).send({ message: 'STATE yang kamu input belum/ tidak terdaftar!' })
         }
         else
         return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
@@ -71,7 +77,8 @@ exports.readAllData = async(req, res) => {
     try {
         const result = await OrgDB.query()
         return res.status(200).send(result)
-    } catch (err) {
+    } 
+    catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
@@ -107,6 +114,7 @@ exports.updateData = async(req, res) => {
 
     const authorizedDiv = ['D01', 'D02']
     const division = req.division
+    const cekSTATE = await StateDB.query().where({ stateID })
 
     try {
         if(!authorizedDiv.includes(division)){
@@ -118,14 +126,18 @@ exports.updateData = async(req, res) => {
         const cekNIM = await OrgDB.query().where({ nim })
 
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            await OrgDB.query().update({
-                name,
-                email,
-                stateID,
-                verified
-            }).where({ nim })
+            if(cekSTATE.length !== 0 || cekSTATE !== [] || cekSTATE !== null || cekSTATE !== undefined){
+                await OrgDB.query().update({
+                    name,
+                    email,
+                    stateID,
+                    verified
+                }).where({ nim })
 
-            return res.status(200).send({ message: 'Data berhasil diupdate' })
+                return res.status(200).send({ message: 'Data berhasil diupdate' })
+            }else
+            return res.status(404).send({ message: 'STATE yang kamu input belum/ tidak terdaftar!' })
+
         }
         else
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!' }) 

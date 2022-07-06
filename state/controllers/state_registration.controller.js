@@ -52,8 +52,9 @@ exports.createStateReg = async(req, res) => {
         .where('state_registration.nim', nim)
         .orderBy('day_management.day')
 
-        const len = dbState.length
+        const cekSTATE = await StateDB.query().where({ stateID })
         const cekParticipant = await sRegisDB.query().where({ nim, stateID })
+        const len = dbState.length
         let cek = 0
 
         if(cekParticipant.length === 0 || cekParticipant === [] || cekParticipant === null || cekParticipant === undefined)
@@ -61,45 +62,49 @@ exports.createStateReg = async(req, res) => {
         else 
             return res.status(403).send({ message: 'Kamu telah mendaftar pada STATE ini!' })
 
-        if(len < 3 && cek == 1){
-            await sRegisDB.query().insert({
-                stateID,
-                nim,
-                queueNo: 0,
-                attendanceTime: 0,
-                inEventAttendance: 0,
-                exitAttendance: 0,
-                tokenTime: 0
-            })
+        if(cekSTATE.length !== 0 || cekSTATE !== [] || cekSTATE !== null || cekSTATE !== undefined){
+            if(len < 3 && cek == 1){
+                await sRegisDB.query().insert({
+                    stateID,
+                    nim,
+                    queueNo: 0,
+                    attendanceTime: 0,
+                    inEventAttendance: 0,
+                    exitAttendance: 0,
+                    tokenTime: 0
+                })
 
-            const dbActivities = await sActDB.query()
-            .select(
-                'state_activities.*',
-                'day_management.date',
-                'state_registration.exitAttendance'
-            )
-            .join(
-                'state_registration',
-                'state_registration.stateID',
-                'state_activities.stateID'
-            )
-            .join(
-                'day_management',
-                'day_management.day',
-                'state_activities.day'
-            )
-            .where('state_activities.stateID', stateID)
-    
-            await sActDB.query()
-            .where('stateID', stateID)
-            .update({
-                registered: dbActivities[0].registered + 1
-            })
-            
-            return res.status(200).send({ message: 'Registrasi STATE berhasil dilakukan' })
+                const dbActivities = await sActDB.query()
+                .select(
+                    'state_activities.*',
+                    'day_management.date',
+                    'state_registration.exitAttendance'
+                )
+                .join(
+                    'state_registration',
+                    'state_registration.stateID',
+                    'state_activities.stateID'
+                )
+                .join(
+                    'day_management',
+                    'day_management.day',
+                    'state_activities.day'
+                )
+                .where('state_activities.stateID', stateID)
+        
+                await sActDB.query()
+                .where('stateID', stateID)
+                .update({
+                    registered: dbActivities[0].registered + 1
+                })
+                
+                return res.status(200).send({ message: 'Registrasi STATE berhasil dilakukan' })
+            }
+            else
+                return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
         }
-        else
-            return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
+        else 
+            return res.status(409).send({ message: 'STATE yang kamu input belum / tidak terdaftar, dicek lagi ya!' })
     }
     catch (err) {
         return res.status(500).send({ message: err.message })

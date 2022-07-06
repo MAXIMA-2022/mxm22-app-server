@@ -52,7 +52,7 @@ exports.createStateReg = async(req, res) => {
         .where('state_registration.nim', nim)
         .orderBy('day_management.day')
 
-        const cekSTATE = await StateDB.query().where({ stateID })
+        const cekSTATE = await sActDB.query().where({ stateID })
         const cekParticipant = await sRegisDB.query().where({ nim, stateID })
         const len = dbState.length
         let cek = 0
@@ -62,7 +62,7 @@ exports.createStateReg = async(req, res) => {
         else 
             return res.status(403).send({ message: 'Kamu telah mendaftar pada STATE ini!' })
 
-        if(cekSTATE.length !== 0 || cekSTATE !== [] || cekSTATE !== null || cekSTATE !== undefined){
+        if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
             if(len < 3 && cek == 1){
                 await sRegisDB.query().insert({
                     stateID,
@@ -104,7 +104,7 @@ exports.createStateReg = async(req, res) => {
                 return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
         }
         else 
-            return res.status(409).send({ message: 'STATE yang kamu input belum / tidak terdaftar, dicek lagi ya!' })
+            return res.status(409).send({ message: 'STATE yang kamu input belum/ tidak terdaftar, dicek lagi ya!' })
     }
     catch (err) {
         return res.status(500).send({ message: err.message })

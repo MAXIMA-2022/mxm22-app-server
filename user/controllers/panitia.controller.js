@@ -19,7 +19,7 @@ exports.register = async(req, res) => {
 
     try{
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            if(cekDiv.length !== 0 || cekDiv !== [] || cekDiv !== null || cekDiv !== undefined){
+            if(cekDiv.length !== 0 && cekDiv !== [] && cekDiv !== null && cekDiv !== undefined){
                 if (divisiID === 'D01')
                     return res.status(401).send({ message: 'Anda tidak dapat mendaftar pada divisi tersebut' })
             
@@ -133,8 +133,8 @@ exports.updateData = async(req,res)=>{
         const cekNIM = await PanitDB.query().where({ nim })
         
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            if(cekDiv.length !== 0 || cekDiv !== [] || cekDiv !== null || cekDiv !== undefined){
-                if(verified !== 0 || verified !== 1)
+            if(cekDiv.length !== 0 && cekDiv !== [] && cekDiv !== null && cekDiv !== undefined){
+                if(verified < 0 || verified > 1)
                     return res.status(403).send({ message: 'Value hanya boleh angka 0 atau 1 saja!' })
                 else {
                     await PanitDB.query().update({

@@ -19,7 +19,7 @@ exports.register = async(req, res) => {
     
     try{
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            if(cekSTATE.length !== 0 || cekSTATE !== [] || cekSTATE !== null || cekSTATE !== undefined){
+            if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
                 await OrgDB.query().insert({
                     name,
                     nim,
@@ -126,18 +126,22 @@ exports.updateData = async(req, res) => {
         const cekNIM = await OrgDB.query().where({ nim })
 
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            if(cekSTATE.length !== 0 || cekSTATE !== [] || cekSTATE !== null || cekSTATE !== undefined){
-                await OrgDB.query().update({
-                    name,
-                    email,
-                    stateID,
-                    verified
-                }).where({ nim })
+            if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
+                if(verified < 0 || verified > 1)
+                    return res.status(403).send({ message: 'Value hanya boleh angka 0 atau 1 saja!' })
+                else {
+                    await OrgDB.query().update({
+                        name,
+                        email,
+                        stateID,
+                        verified
+                    }).where({ nim })
 
-                return res.status(200).send({ message: 'Data berhasil diupdate' })
-            }else
-            return res.status(404).send({ message: 'STATE yang kamu input belum/ tidak terdaftar!' })
-
+                    return res.status(200).send({ message: 'Data berhasil diupdate' })
+                }
+            }
+            else
+                return res.status(404).send({ message: 'STATE yang kamu input belum/ tidak terdaftar!' })
         }
         else
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!' }) 

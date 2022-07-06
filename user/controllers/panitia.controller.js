@@ -1,4 +1,5 @@
 const PanitDB = require('../model/panitia.model')
+const DivisiDB = require('../model/divisi.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -13,23 +14,28 @@ exports.register = async(req, res) => {
 
     const hashPass = await bcrypt.hashSync(password, 8)
     const cekNIM = await PanitDB.query().where({ nim })
+    const cekDiv = await DivisiDB.query().where({ divisiID })
     const verified2 = 0
 
     try{
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            if (divisiID === 'D01')
-                return res.status(401).send({ message: 'Anda tidak dapat mendaftar pada divisi tersebut' })
+            if(cekDiv.length !== 0 || cekDiv !== [] || cekDiv !== null || cekDiv !== undefined){
+                if (divisiID === 'D01')
+                    return res.status(401).send({ message: 'Anda tidak dapat mendaftar pada divisi tersebut' })
             
-            await PanitDB.query().insert({
-                name,
-                nim,
-                password: hashPass,
-                email,
-                divisiID, 
-                verified: verified2
-            })
+                await PanitDB.query().insert({
+                    name,
+                    nim,
+                    password: hashPass,
+                    email,
+                    divisiID, 
+                    verified: verified2
+                })
 
-            return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
+                return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
+            }
+            else 
+                return res.status(409).send({ message: 'Divisi yang kamu input belum/ tidak terdaftar!' })       
         }
         else
             return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
@@ -78,7 +84,8 @@ exports.readAllData = async(req, res) => {
     try {
         const result = await PanitDB.query()
         return res.status(200).send(result)    
-    } catch (err) {
+    } 
+    catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
@@ -114,6 +121,7 @@ exports.updateData = async(req,res)=>{
 
     const authorizedDiv = ['D01', 'D02']
     const division = req.division
+    const cekDiv = await DivisiDB.query().where({ divisiID })
    
     try {
         if(!authorizedDiv.includes(division)){
@@ -125,14 +133,22 @@ exports.updateData = async(req,res)=>{
         const cekNIM = await PanitDB.query().where({ nim })
         
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            await PanitDB.query().update({
-                name,
-                email,
-                divisiID,
-                verified
-            }).where({ nim })
+            if(cekDiv.length !== 0 || cekDiv !== [] || cekDiv !== null || cekDiv !== undefined){
+                if(verified !== 0 || verified !== 1)
+                    return res.status(403).send({ message: 'Value hanya boleh angka 0 atau 1 saja!' })
+                else {
+                    await PanitDB.query().update({
+                        name,
+                        email,
+                        divisiID,
+                        verified
+                    }).where({ nim })
 
-            return res.status(200).send({ message: 'Data berhasil diupdate' })
+                    return res.status(200).send({ message: 'Data berhasil diupdate' })
+                }
+            }
+            else 
+                return res.status(409).send({ message: 'Divisi yang kamu input belum/ tidak terdaftar!' })
         }
         else
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!' })

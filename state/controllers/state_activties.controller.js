@@ -13,15 +13,21 @@ exports.readAllState = async(req, res) => {
 
 exports.readSpecificState = async(req, res) => {
     const { stateID } = req.params
-    const cekSTATE = await sActDB.query().where({ stateID })
-    
-    if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
-        const result = await sActDB.query().where({ stateID })
 
+    try {
+        const cekSTATE = await sActDB.query().where({ stateID })
+        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+            return res.status(404).send({
+                 message: 'STATE ID ' + stateID + ' tidak ditemukan' 
+            })
+        }
+        const result = await sActDB.query().where({ stateID })
         return res.status(200).send(result)
+
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
     }
-    else
-        return res.status(404).send({ message: 'STATE ID ' + stateID + ' tidak ditemukan' })
+
 }
 
 
@@ -94,25 +100,27 @@ exports.updateState = async(req, res) => {
         } = req.body
         const cekSTATE = await sActDB.query().where({ stateID })
 
-        if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
-            await sActDB.query().update({
-                name,
-                zoomLink,
-                day,
-                stateLogo,
-                quota,
-                registered,
-                attendanceCode,
-                identifier,
-                category,
-                shortDesc,
-                coverPhoto
-            }).where({ stateID })
-            
-            return res.status(200).send({ message: 'STATE berhasil diupdate' })
+        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+            return res.status(404).send({ 
+                message: 'STATE ID ' + stateID + ' tidak ditemukan' 
+            })
         }
-        else
-            return res.status(404).send({ message: 'STATE ID ' + stateID + ' tidak ditemukan' })
+            
+        await sActDB.query().update({
+            name,
+            zoomLink,
+            day,
+            stateLogo,
+            quota,
+            registered,
+            attendanceCode,
+            identifier,
+            category,
+            shortDesc,
+            coverPhoto
+        }).where({ stateID })
+        
+        return res.status(200).send({ message: 'STATE berhasil diupdate' })
     }
     catch (err) {
         return res.status(500).send({message: err.message})
@@ -125,13 +133,14 @@ exports.deleteState = async(req, res) => {
     try{
         const cekSTATE = await sActDB.query().where({ stateID })
 
-        if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
-            await sActDB.query().delete().where({ stateID })
-
-            return res.status(200).send({ message: 'STATE berhasil dihapus' })
+        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+            return res.status(404).send({ 
+                message: 'STATE ID ' + stateID + ' tidak ditemukan'
+            })
         }
-        else
-            return res.status(404).send({ message: 'STATE ID ' + stateID + ' tidak ditemukan' })
+
+        await sActDB.query().delete().where({ stateID })
+        return res.status(200).send({ message: 'STATE berhasil dihapus' })
     }
     catch (err) {
         return res.status(500).send({ message: err.message })

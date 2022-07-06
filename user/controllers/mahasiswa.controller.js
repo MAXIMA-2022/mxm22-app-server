@@ -21,25 +21,25 @@ exports.register = async(req, res) => {
     const cekNIM = await MhsDB.query().where({ nim })
 
     try{
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            await MhsDB.query().insert({
-                name,
-                nim, 
-                password: hashPass,
-                whatsapp,
-                email,
-                idInstagram,
-                idLine,
-                tanggalLahir,
-                tempatLahir,
-                jenisKelamin,
-                prodi
-            })
-
-            return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
-        }
-        else
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
             return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
+        }
+            
+        await MhsDB.query().insert({
+            name,
+            nim, 
+            password: hashPass,
+            whatsapp,
+            email,
+            idInstagram,
+            idLine,
+            tanggalLahir,
+            tempatLahir,
+            jenisKelamin,
+            prodi
+        })
+
+        return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
         return res.status(500).send({ message: err.message })
@@ -61,7 +61,9 @@ exports.login = async(req, res) => {
         const isPassValid = bcrypt.compareSync(password, checkingNim[0].password)
 
         if(!isPassValid){
-            return res.status(400).send({ message: 'NIM atau password salah!' })
+            return res.status(400).send({ 
+                message: 'NIM atau password salah!' 
+            })
         }
 
         const JWTtoken = jwt.sign({nim: checkingNim[0].nim}, process.env.SECRET_KEY, {
@@ -87,19 +89,20 @@ exports.readAllData = async(req, res) => {
         return res.status(500).send({ message: err.message })
     }
 }
+
 exports.readSpecificData = async(req, res) => {
     const { nim } = req.params
 
     try{
         const cekNIM = await MhsDB.query().where({ nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            const result = await MhsDB.query().where({ nim })
-
-            return res.status(200).send(result)
-        }
-        else
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
+        }
+        
+        const result = await MhsDB.query().where({ nim })
+
+        return res.status(200).send(result) 
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -133,23 +136,25 @@ exports.updateData = async(req, res) => {
 
         const cekNIM = await MhsDB.query().where({ nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            await MhsDB.query().update({
-                name,
-                whatsapp,
-                email,
-                idInstagram,
-                idLine,
-                tanggalLahir,
-                tempatLahir,
-                jenisKelamin,
-                prodi
-            }).where({ nim })
-
-            return res.status(200).send({ message: 'Data berhasil diupdate' })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!' 
+            })
         }
-        else
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!' })
+            
+        await MhsDB.query().update({
+            name,
+            whatsapp,
+            email,
+            idInstagram,
+            idLine,
+            tanggalLahir,
+            tempatLahir,
+            jenisKelamin,
+            prodi
+        }).where({ nim })
+
+        return res.status(200).send({ message: 'Data berhasil diupdate' })
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -171,13 +176,15 @@ exports.deleteData = async(req, res) => {
 
         const cekNIM = await MhsDB.query().where({ nim })
         
-        if(cekNIM.length !== 0 || cekNIM !== [] || cekNIM !== null || cekNIM !== undefined){
-            await MhsDB.query().delete().where({ nim })
-
-            return res.status(200).send({ message: 'Data berhasil dihapus' })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
         }
-        else
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
+        
+        await MhsDB.query().delete().where({ nim })
+
+        return res.status(200).send({ message: 'Data berhasil dihapus' })
     }
     catch (err) {
         return res.status(500).send({ message: err.message })

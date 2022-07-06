@@ -18,24 +18,33 @@ exports.register = async(req, res) => {
     const verified2 = 0
     
     try{
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
-                await OrgDB.query().insert({
-                    name,
-                    nim,
-                    email,
-                    password: hashPass,
-                    stateID,
-                    verified: verified2
-                })
 
-                return res.status(200).send({ message: 'Akun baru berhasil ditambahkan'  })
-            }
-            else 
-                return res.status(404).send({ message: 'STATE yang kamu input belum/ tidak terdaftar!' })
+        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
+            return res.status(409).send({ 
+                message: 'Akun anda sebelumnya telah terdaftar' 
+            })
+           
+                
         }
-        else
-        return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
+
+        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+            return res.status(404).send({ 
+                message: 'STATE yang kamu input tidak terdaftar!' 
+            })
+        }
+           
+        
+        await OrgDB.query().insert({
+            name,
+            nim,
+            email,
+            password: hashPass,
+            stateID,
+            verified: verified2
+        })
+
+        return res.status(200).send({ message: 'Akun baru berhasil ditambahkan'  })
+
     }
     catch(err){
         return res.status(500).send({ message: err.message })
@@ -89,13 +98,13 @@ exports.readSpecificData = async(req, res) => {
     try{
         const cekNIM = await OrgDB.query().where({ nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            const result = await OrgDB.query().where({ nim })
-            
-            return res.status(200).send(result)
-        }
-        else
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
+        }
+            
+        const result = await OrgDB.query().where({ nim })
+        return res.status(200).send(result)
+
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -125,26 +134,33 @@ exports.updateData = async(req, res) => {
 
         const cekNIM = await OrgDB.query().where({ nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
-                if(verified < 0 || verified > 1)
-                    return res.status(403).send({ message: 'Value hanya boleh angka 0 atau 1 saja!' })
-                else {
-                    await OrgDB.query().update({
-                        name,
-                        email,
-                        stateID,
-                        verified
-                    }).where({ nim })
-
-                    return res.status(200).send({ message: 'Data berhasil diupdate' })
-                }
-            }
-            else
-                return res.status(404).send({ message: 'STATE yang kamu input belum/ tidak terdaftar!' })
+        if (cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined) {
+            return res.status(404).send({
+                message: 'NIM ' + nim + ' tidak ditemukan!' 
+            })
         }
-        else
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!' }) 
+
+       
+        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+            return res.status(404).send({ 
+                message: 'STATE yang kamu input tidak terdaftar!' 
+            })
+        }
+                
+        if(verified < 0 || verified > 1)
+            return res.status(403).send({ 
+                message: 'Value hanya boleh angka 0 atau 1 saja!' 
+            })
+        
+        await OrgDB.query().update({
+            name,
+            email,
+            stateID,
+            verified
+        }).where({ nim })
+
+        return res.status(200).send({ message: 'Data berhasil diupdate' })
+             
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -166,13 +182,15 @@ exports.deleteData = async(req, res) => {
         
         const cekNIM = await OrgDB.query().where({ nim })
         
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            await OrgDB.query().delete().where({ nim })
-            
-            return res.status(200).send({ message: 'Data berhasil dihapus' })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
         }
-        else
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
+        
+            
+        await OrgDB.query().delete().where({ nim })
+        return res.status(200).send({ message: 'Data berhasil dihapus' })
     }
     catch (err) {
         return res.status(500).send({ message: err.message })

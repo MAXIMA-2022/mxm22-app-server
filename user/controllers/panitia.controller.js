@@ -24,7 +24,7 @@ exports.register = async(req, res) => {
             })
         }
 
-        if(cekDiv.length === 0){
+        if(cekDiv.length === 0 || cekDiv === [] || cekDiv === null || cekDiv === undefined){
             return res.status(409).send({ 
                 message: 'Divisi yang kamu input tidak terdaftar!' 
             })       
@@ -44,6 +44,8 @@ exports.register = async(req, res) => {
             divisiID, 
             verified: verified2
         })
+
+        return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
         return res.status(500).send({ message: err.message })
@@ -100,13 +102,13 @@ exports.readSpecificData = async(req, res) => {
     try {
         const cekNIM = await PanitDB.query().where({ nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            const result = await PanitDB.query().where({ nim })
-            
-            return res.status(200).send(result)
-        }
-        else
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan'}) 
+        }
+            
+        const result = await PanitDB.query().where({ nim })
+        
+        return res.status(200).send(result)
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -135,27 +137,34 @@ exports.updateData = async(req,res)=>{
         }
 
         const cekNIM = await PanitDB.query().where({ nim })
-        
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            if(cekDiv.length !== 0 && cekDiv !== [] && cekDiv !== null && cekDiv !== undefined){
-                if(verified < 0 || verified > 1)
-                    return res.status(403).send({ message: 'Value hanya boleh angka 0 atau 1 saja!' })
-                else {
-                    await PanitDB.query().update({
-                        name,
-                        email,
-                        divisiID,
-                        verified
-                    }).where({ nim })
 
-                    return res.status(200).send({ message: 'Data berhasil diupdate' })
-                }
-            }
-            else 
-                return res.status(409).send({ message: 'Divisi yang kamu input belum/ tidak terdaftar!' })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
         }
-        else
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!' })
+        
+        if(cekDiv.length === 0 || cekDiv === [] || cekDiv === null || cekDiv === undefined){
+            return res.status(404).send({ 
+                message: 'Divisi yang kamu input tidak terdaftar!' 
+            })
+        }
+
+        if(verified < 0 || verified > 1){
+            return res.status(406).send({ 
+                message: 'Value hanya boleh angka 0 atau 1 saja!' 
+            })
+        }
+
+        await PanitDB.query().update({
+            name,
+            email,
+            divisiID,
+            verified
+        }).where({ nim })
+
+        return res.status(200).send({ message: 'Data berhasil diupdate' })
+            
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -177,13 +186,12 @@ exports.deleteData = async(req, res) => {
 
         const cekNIM = await PanitDB.query().where({ nim })
 
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            await PanitDB.query().delete().where({ nim })
-            
-            return res.status(200).send({ message: 'Data berhasil dihapus' })
-        }
-        else
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
+        }
+    
+        await PanitDB.query().delete().where({ nim })
+        return res.status(200).send({ message: 'Data berhasil dihapus' })
     }
     catch (err) {
         return res.status(500).send({ message: err.message })

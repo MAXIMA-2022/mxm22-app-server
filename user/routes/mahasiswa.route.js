@@ -27,7 +27,8 @@ module.exports = function(app){
 
     app.put(
         '/api/mhs/update/:nim',
-        middleware.verifyJWT, middleware.isPanitia,
+        middleware.verifyJWT, middleware.isPanitia, 
+        validation.mhsUpdateValidation, validation.runValidation,
         MhsController.updateData
     )
 

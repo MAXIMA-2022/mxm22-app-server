@@ -3,26 +3,28 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 exports.register = async(req, res) => {
-    const { 
-        name, 
-        nim, 
-        password, 
-        whatsapp, 
-        email, 
-        idInstagram, 
-        idLine, 
-        tanggalLahir, 
-        tempatLahir, 
-        jenisKelamin, 
-        prodi 
-    } = req.body
-
-    const hashPass = await bcrypt.hashSync(password, 8)
-    const cekNIM = await MhsDB.query().where({ nim })
-
     try{
+        const { 
+            name, 
+            nim, 
+            password, 
+            whatsapp, 
+            email, 
+            idInstagram, 
+            idLine, 
+            tanggalLahir, 
+            tempatLahir, 
+            jenisKelamin, 
+            prodi 
+        } = req.body
+
+        const hashPass = await bcrypt.hashSync(password, 8)
+
+        const cekNIM = await MhsDB.query().where({ nim })
         if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
-            return res.status(409).send({ message: 'Akun anda sebelumnya telah terdaftar' })
+            return res.status(409).send({ 
+                message: 'Akun anda sebelumnya telah terdaftar'
+            })
         }
             
         await MhsDB.query().insert({
@@ -48,18 +50,17 @@ exports.register = async(req, res) => {
 
 
 exports.login = async(req, res) => {
-    const { nim, password } = req.body;
-    const checkingNim = await MhsDB.query().where({ nim })
-
     try{
+        const { nim, password } = req.body
+
+        const checkingNim = await MhsDB.query().where({ nim })
         if(checkingNim.length === 0){
-            return res.status(400).send({
-                message : 'NIM atau password salah!'
+            return res.status(404).send({
+                message : 'NIM ' + nim + ' tidak terdaftar! Harap melakukan register dahulu'
             })
         }
 
         const isPassValid = bcrypt.compareSync(password, checkingNim[0].password)
-
         if(!isPassValid){
             return res.status(400).send({ 
                 message: 'NIM atau password salah!' 
@@ -85,23 +86,24 @@ exports.readAllData = async(req, res) => {
     try {
         const result = await MhsDB.query()
         return res.status(200).send(result)
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
 
 exports.readSpecificData = async(req, res) => {
-    const { nim } = req.params
-
     try{
-        const cekNIM = await MhsDB.query().where({ nim })
+        const { nim } = req.params
 
+        const cekNIM = await MhsDB.query().where({ nim })
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
         }
         
         const result = await MhsDB.query().where({ nim })
-
         return res.status(200).send(result) 
     }
     catch (err) {
@@ -111,23 +113,23 @@ exports.readSpecificData = async(req, res) => {
 
 
 exports.updateData = async(req, res) => {
-    const { nim } = req.params
-    const { 
-        name, 
-        whatsapp, 
-        email, 
-        idInstagram, 
-        idLine, 
-        tanggalLahir, 
-        tempatLahir, 
-        jenisKelamin, 
-        prodi 
-    } = req.body
-
-    const authorizedDiv = ['D01', 'D02']
-    const division = req.division
-
     try{
+        const { nim } = req.params
+        const { 
+            name, 
+            whatsapp, 
+            email, 
+            idInstagram, 
+            idLine, 
+            tanggalLahir, 
+            tempatLahir, 
+            jenisKelamin, 
+            prodi 
+        } = req.body
+
+        const authorizedDiv = ['D01', 'D02']
+        const division = req.division
+
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
                 message: "Divisi anda tidak punya otoritas yang cukup!"
@@ -135,10 +137,16 @@ exports.updateData = async(req, res) => {
         }
 
         const cekNIM = await MhsDB.query().where({ nim })
-
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!' 
+            })
+        }
+
+        const nim2 = req.decoded_nim
+        if(nim2 != nim) {
+            return res.status(403).send({ 
+                message: 'Kamu tidak dapat mengupdate data milik akun lain!' 
             })
         }
             
@@ -163,11 +171,11 @@ exports.updateData = async(req, res) => {
 
 
 exports.deleteData = async(req, res) => {
-    const { nim } = req.params
-    const authorizedDiv = ['D01', 'D02']
-    const division = req.division
-
     try{
+        const { nim } = req.params
+        const authorizedDiv = ['D01', 'D02']
+        const division = req.division
+
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
                 message: "Divisi anda tidak punya otoritas yang cukup!"
@@ -175,15 +183,13 @@ exports.deleteData = async(req, res) => {
         }
 
         const cekNIM = await MhsDB.query().where({ nim })
-        
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
-        }
+        } 
         
         await MhsDB.query().delete().where({ nim })
-
         return res.status(200).send({ message: 'Data berhasil dihapus' })
     }
     catch (err) {

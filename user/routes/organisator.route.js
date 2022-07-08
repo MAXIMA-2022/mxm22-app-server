@@ -28,8 +28,14 @@ module.exports = function(app){
 
     app.put(
         '/api/org/update/:nim',
-        middleware.verifyJWT, middleware.isPanitia,
+        middleware.verifyJWT, middleware.isPanitia, 
+        validation.orgUpdateValidation, validation.runValidation,
         OrgController.updateData
+    )
+    app.put(
+        '/api/org/updateVerified/:nim',
+        middleware.verifyJWT, middleware.isPanitia,
+        OrgController.updateVerified
     )
 
     app.delete(

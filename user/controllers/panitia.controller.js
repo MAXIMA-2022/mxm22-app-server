@@ -4,26 +4,26 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 exports.register = async(req, res) => {
-    const { 
-        name, 
-        nim, 
-        password, 
-        email, 
-        divisiID
-    } = req.body
-
     try{
+        const { 
+            name, 
+            nim, 
+            password, 
+            email, 
+            divisiID
+        } = req.body
+
         const hashPass = await bcrypt.hashSync(password, 8)
-        const cekNIM = await PanitDB.query().where({ nim })
-        const cekDiv = await DivisiDB.query().where({ divisiID })
         const verified2 = 0
 
+        const cekNIM = await PanitDB.query().where({ nim })
         if(cekNIM.length !== 0){
             return res.status(400).send({
                 message: 'NIM sudah terdaftar!'
             })
         }
 
+        const cekDiv = await DivisiDB.query().where({ divisiID })
         if(cekDiv.length === 0 || cekDiv === [] || cekDiv === null || cekDiv === undefined){
             return res.status(409).send({ 
                 message: 'Divisi yang kamu input tidak terdaftar!' 
@@ -53,21 +53,27 @@ exports.register = async(req, res) => {
 }
 
 exports.login = async(req, res)=>{
-    const { nim, password } = req.body;
-    const checkingNim = await PanitDB.query().where({ nim })
-
     try{
+        const { nim, password } = req.body
+
+        const checkingNim = await PanitDB.query().where({ nim })
         if(checkingNim.length === 0){
-            return res.status(400).send({
-                message : 'NIM atau password salah!'
+            return res.status(404).send({
+                message : 'NIM ' + nim + ' tidak terdaftar! Harap melakukan register dahulu'
             })
         }
 
         const isPassValid = bcrypt.compareSync(password, checkingNim[0].password)
-
         if(!isPassValid){
             return res.status(400).send({
                 message: 'NIM atau password salah!'
+            })
+        }
+
+        const ver = await PanitDB.query().select('verified').where({ nim })
+        if(ver[0].verified !== 1){
+            return res.status(400).send({
+                message: 'Akun anda belum terverifikasi!'
             })
         }
 
@@ -97,17 +103,17 @@ exports.readAllData = async(req, res) => {
 }
 
 exports.readSpecificData = async(req, res) => {
-    const { nim } = req.params
-
     try {
-        const cekNIM = await PanitDB.query().where({ nim })
+        const { nim } = req.params
 
+        const cekNIM = await PanitDB.query().where({ nim })
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan'}) 
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan'
+            }) 
         }
             
         const result = await PanitDB.query().where({ nim })
-        
         return res.status(200).send(result)
     }
     catch (err) {
@@ -117,19 +123,17 @@ exports.readSpecificData = async(req, res) => {
 
 
 exports.updateData = async(req,res)=>{
-    const { nim } = req.params
-    const { 
-        name, 
-        email, 
-        divisiID, 
-        verified 
-    } = req.body
-
-    const authorizedDiv = ['D01', 'D02']
-    const division = req.division
-    const cekDiv = await DivisiDB.query().where({ divisiID })
-   
     try {
+        const { nim } = req.params
+        const { 
+            name, 
+            email, 
+            divisiID
+        } = req.body
+
+        const authorizedDiv = ['D01', 'D02']
+        const division = req.division
+
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
                 message: "Divisi anda tidak punya otoritas yang cukup!"
@@ -137,16 +141,56 @@ exports.updateData = async(req,res)=>{
         }
 
         const cekNIM = await PanitDB.query().where({ nim })
-
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
         }
-        
+
+        const nim2 = req.decoded_nim
+        if(nim2 != nim) {
+            return res.status(403).send({ 
+                message: 'Kamu tidak dapat mengupdate data milik akun lain!' 
+            })
+        }
+
+        const cekDiv = await DivisiDB.query().where({ divisiID })
         if(cekDiv.length === 0 || cekDiv === [] || cekDiv === null || cekDiv === undefined){
             return res.status(404).send({ 
                 message: 'Divisi yang kamu input tidak terdaftar!' 
+            })
+        }
+
+        await PanitDB.query().update({
+            name,
+            email,
+            divisiID
+        }).where({ nim })
+
+        return res.status(200).send({ message: 'Data berhasil diupdate' })
+    }
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+exports.updateVerified = async(req, res) => {
+    try{
+        const { nim } = req.params
+        const { verified } = req.body
+        const authorizedDiv = ['D01', 'D02']
+        const division = req.division
+
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }
+
+        const cekNIM = await PanitDB.query().where({ nim })
+        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
             })
         }
 
@@ -157,14 +201,9 @@ exports.updateData = async(req,res)=>{
         }
 
         await PanitDB.query().update({
-            name,
-            email,
-            divisiID,
             verified
         }).where({ nim })
-
         return res.status(200).send({ message: 'Data berhasil diupdate' })
-            
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -173,11 +212,11 @@ exports.updateData = async(req,res)=>{
 
 
 exports.deleteData = async(req, res) => {
-    const { nim } = req.params
-    const authorizedDiv = ['D01', 'D02']
-    const division = req.division
-
     try {
+        const { nim } = req.params
+        const authorizedDiv = ['D01', 'D02']
+        const division = req.division
+
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
                 message: "Divisi anda tidak punya otoritas yang cukup!"
@@ -185,9 +224,10 @@ exports.deleteData = async(req, res) => {
         }
 
         const cekNIM = await PanitDB.query().where({ nim })
-
         if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
-            return res.status(404).send({ message: 'NIM ' + nim + ' tidak ditemukan!'})
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
         }
     
         await PanitDB.query().delete().where({ nim })

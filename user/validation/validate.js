@@ -42,6 +42,32 @@ exports.mhsLoginValidation = [
   check('password').notEmpty().withMessage('Halo, Maximates! Password tidak boleh kosong, dicek lagi ya!')
 ]
 
+// Update
+exports.mhsUpdateValidation = [
+  check('name').notEmpty().withMessage('Halo, Maximates! Nama tidak boleh kosong, dicek lagi ya!'),
+  check('whatsapp').notEmpty().withMessage('Halo, Maximates! Nomor Whatsapp tidak boleh kosong, dicek lagi ya!'),
+  check('email').notEmpty().withMessage('Halo, Maximates! Email tidak boleh kosong, dicek lagi ya!'),
+  check('idInstagram').notEmpty().withMessage('Halo, Maximates! ID Instagram tidak boleh kosong, dicek lagi ya!'),
+  check('idLine').notEmpty().withMessage('Halo, Maximates! ID Line tidak boleh kosong, dicek lagi ya!'),
+  check('tanggalLahir').notEmpty().withMessage('Halo, Maximates! Tanggal lahir tidak boleh kosong, dicek lagi ya!'),
+  check('tempatLahir').notEmpty().withMessage('Halo, Maximates! Tempat lahir tidak boleh kosong, dicek lagi ya!'),
+  check('jenisKelamin').notEmpty().withMessage('Halo, Maximates! Jenis kelamin tidak boleh kosong, dicek lagi ya!'),
+  check('prodi').notEmpty().withMessage('Halo, Maximates! Prodi tidak boleh kosong, dicek lagi ya!')
+]
+
+exports.panitUpdateValidation = [
+  check('name').notEmpty().withMessage('Halo, Maximates! Nama tidak boleh kosong, dicek lagi ya!'),
+  check('email').notEmpty().withMessage('Halo, Maximates! Email tidak boleh kosong, dicek lagi ya!'),
+  check('divisiID').notEmpty().withMessage('Halo, Maximates! ID Divisi tidak boleh kosong, dicek lagi ya!'),
+  check('verified').notEmpty().withMessage('Halo, Maximates! Verified tidak boleh kosong, dicek lagi ya!')
+]
+
+exports.orgUpdateValidation = [
+  check('nim').notEmpty().withMessage('Nim tidak boleh kosong'),
+  check('name').notEmpty().withMessage('Nama tidak boleh kosong'),
+  check('email').notEmpty().withMessage('Email tidak boleh kosong')
+]
+
 exports.runValidation = (req, res, next) => {
   const errors = validationResult(req).errors
   const listErrors = []

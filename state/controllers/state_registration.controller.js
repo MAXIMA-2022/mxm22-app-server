@@ -12,23 +12,12 @@ exports.readAllRegistration = async(req, res) => {
     }
 }
 
-// exports.readSpecificState = async(req, res) => {
-//     const { stateID } = req.params
-//     const cekSTATE = await sRegisDB.query().where({ stateID })
-    
-//     if(cekSTATE.length !== 0 && cekSTATE !== [] && cekSTATE !== null && cekSTATE !== undefined){
-//         const result = await sRegisDB.query().where({ stateID })
-
-//         return res.status(200).send(result)
-//     }
-//     else
-//         return res.status(404).send({ message: 'STATE ID ' + stateID + ' tidak ditemukan' })
-// }
 
 exports.createStateReg = async(req, res) => {
     try{
         const { stateID } = req.body
         const { nim } = req.params
+        const nim2 = req.decoded_nim
         
         const dbState = await sActDB.query()
         .select(
@@ -53,31 +42,60 @@ exports.createStateReg = async(req, res) => {
 
         const cekSTATE = await sActDB.query().where({ stateID })
         const cekParticipant = await sRegisDB.query().where({ nim, stateID })
-        const len = dbState.length
-        let cek = 0
 
+        if(nim2 != nim) {
+            return res.status(403).send({ 
+                message: 'Kamu tidak dapat mendaftar STATE menggunakan akun lain!' 
+            })
+        }        
+
+        const len = dbState.length
+        if(len > 3)
+            return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
+
+        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+           return res.status(404).send({ 
+                message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
+            }) 
+        }
+                 
         if(cekParticipant.length !== 0 && cekParticipant !== [] && cekParticipant !== null && cekParticipant !== undefined){
             return res.status(403).send({ 
                 message: 'Kamu telah mendaftar pada STATE ini!' 
             })
         }
 
-        cek = 1
 
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
-           return res.status(404).send({ 
-            message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
-        }) 
+   
+        const data = await sActDB.query().where({ stateID })
+        if(len > 0){
+            const day = data[0].day
+            const mhsDay2 = await sActDB.query()
+            .select(
+                'state_activities.*',
+                'state_registration.*'
+            )
+            .join(
+                'state_registration',
+                'state_registration.stateID',
+                'state_activities.stateID'
+            )
+            .where('state_registration.nim', nim)
+
+            for(let i = 0; i < len; i++){
+                if(day === mhsDay2[i].day)
+                    return res.status(400).send({ message: 'Kamu tidak dapat mendaftar pada lebih dari 1 STATE pada hari yang sama!' })
+            }
         }
-            
-        if(len > 3 && cek != 1){
-            return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
-        }
+        
+        const qt1 = data[0].quota
+        const qt2 = data[0].registered + 1
+        if(qt2 > qt1)
+            return res.status(400).send({ message: 'Mohon maaf MAXIMERS, quota untuk STATE ' + data[0].name + ' sudah penuh' })
             
         await sRegisDB.query().insert({
             stateID,
             nim,
-            queueNo: 0,
             attendanceTime: 0,
             inEventAttendance: 0,
             exitAttendance: 0,
@@ -120,20 +138,28 @@ exports.deleteRegistration = async(req, res) => {
     const { stateID, nim } = req.params
     const nim2 = req.decoded_nim
 
-    try{
-        const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
+    try{        
+        if(nim2 != nim) {
+            return res.status(403).send({ 
+                message: 'Kamu tidak dapat menghapus Registered STATE milik akun lain!' 
+            })
+        }
 
+        const cekSTATE = await sActDB.query().where({ stateID })
+        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+            return res.status(404).send({ 
+                 message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
+             }) 
+         }
+
+        const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
         if(cekRegister.length === 0 || cekRegister === [] || cekRegister === null || cekRegister === undefined){
             return res.status(403).send({ 
                 message: 'Kamu belum mendaftar pada STATE ini!' 
             })
         }
             
-        if(nim2 != nim) {
-            return res.status(403).send({ 
-                message: 'Kamu tidak dapat menghapus Registered STATE milik akun lain!' 
-            })
-        }
+
     
         await sRegisDB.query().delete().where({ nim, stateID })
         const dbActivities = await sActDB.query().where({ stateID })
@@ -152,28 +178,82 @@ exports.deleteRegistration = async(req, res) => {
     }
 }
 
-
-exports.verifyAttendance = async(req, res) => {
-    const { nim, stateID } = req.params
-    const { attendanceCode2 } = req.body
-    const tokenTime = helper.createAttendanceTime()
-
+exports.attendState = async(req, res) => {
     try {
-        const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
-
-        if(cekRegister.length === 0 || cekRegister === [] || cekRegister === null || cekRegister === undefined){
-            return res.status(404).send({ 
-                message: 'Kamu belum mendaftar pada STATE ini!' 
+        const { nim, stateID } = req.params
+        const { attendanceCode } = req.body
+        const attendanceTime = helper.createAttendanceTime()
+        const nim2 = req.decoded_nim
+        
+        if(nim2 != nim){
+            return res.status(403).send({ 
+                message: 'Kamu tidak dapat melakukan absensi STATE milik orang lain' 
             })
         }
-        const cekAttendanceCode = await sActDB.query().where({ stateID, attendanceCode2 })
-            
+
+        
+        const cekAttendanceCode = await sActDB.query().where({ stateID, attendanceCode })
         if(cekAttendanceCode.length === 0 || cekAttendanceCode === [] || cekAttendanceCode === null || cekAttendanceCode === undefined){
             return res.status(404).send({ 
                 message: 'Token yang kamu masukkan salah!'
             })
         }
+
+        const cekRegister = await sRegisDB.query().where({ nim, stateID })
+        if(cekRegister.length === 0 || cekRegister === [] || cekRegister === null || cekRegister === undefined){
+            return res.status(404).send({ 
+                message: 'Kamu belum mendaftar pada STATE ini!' 
+            })
+        }
+    
+
+        await sRegisDB.query()
+        .patch({ attendanceTime, inEventAttendance: 1 })
+        .where({ nim, stateID })
         
+        return res.status(200).send({ message: 'Proses absensi selesai' })
+    } 
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+
+exports.verifyAttendance = async(req, res) => {
+    try {
+        const { nim, stateID } = req.params
+        const { attendanceCode2 } = req.body
+        const tokenTime = helper.createAttendanceTime()
+        const nim2 = req.decoded_nim
+
+        if(nim2 != nim){
+            return res.status(403).send({ 
+                message: 'Kamu tidak bisa melakukan absensi STATE milik orang lain' 
+            })
+        }
+
+        const cekAttendanceCode = await sActDB.query().where({ stateID, attendanceCode2 })
+        if(cekAttendanceCode.length === 0 || cekAttendanceCode === [] || cekAttendanceCode === null || cekAttendanceCode === undefined){
+            return res.status(404).send({ 
+                message: 'Token yang kamu masukkan salah!'
+            })
+        }
+
+        const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
+        if(cekRegister.length === 0 || cekRegister === [] || cekRegister === null || cekRegister === undefined){
+            return res.status(404).send({ 
+                message: 'Kamu belum mendaftar pada STATE ini!' 
+            })
+        }
+
+        const cekAttendance = await sRegisDB.query().select('attendanceTime', 'inEventAttendance').where({ nim, stateID }) 
+        if(cekAttendance[0].inEventAttendance === 0 || cekAttendance[0].attendanceTime === 0){
+            return res.status(404).send({
+                message: 'Kamu belum melakukan absensi yang pertama!'
+            })
+        }
+
+
            
         await sRegisDB.query()
         .patch({ exitAttendance: 1, tokenTime: tokenTime })

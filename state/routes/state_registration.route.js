@@ -8,11 +8,7 @@ module.exports = function(app) {
         middleware.verifyJWT, middleware.isPanitia,
         sRegController.readAllRegistration
     )
-    /* app.get(
-        '/api/stateReg/:stateID',
-        middleware.verifyJWT,
-        sRegController.readSpecificState
-    ) */
+
 
     app.post(
         '/api/stateReg/createSRegis/:nim',
@@ -21,9 +17,16 @@ module.exports = function(app) {
     )
 
     app.put(
+        '/api/stateReg/attendState/:stateID/:nim',
+        middleware.verifyJWT, middleware.isMahasiswa,
+        validation.attendState, validation.runValidation,
+        sRegController.attendState
+    )
+    
+    app.put(
         '/api/stateReg/verifyAttendance/:stateID/:nim',
         middleware.verifyJWT, middleware.isMahasiswa,
-        validation.verifyAttendance2, validation.runValidation,
+        validation.verifyAttendance, validation.runValidation,
         sRegController.verifyAttendance
     )
 

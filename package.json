@@ -18,18 +18,23 @@
   "homepage": "https://github.com/MAXIMA-2022/mxm22-app-server#readme",
   "dependencies": {
     "-": "^0.0.1",
+    "@google-cloud/storage": "^6.2.2",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "express-fileupload": "^1.4.0",
     "express-validator": "^6.14.1",
+    "fs": "^0.0.1-security",
     "init": "^0.1.2",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.1.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
-    "objection": "^3.0.1"
+    "objection": "^3.0.1",
+    "path": "^0.12.7",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.18"

@@ -1,10 +1,12 @@
 const PanitController = require('../controllers/panitia.controller')
 const validation = require('../validation/validate')
 const middleware = require('../middleware/user.middleware')
+const toggle = require('../../toggle/middleware/toggle.middleware')
 
 module.exports = function(app){
     app.post(
-        '/api/panit/register',
+        '/api/panit/register', 
+        toggle.signUpPanitiaOrganizator, toggle.checkToggle,
         validation.panitiaRegisValidation, validation.runValidation,
         PanitController.register
     )

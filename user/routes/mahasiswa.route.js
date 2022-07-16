@@ -1,15 +1,18 @@
 const MhsController = require('../controllers/mahasiswa.controller')
 const validation = require('../validation/validate')
 const middleware = require('../middleware/user.middleware')
+const toggle = require('../../toggle/middleware/toggle.middleware')
 
 module.exports = function(app){
     app.post(
         '/api/mhs/register',
+        toggle.signUpMahasiswa, toggle.checkToggle,
         validation.mhsRegisValidation, validation.runValidation,
         MhsController.register
     )
     app.post(
         '/api/mhs/login',
+        toggle.signInMahasiswa, toggle.checkToggle,
         validation.loginValidation, validation.runValidation,
         MhsController.login
     )

@@ -18,7 +18,6 @@ exports.verifyJWT = async(req, res, next)=>{
         req.decoded_nim = decoded.nim
         next()
     })
-    
 }
 
 exports.isPanitia = async(req, res, next)=>{

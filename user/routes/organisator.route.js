@@ -1,10 +1,12 @@
 const OrgController = require('../controllers/organisator.controller')
 const validation = require('../validation/validate')
 const middleware = require('../middleware/user.middleware')
+const toggle = require('../../toggle/middleware/toggle.middleware')
 
 module.exports = function(app){
     app.post(
         '/api/org/register',
+        toggle.signUpPanitiaOrganizator, toggle.checkToggle,
         validation.organizatorRegisValidation, validation.runValidation,
         OrgController.register
     )

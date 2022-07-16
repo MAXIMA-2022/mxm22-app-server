@@ -18,6 +18,9 @@ require('./user/routes/panitia.route')(app)
 require('./state/routes/state_activities.route')(app)
 require('./state/routes/state_registration.route')(app)
 
+//toggle
+require('./toggle/routes/toggle.route')(app)
+
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () =>{
     console.log(`Listening to the server ${PORT}`)

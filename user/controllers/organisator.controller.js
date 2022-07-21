@@ -17,14 +17,14 @@ exports.register = async(req, res) => {
         const verified2 = 0
 
         const cekNIM = await OrgDB.query().where({ nim })
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
+        if(cekNIM.length !== 0 && cekNIM !== []){
             return res.status(409).send({ 
                 message: 'Akun anda sebelumnya telah terdaftar' 
             })      
         }
 
         const cekSTATE = await StateDB.query().where({ stateID })
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+        if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({ 
                 message: 'STATE yang kamu input tidak terdaftar!' 
             })
@@ -102,7 +102,7 @@ exports.readSpecificData = async(req, res) => {
         const { nim } = req.params
 
         const cekNIM = await OrgDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
@@ -136,14 +136,14 @@ exports.updateData = async(req, res) => {
         }
 
         const cekNIM = await OrgDB.query().where({ nim })
-        if (cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined) {
+        if (cekNIM.length === 0 || cekNIM === []) {
             return res.status(404).send({
                 message: 'NIM ' + nim + ' tidak ditemukan!' 
             })
         }
         
         const cekSTATE = await StateDB.query().where({ stateID })
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+        if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({ 
                 message: 'STATE yang kamu input tidak terdaftar!' 
             })
@@ -176,7 +176,7 @@ exports.updateVerified = async(req, res) => {
         }
 
         const cekNIM = await OrgDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
@@ -212,7 +212,7 @@ exports.deleteData = async(req, res) => {
         }
         
         const cekNIM = await OrgDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })

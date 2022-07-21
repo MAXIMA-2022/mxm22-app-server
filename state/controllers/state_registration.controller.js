@@ -53,19 +53,17 @@ exports.createStateReg = async(req, res) => {
         if(len > 3)
             return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
 
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+        if(cekSTATE.length === 0 || cekSTATE === []){
            return res.status(404).send({ 
                 message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
             }) 
         }
                  
-        if(cekParticipant.length !== 0 && cekParticipant !== [] && cekParticipant !== null && cekParticipant !== undefined){
+        if(cekParticipant.length !== 0 && cekParticipant !== []){
             return res.status(403).send({ 
                 message: 'Kamu telah mendaftar pada STATE ini!' 
             })
         }
-
-
    
         const data = await sActDB.query().where({ stateID })
         if(len > 0){
@@ -146,21 +144,19 @@ exports.deleteRegistration = async(req, res) => {
         }
 
         const cekSTATE = await sActDB.query().where({ stateID })
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+        if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({ 
                  message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
              }) 
          }
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
-        if(cekRegister.length === 0 || cekRegister === [] || cekRegister === null || cekRegister === undefined){
+        if(cekRegister.length === 0 || cekRegister === []){
             return res.status(403).send({ 
                 message: 'Kamu belum mendaftar pada STATE ini!' 
             })
         }
             
-
-    
         await sRegisDB.query().delete().where({ nim, stateID })
         const dbActivities = await sActDB.query().where({ stateID })
         
@@ -171,7 +167,6 @@ exports.deleteRegistration = async(req, res) => {
         })
         
         return res.status(200).send({ message: 'Registrasi STATE berhasil dihapus' })
-        
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -190,22 +185,20 @@ exports.attendState = async(req, res) => {
                 message: 'Kamu tidak dapat melakukan absensi STATE milik orang lain' 
             })
         }
-
         
         const cekAttendanceCode = await sActDB.query().where({ stateID, attendanceCode })
-        if(cekAttendanceCode.length === 0 || cekAttendanceCode === [] || cekAttendanceCode === null || cekAttendanceCode === undefined){
+        if(cekAttendanceCode.length === 0 || cekAttendanceCode === []){
             return res.status(404).send({ 
                 message: 'Token yang kamu masukkan salah!'
             })
         }
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID })
-        if(cekRegister.length === 0 || cekRegister === [] || cekRegister === null || cekRegister === undefined){
+        if(cekRegister.length === 0 || cekRegister === []){
             return res.status(404).send({ 
                 message: 'Kamu belum mendaftar pada STATE ini!' 
             })
         }
-    
 
         await sRegisDB.query()
         .patch({ attendanceTime, inEventAttendance: 1 })
@@ -233,14 +226,14 @@ exports.verifyAttendance = async(req, res) => {
         }
 
         const cekAttendanceCode = await sActDB.query().where({ stateID, attendanceCode2 })
-        if(cekAttendanceCode.length === 0 || cekAttendanceCode === [] || cekAttendanceCode === null || cekAttendanceCode === undefined){
+        if(cekAttendanceCode.length === 0 || cekAttendanceCode === []){
             return res.status(404).send({ 
                 message: 'Token yang kamu masukkan salah!'
             })
         }
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
-        if(cekRegister.length === 0 || cekRegister === [] || cekRegister === null || cekRegister === undefined){
+        if(cekRegister.length === 0 || cekRegister === []){
             return res.status(404).send({ 
                 message: 'Kamu belum mendaftar pada STATE ini!' 
             })
@@ -252,8 +245,6 @@ exports.verifyAttendance = async(req, res) => {
                 message: 'Kamu belum melakukan absensi yang pertama!'
             })
         }
-
-
            
         await sRegisDB.query()
         .patch({ exitAttendance: 1, tokenTime: tokenTime })

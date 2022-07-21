@@ -21,7 +21,7 @@ exports.register = async(req, res) => {
         const hashPass = await bcrypt.hashSync(password, 8)
 
         const cekNIM = await MhsDB.query().where({ nim })
-        if(cekNIM.length !== 0 && cekNIM !== [] && cekNIM !== null && cekNIM !== undefined){
+        if(cekNIM.length !== 0 && cekNIM !== []){
             return res.status(409).send({ 
                 message: 'Akun anda sebelumnya telah terdaftar'
             })
@@ -97,7 +97,7 @@ exports.readSpecificData = async(req, res) => {
         const { nim } = req.params
 
         const cekNIM = await MhsDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
@@ -137,7 +137,7 @@ exports.updateData = async(req, res) => {
         }
 
         const cekNIM = await MhsDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!' 
             })
@@ -183,7 +183,7 @@ exports.deleteData = async(req, res) => {
         }
 
         const cekNIM = await MhsDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })

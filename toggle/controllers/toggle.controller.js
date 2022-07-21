@@ -26,7 +26,7 @@ exports.updateToggleValue = async(req,res)=>{
             })
         }
 
-        if(cekToggleID.length === 0 || cekToggleID === [] || cekToggleID === null || cekToggleID === undefined ){
+        if(cekToggleID.length === 0 || cekToggleID === []){
             return res.status(404).send({
                 message: "Endpoint pada toggle ID: " + id + " tidak ditemukan!"
             })

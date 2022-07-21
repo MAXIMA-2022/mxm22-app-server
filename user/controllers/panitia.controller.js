@@ -24,7 +24,7 @@ exports.register = async(req, res) => {
         }
 
         const cekDiv = await DivisiDB.query().where({ divisiID })
-        if(cekDiv.length === 0 || cekDiv === [] || cekDiv === null || cekDiv === undefined){
+        if(cekDiv.length === 0 || cekDiv === []){
             return res.status(409).send({ 
                 message: 'Divisi yang kamu input tidak terdaftar!' 
             })       
@@ -107,7 +107,7 @@ exports.readSpecificData = async(req, res) => {
         const { nim } = req.params
 
         const cekNIM = await PanitDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan'
             }) 
@@ -141,7 +141,7 @@ exports.updateData = async(req,res)=>{
         }
 
         const cekNIM = await PanitDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
@@ -155,7 +155,7 @@ exports.updateData = async(req,res)=>{
         }
 
         const cekDiv = await DivisiDB.query().where({ divisiID })
-        if(cekDiv.length === 0 || cekDiv === [] || cekDiv === null || cekDiv === undefined){
+        if(cekDiv.length === 0 || cekDiv === []){
             return res.status(404).send({ 
                 message: 'Divisi yang kamu input tidak terdaftar!' 
             })
@@ -188,7 +188,7 @@ exports.updateVerified = async(req, res) => {
         }
 
         const cekNIM = await PanitDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
@@ -224,7 +224,7 @@ exports.deleteData = async(req, res) => {
         }
 
         const cekNIM = await PanitDB.query().where({ nim })
-        if(cekNIM.length === 0 || cekNIM === [] || cekNIM === null || cekNIM === undefined){
+        if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })

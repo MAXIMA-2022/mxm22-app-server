@@ -25,7 +25,7 @@ exports.readSpecificState = async(req, res) => {
         const { stateID } = req.params
 
         const cekSTATE = await sActDB.query().where({ stateID })
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+        if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({
                  message: 'STATE ID ' + stateID + ' tidak ditemukan' 
             })
@@ -74,8 +74,6 @@ exports.createState = async(req, res) => {
             })
         }
 
- 
-
         const { 
             name, 
             zoomLink, 
@@ -113,23 +111,19 @@ exports.createState = async(req, res) => {
         const urlFileLogo = `https://storage.googleapis.com/${bucketName}/${fileNameLogo}`
         const urlFileCover = `https://storage.googleapis.com/${bucketName}/${fileNameCover}`
 
-
         const cekStateName = await sActDB.query().where({ name:fixName })
-
-        if(cekStateName.length !== 0 && cekStateName !== [] && cekStateName !== null && cekStateName !== undefined){
+        if(cekStateName.length !== 0 && cekStateName !== []){
             return res.status(409).send({ 
                 message: `STATE ${fixName} sudah terdaftar sebelumnya! Silahkan periksa kembali`
             })
         } 
 
         const cekDay = await dayManDB.query().where({ day })
-
-        if(cekDay.length === 0 || cekDay === [] || cekDay === null || cekDay === undefined){
+        if(cekDay.length === 0 || cekDay === []){
             return res.status(404).send({ 
                 message: `Value day: ${day}, tidak tersedia!`
             })
         }
-
 
         await sActDB.query().insert({
             name: fixName,
@@ -147,10 +141,9 @@ exports.createState = async(req, res) => {
         })
 
         stateLogo.mv(uploadPathLogo, async (err) => {
-            if (err){
+            if (err)
                 return res.status(500).send({ message: err.messsage })
-            }
-                
+                            
             await storage.bucket(bucketName).upload(uploadPathLogo)
       
             fs.unlink(uploadPathLogo, (err) => {
@@ -162,16 +155,14 @@ exports.createState = async(req, res) => {
         })
       
         coverPhoto.mv(uploadPathCover, async(err) => {
-            if (err){
+            if (err)
                 return res.status(500).send({ message: err.messsage })
-            }
-                
+                            
             await storage.bucket(bucketName).upload(uploadPathCover)
       
             fs.unlink(uploadPathCover, (err) => {
-                if (err){
+                if (err)
                     return res.status(500).send({ message: err.messsage })
-                }
             })
         })
         
@@ -193,7 +184,6 @@ exports.updateState = async(req, res) => {
             day, 
             quota, 
             registered, 
-            attendanceCode, 
             identifier, 
             category, 
             shortDesc
@@ -213,16 +203,14 @@ exports.updateState = async(req, res) => {
         }
 
         const cekSTATE = await sActDB.query().where({ stateID })
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+        if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({ 
                 message: 'STATE ID ' + stateID + ' tidak ditemukan' 
             })
         }
 
-
         const cekDay = await dayManDB.query().where({ day })
-
-        if(cekDay.length === 0 || cekDay === [] || cekDay === null || cekDay === undefined){
+        if(cekDay.length === 0 || cekDay === []){
             return res.status(404).send({ 
                 message: `Value day: ${day}, tidak tersedia!`
             })
@@ -239,13 +227,12 @@ exports.updateState = async(req, res) => {
 
         const stateName = fixName.trim().split(' ').join('-')
 
-        if(!req.files || !stateLogo){
+        if(!req.files || !stateLogo)
             res.status(400).send({ message: 'Logo STATE tidak boleh kosong!' })
-        }
-
-        if(!req.files || !coverPhoto){
+        
+        if(!req.files || !coverPhoto)
             res.status(400).send({ message: 'Cover Photo STATE tidak boleh kosong!' })
-        }
+        
         const extnameLogo = path.extname(stateLogo.name)
         const basenameLogo = path.basename(stateLogo.name, extnameLogo).trim().split(' ').join('-')
         const extnameCover = path.extname(coverPhoto.name)
@@ -265,9 +252,7 @@ exports.updateState = async(req, res) => {
         bucketName = 'mxm22-bucket-test'
         urlFileCover = `https://storage.googleapis.com/${bucketName}/${fileNameCover}`
 
-
         const cekRegistered = await sActDB.query().where({ stateID })
-
         if(parseInt(quota) < cekRegistered[0].registered ){
             return res.status(409).send({
                 message: 'Jumlah Quota STATE lebih sedikit daripada jumlah yang telah mendaftar'
@@ -281,6 +266,9 @@ exports.updateState = async(req, res) => {
         //     })
         // }
 
+        const attCode = helper.createAttendanceCode(name.trim().split(' ').join('-'))
+        const attCode2 = helper.createAttendanceCode(name.trim().split(' ').join('-'))
+        
         await sActDB.query().update({
             name: fixName,
             zoomLink,
@@ -288,40 +276,35 @@ exports.updateState = async(req, res) => {
             stateLogo: urlFileLogo,
             quota,
             registered,
-            attendanceCode,
+            attendanceCode: attCode,
+            attendanceCode2: attCode2,
             identifier,
             category,
             shortDesc,
             coverPhoto: urlFileCover
         }).where({ stateID })
 
-
         stateLogo.mv(uploadPathLogo, async (err) => {
-            if (err){
+            if (err)
                 return res.status(500).send({ message: err.messsage })
-            }
-                
+                            
             await storage.bucket(bucketName).upload(uploadPathLogo)
       
             fs.unlink(uploadPathLogo, (err) => {
-                if (err) {
-                    return res.status(500).send({ message: err.messsage })
-                }
-                    
+                if (err)
+                    return res.status(500).send({ message: err.messsage })                    
             })
         })
       
         coverPhoto.mv(uploadPathCover, async(err) => {
-            if (err){
+            if (err)
                 return res.status(500).send({ message: err.messsage })
-            }
-                
+                            
             await storage.bucket(bucketName).upload(uploadPathCover)
       
             fs.unlink(uploadPathCover, (err) => {
-                if (err){
+                if (err)
                     return res.status(500).send({ message: err.messsage })
-                }
             })
         })
         
@@ -345,7 +328,7 @@ exports.deleteState = async(req, res) => {
         }
 
         const cekSTATE = await sActDB.query().where({ stateID })
-        if(cekSTATE.length === 0 || cekSTATE === [] || cekSTATE === null || cekSTATE === undefined){
+        if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({ 
                 message: 'STATE ID ' + stateID + ' tidak ditemukan'
             })

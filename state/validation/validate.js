@@ -70,91 +70,89 @@ exports.coverValidation = (req, res, next) => {
   const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
 
   switch (true) {
-    case !req.files :
-      coverErrors.push({
-        key: 'coverPhoto',
-        message: 'Foto Cover tidak boleh kosong'
-      })
+      case !req.files :
+          coverErrors.push({
+              key: 'coverPhoto',
+              message: 'Foto Cover tidak boleh kosong'
+          })
       break
-    case !req.files.coverPhoto :
-      coverErrors.push({
-        key: 'coverPhoto',
-        message: 'Gambar Logo tidak boleh kosong'
-      })
+      case !req.files.coverPhoto :
+          coverErrors.push({
+              key: 'coverPhoto',
+              message: 'Gambar Logo tidak boleh kosong'
+          })
       break
-    case !acceptedType.includes(req.files.coverPhoto.mimetype) :
-      coverErrors.push({
-        key: 'coverPhoto',
-        message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
-      })
+      case !acceptedType.includes(req.files.coverPhoto.mimetype) :
+          coverErrors.push({
+              key: 'coverPhoto',
+              message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
+          })
       break
   }
 
   req.coverErrors = coverErrors
-
   next()
 }
 
 
 exports.logoUpdateValidation = (req, res, next) => {
-  const logoErrors = []
-  const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
-  if (req.files && req.files.stateLogo) {
-    if (!acceptedType.includes(req.files.stateLogo.mimetype)) {
-      logoErrors.push({
-        key: 'stateLogo',
-        message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
-      })
+    const logoErrors = []
+    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+
+    if (req.files && req.files.stateLogo) {
+        if (!acceptedType.includes(req.files.stateLogo.mimetype)) {
+            logoErrors.push({
+                key: 'stateLogo',
+                message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
+            })
+        }
     }
-  }
 
-  req.logoErrors = logoErrors
-
-  next()
+    req.logoErrors = logoErrors
+    next()
 }
 
 exports.coverUpdateValidation = (req, res, next) => {
-  const coverErrors = []
-  const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
-  if (req.files && req.files.coverPhoto) {
-    if (!acceptedType.includes(req.files.coverPhoto.mimetype)) {
-      coverErrors.push({
-        key: 'coverPhoto',
-        message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
-      })
+    const coverErrors = []
+    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+
+    if (req.files && req.files.coverPhoto) {
+        if (!acceptedType.includes(req.files.coverPhoto.mimetype)) {
+            coverErrors.push({
+                key: 'coverPhoto',
+                message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
+            })
+        }
     }
-  }
 
-  req.coverErrors = coverErrors
-
-  next()
+    req.coverErrors = coverErrors
+    next()
 }
 
 exports.runValidation = (req, res, next) => {
-  const errors = validationResult(req).errors
-  const logoErrors = req.logoErrors
-  const coverErrors = req.coverErrors
+    const errors = validationResult(req).errors
+    const logoErrors = req.logoErrors
+    const coverErrors = req.coverErrors
 
-  const listErrors = []
+    const listErrors = []
 
-  if (errors.length !== 0) {
-    errors.map(error => {
-      listErrors.push({
-        key: error.param,
-        message: error.msg
-      })
-    })
-  }
+    if (errors.length !== 0) {
+        errors.map(error => {
+            listErrors.push({
+                key: error.param,
+                message: error.msg
+            })
+        })
+    }
 
-  if (logoErrors !== undefined && logoErrors.length !== 0) {
-    listErrors.push(logoErrors[0])
-  }
+    if (logoErrors !== undefined && logoErrors.length !== 0)
+        listErrors.push(logoErrors[0])
 
-  if (coverErrors !== undefined && coverErrors.length !== 0) {
-    listErrors.push(coverErrors[0])
-  }
+    if (coverErrors !== undefined && coverErrors.length !== 0)
+        listErrors.push(coverErrors[0])
 
-  if (listErrors.length !== 0) return res.status(400).send(listErrors)
+    if (listErrors.length !== 0) 
+        return res.status(400).send(listErrors)
 
-  next()
+    next()
 }

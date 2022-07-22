@@ -115,14 +115,12 @@ exports.createStateReg = async(req, res) => {
             'day_management',
             'day_management.day',
             'state_activities.day'
-        )
-        .where('state_activities.stateID', stateID)
+        ).where('state_activities.stateID', stateID)
 
         await sActDB.query()
-        .where('stateID', stateID)
         .update({
             registered: dbActivities[0].registered + 1
-        })
+        }).where('stateID', stateID)
         
         return res.status(200).send({ message: 'Registrasi STATE berhasil dilakukan' })
     }
@@ -146,8 +144,8 @@ exports.deleteRegistration = async(req, res) => {
         const cekSTATE = await sActDB.query().where({ stateID })
         if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({ 
-                 message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
-             }) 
+                message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
+            }) 
          }
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID }) 

@@ -32,7 +32,6 @@ exports.readSpecificState = async(req, res) => {
         }
         const result = await sActDB.query().where({ stateID })
         return res.status(200).send(result)
-
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
@@ -145,12 +144,10 @@ exports.createState = async(req, res) => {
                 return res.status(500).send({ message: err.messsage })
                             
             await storage.bucket(bucketName).upload(uploadPathLogo)
-      
             fs.unlink(uploadPathLogo, (err) => {
                 if (err) {
                     return res.status(500).send({ message: err.messsage })
-                }
-                    
+                }        
             })
         })
       
@@ -159,7 +156,6 @@ exports.createState = async(req, res) => {
                 return res.status(500).send({ message: err.messsage })
                             
             await storage.bucket(bucketName).upload(uploadPathCover)
-      
             fs.unlink(uploadPathCover, (err) => {
                 if (err)
                     return res.status(500).send({ message: err.messsage })
@@ -177,7 +173,6 @@ exports.createState = async(req, res) => {
 exports.updateState = async(req, res) => {
     try{
         const { stateID } = req.params
-        
         const { 
             name, 
             zoomLink, 
@@ -190,12 +185,10 @@ exports.updateState = async(req, res) => {
         } = req.body
 
         const { stateLogo, coverPhoto } = req.files
-
-        const authorizedDiv = ['D01', 'D02']
-        const division = req.division
-
         const fixName = helper.toTitleCase(name).trim()
 
+        const authorizedDiv = ['D01', 'D02']
+        const division = req.division    
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
                 message: "Divisi anda tidak punya otoritas yang cukup!"

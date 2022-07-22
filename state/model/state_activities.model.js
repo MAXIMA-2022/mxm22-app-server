@@ -11,7 +11,7 @@ class State_Activities extends Model {
     static get relationMappings(){ 
         const Day_Management = require('./day_management.model')
         return {
-            divisi:{
+            day_management:{
                 relation: Model.HasManyRelation,
                 modelClass: Day_Management,
                 join:{

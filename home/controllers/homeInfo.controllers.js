@@ -1,5 +1,6 @@
 const HInfoDB = require('../models/homeInfo.model')
 const CDialDB = require('../../chapters/models/chaptersDial.models')
+const HMediaDB = require('../models/homeMedia.model')
 const helper = require('../../helpers/helper')
 const { Storage } = require('@google-cloud/storage');
 const storage = new Storage({ keyFilename:
@@ -12,8 +13,19 @@ const { v4: uuidv4 } = require('uuid')
 
 exports.readAllHInfo = async(req, res) => {
     try{
-        const result = await HInfoDB.query()
-        return res.status(200).send(result)
+        let homeResult = await HInfoDB.query()
+
+        for(let i = 0; i < homeResult.length; i++){
+            const mediaResult = await HMediaDB.query()
+            .select('photoID', 'linkMedia')
+            .where({ homeID: homeResult[i].homeID })
+
+
+            homeResult[i].media = mediaResult
+        }
+        
+
+        return res.status(200).send(homeResult)
     }
     catch(err){
         return res.status(500).send({ message: err.message })
@@ -32,8 +44,20 @@ exports.readSpecificHInfo = async(req, res) => {
             })
         }
         
-        const result = await HInfoDB.query().where({ homeID })
-        return res.status(200).send(result) 
+        let homeResult = await HInfoDB.query().where({ homeID })
+
+        for(let i = 0; i < homeResult.length; i++){
+            const mediaResult = await HMediaDB.query()
+            .select('photoID', 'linkMedia')
+            .where({ homeID: homeResult[i].homeID })
+
+
+            homeResult[i].media = mediaResult
+        }
+        
+
+        return res.status(200).send(homeResult)
+        
     }
     catch(err){
         return res.status(500).send({ message: err.message })

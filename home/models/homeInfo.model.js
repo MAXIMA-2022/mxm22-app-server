@@ -9,7 +9,7 @@ class Home_Information extends Model{
     }
 
     static get relationMappings(){ 
-        const Chapter_dialogues = require('./chapter_dialogues.model')
+        const Chapter_dialogues = require('../../chapters/models/chaptersDial.models')
         return {
             chapter_dialogues:{
                 relation: Model.HasManyRelation,

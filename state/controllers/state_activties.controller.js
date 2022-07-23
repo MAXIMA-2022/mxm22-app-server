@@ -210,14 +210,6 @@ exports.updateState = async(req, res) => {
         }
 
         //File Upload
-        let fileNameLogo = ''
-        let fileNameCover = ''
-        let uploadPathLogo = ''
-        let uploadPathCover = ''
-        let bucketName = ''
-        let urlFileLogo = ''
-        let urlFileCover = ''
-
         const stateName = fixName.trim().split(' ').join('-')
 
         if(!req.files || !stateLogo)

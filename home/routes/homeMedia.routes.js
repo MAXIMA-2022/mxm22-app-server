@@ -2,7 +2,6 @@ const HMediaController = require('../controllers/homeMedia.controllers')
 const middleware = require ('../../user/middleware/user.middleware')
 const validation = require('../validation/validate')
 const toggle = require('../../toggle/middleware/toggle.middleware')
-const { val } = require('objection')
 
 module.exports = function(app){
     app.get(
@@ -10,7 +9,7 @@ module.exports = function(app){
         HMediaController.readAllHMedia
     )
     app.get(
-        '/api/homeMedia/:homeID',
+        '/api/homeMedia/:photoID',
         HMediaController.readSpecificHMedia
     )
 
@@ -26,14 +25,14 @@ module.exports = function(app){
     app.put(
         '/api/home/updateHomeMedia/',
         toggle.updateHome ,toggle.checkToggle,
-        validation.updateHMediaValidation, validation.updateHMediaValidation,
+        validation.updateHMediaValidation, validation.updateMediaValidation,
         validation.runValidation,
         middleware.verifyJWT, middleware.isPanitia,
         HMediaController.updateHMedia
     )
 
     app.delete(
-        '/api/home/deleteHomeMedia/:homeID',
+        '/api/home/deleteHomeMedia/:photoID',
         toggle.deleteHome ,toggle.checkToggle,
         middleware.verifyJWT, middleware.isPanitia,
         HMediaController.deleteHMedia

@@ -1,4 +1,5 @@
 const HInfoDB = require('../models/homeInfo.model')
+const CDialDB = require('../../chapters/models/chaptersDial.models')
 const helper = require('../../helpers/helper')
 const { Storage } = require('@google-cloud/storage');
 const storage = new Storage({ keyFilename:
@@ -42,7 +43,7 @@ exports.readSpecificHInfo = async(req, res) => {
 
 exports.createHInfo = async(req, res) => {
     try{
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -82,6 +83,13 @@ exports.createHInfo = async(req, res) => {
             })
         } 
 
+        const cekChapter = await CDialDB.query().where({ homeChapterID: chapter })
+        if(cekChapter.length === 0 || cekChapter === []){
+            return res.status(409).send({ 
+                message: `Chapter Dialogue ID ${chapter} tidak ditemukan!`
+            })
+        }
+
         await HInfoDB.query().insert({
             search_key,
             linkLogo: urlFileLogo,
@@ -116,7 +124,7 @@ exports.createHInfo = async(req, res) => {
 
 exports.updateHInfo = async(req, res) => {
     try{
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -128,7 +136,6 @@ exports.updateHInfo = async(req, res) => {
         const { homeID } = req.params
         const {
             search_key,
-            linkLogo, //foto blm
             name,
             chapter,
             shortDesc,
@@ -138,6 +145,22 @@ exports.updateHInfo = async(req, res) => {
             linkYoutube
         } = req.body
 
+        const { linkLogo } = req.files
+        const fixName = helper.toTitleCase(name).trim()
+
+        if(!req.files || !linkLogo)
+            res.status(400).send({ message: 'Logo HoME tidak boleh kosong!' })
+            
+        const extnameLogo = path.extname(linkLogo.name)
+        const basenameLogo = path.basename(linkLogo.name, extnameLogo).trim().split(' ').join('-')
+
+        const uuidLogo = uuidv4()
+        const homeIName = fixName.trim().split(' ').join('-')
+        const fileNameLogo = `${homeIName}_${uuidLogo}_${basenameLogo}${extnameLogo}`
+        const uploadPathLogo = './homeLogo/' + fileNameLogo
+        const bucketName = 'mxm22-bucket-test'
+        const urlFileLogo = `https://storage.googleapis.com/${bucketName}/${fileNameLogo}`
+
         const cekHInfo = await HInfoDB.query().where({ homeID })
         if(cekHInfo.length === 0 || cekHInfo === []){
             return res.status(404).send({ 
@@ -145,10 +168,16 @@ exports.updateHInfo = async(req, res) => {
             })
         }
 
-        const fixName = helper.toTitleCase(name).trim()
+        const cekChapter = await CDialDB.query().where({ homeChapterID: chapter })
+        if(cekChapter.length === 0 || cekChapter === []){
+            return res.status(409).send({ 
+                message: `Chapter Dialogue ID ${chapter} tidak ditemukan!`
+            })
+        }
+
         await HInfoDB.query().update({
             search_key,
-            linkLogo, //foto blm
+            linkLogo: urlFileLogo,
             name: fixName,
             chapter,
             shortDesc,
@@ -157,6 +186,18 @@ exports.updateHInfo = async(req, res) => {
             lineID,
             linkYoutube
         }).where({ homeID })
+
+        linkLogo.mv(uploadPathLogo, async (err) => {
+            if (err)
+                return res.status(500).send({ message: err.messsage })
+                            
+            await storage.bucket(bucketName).upload(uploadPathLogo)
+      
+            fs.unlink(uploadPathLogo, (err) => {
+                if (err)
+                    return res.status(500).send({ message: err.messsage })                    
+            })
+        })
 
         return res.status(200).send({ message: 'Data HoME berhasil diupdate' })
     }
@@ -169,7 +210,7 @@ exports.updateHInfo = async(req, res) => {
 exports.deleteHInfo = async(req, res) => {
     try{
         const { homeID } = req.params
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){

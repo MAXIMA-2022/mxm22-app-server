@@ -53,7 +53,7 @@ exports.readSpecificHMedia = async (req, res) =>{
 exports.createNewHMedia = async (req,res) => {
     try {
         const { homeID } = req.body
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -121,7 +121,7 @@ exports.updateHMedia = async (req,res) =>{
         const { photoID } = req.body
         //const { homeID } = req.body
 
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
@@ -196,7 +196,7 @@ exports.deleteHMedia = async(req, res) => {
     try{
         const { photoID } = req.params
 
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
@@ -204,10 +204,10 @@ exports.deleteHMedia = async(req, res) => {
             })
         }
 
-        const cekHInfo = await HInfoDB.query().where({ photoID })
+        const cekHInfo = await HMediaDB.query().where({ photoID })
         if(cekHInfo.length === 0 || cekHInfo === []){
             return res.status(404).send({ 
-                message: 'HoME ID ' + homeID + ' tidak ditemukan!'
+                message: 'Media HoME tidak ditemukan!'
             })
         }
 

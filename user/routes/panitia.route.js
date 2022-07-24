@@ -36,6 +36,7 @@ module.exports = function(app){
     app.put(
         '/api/panit/updateVerified/:nim',
         middleware.verifyJWT, middleware.isPanitia, 
+        validation.panitVerifiedValidation, validation.runValidation,
         PanitController.updateVerified
     )
     

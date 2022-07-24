@@ -59,7 +59,10 @@ exports.panitUpdateValidation = [
   check('name').notEmpty().withMessage('Halo, Maximates! Nama tidak boleh kosong, dicek lagi ya!'),
   check('email').notEmpty().withMessage('Halo, Maximates! Email tidak boleh kosong, dicek lagi ya!'),
   check('divisiID').notEmpty().withMessage('Halo, Maximates! ID Divisi tidak boleh kosong, dicek lagi ya!'),
-  check('verified').notEmpty().withMessage('Halo, Maximates! Verified tidak boleh kosong, dicek lagi ya!')
+]
+
+exports.panitVerifiedValidation = [
+  check('verified').notEmpty().withMessage('Verified tidak boleh kosong'),
 ]
 
 exports.orgUpdateValidation = [

@@ -9,7 +9,7 @@ module.exports = function(app){
         HInfoController.readAllHInfo
     )
     app.get(
-        '/api/homeInfo/:homeID',
+        '/api/homeInfo/:param',
         HInfoController.readSpecificHInfo
     )
 

@@ -20,11 +20,9 @@ exports.readAllHInfo = async(req, res) => {
             .select('photoID', 'linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
-
             homeResult[i].media = mediaResult
         }
         
-
         return res.status(200).send(homeResult)
     }
     catch(err){
@@ -35,28 +33,48 @@ exports.readAllHInfo = async(req, res) => {
 
 exports.readSpecificHInfo = async(req, res) => {
     try{
-        const { homeID } = req.params
+        const { param } = req.params
 
-        const cekHome = await HInfoDB.query().where({ homeID })
-        if(cekHome.length === 0 || cekHome === []){
+        const cekHomeByName = await HInfoDB.query().where({ name: param })
+        const cekHomeByChapter = await HInfoDB.query().where({ chapter: param })
+        if((cekHomeByName.length === 0 || cekHomeByName === []) && (cekHomeByChapter.length === 0 || cekHomeByChapter === [])){
             return res.status(404).send({ 
                 message: 'Informasi HoME tidak ditemukan!'
             })
         }
         
-        let homeResult = await HInfoDB.query().where({ homeID })
+        let cekHome = ''
+        if(cekHomeByName.length !== 0 && cekHomeByName !== [])
+            cekHome = await HInfoDB.query().where({ name: param })
+                
+        if(cekHomeByChapter.length !== 0 && cekHomeByChapter !== [])
+            cekHome = await HInfoDB.query().where({ chapter: param })
 
-        for(let i = 0; i < homeResult.length; i++){
-            const mediaResult = await HMediaDB.query()
-            .select('photoID', 'linkMedia')
-            .where({ homeID: homeResult[i].homeID })
 
-
-            homeResult[i].media = mediaResult
-        }
+        return res.status(200).send(cekHome)
         
+        // let homeResult = await HInfoDB.query().where({ homeID: cekHome[0].homeID })
+        // for(let i = 0; i < homeResult.length; i++){
+        //     const mediaResult = await HMediaDB.query()
+        //     .select('photoID', 'linkMedia')
+        //     .where({ homeID: homeResult[0].homeID })
 
-        return res.status(200).send(homeResult)
+        //     homeResult[i].media = mediaResult
+        // }
+
+        // let homeResult = ''
+        // let homeMed = ''
+        // for(let i = 0; i < cekHome.length; i++){
+        //     homeResult = await HInfoDB.query().where({ homeID: cekHome[i].homeID })
+        //     homeMed = await HMediaDB.query().where({ homeID: homeResult[0].homeID})
+        //     for(let j = 0; j < homeMed.length; j++){
+        //         const mediaResult = await HMediaDB.query()
+        //         .select('photoID', 'linkMedia')
+        //         .where({ homeID: homeMed[j].homeID })
+
+        //         homeResult[i].media = mediaResult 
+        //     }     
+        // }
         
     }
     catch(err){

@@ -22,15 +22,15 @@ exports.readAllState = async(req, res) => {
 
 exports.readSpecificState = async(req, res) => {
     try {
-        const { stateID } = req.params
+        const { name } = req.params
 
-        const cekSTATE = await sActDB.query().where({ stateID })
+        const cekSTATE = await sActDB.query().where({ name })
         if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({
-                 message: 'STATE ID ' + stateID + ' tidak ditemukan' 
+                 message: 'STATE ' + name + ' tidak ditemukan!' 
             })
         }
-        const result = await sActDB.query().where({ stateID })
+        const result = await sActDB.query().where({ name })
         return res.status(200).send(result)
     }
     catch (err) {

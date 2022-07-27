@@ -18,7 +18,7 @@ module.exports = function(app){
         sActController.readAllState
     )
     app.get(
-        '/api/stateAct/:name',
+        '/api/stateAct/:stateID',
         middleware.verifyJWT, middleware.isPanitia,
         sActController.readSpecificState
     )

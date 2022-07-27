@@ -1,7 +1,6 @@
 const { check, validationResult } = require('express-validator')
 
 exports.createHInfoValidation = [
-    check('search_key').notEmpty().withMessage('Search Key HOME tidak boleh kosong'),
     check('name').notEmpty().withMessage('Nama HOME tidak boleh kosong'),    
     check('chapter').notEmpty().withMessage('Chapter Dialogue HOME tidak boleh kosong'),
     check('instagram').notEmpty().withMessage('Username Instagram HOME tidak boleh kosong'),
@@ -9,7 +8,6 @@ exports.createHInfoValidation = [
 ]
 
 exports.updateHInfoValidation = [
-    check('search_key').notEmpty().withMessage('Search Key HOME tidak boleh kosong'),
     check('name').notEmpty().withMessage('Nama HOME tidak boleh kosong'),    
     check('chapter').notEmpty().withMessage('Chapter Dialogue HOME tidak boleh kosong'),
     check('instagram').notEmpty().withMessage('Username Instagram HOME tidak boleh kosong'),

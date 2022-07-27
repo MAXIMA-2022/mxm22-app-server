@@ -27,7 +27,7 @@ exports.readSpecificState = async(req, res) => {
         const cekSTATE = await sActDB.query().where({ stateID })
         if(cekSTATE.length === 0 || cekSTATE === []){
             return res.status(404).send({
-                 message: 'STATE ID ' + stateID + ' tidak ditemukan' 
+                 message: 'STATE ID ' + stateID + ' tidak ditemukan!' 
             })
         }
         const result = await sActDB.query().where({ stateID })

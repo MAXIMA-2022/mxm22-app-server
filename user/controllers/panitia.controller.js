@@ -147,13 +147,6 @@ exports.updateData = async(req,res)=>{
             })
         }
 
-        const nim2 = req.decoded_nim
-        if(nim2 != nim) {
-            return res.status(403).send({ 
-                message: 'Kamu tidak dapat mengupdate data milik akun lain!' 
-            })
-        }
-
         const cekDiv = await DivisiDB.query().where({ divisiID })
         if(cekDiv.length === 0 || cekDiv === []){
             return res.status(404).send({ 

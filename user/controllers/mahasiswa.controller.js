@@ -143,13 +143,6 @@ exports.updateData = async(req, res) => {
             })
         }
 
-        const nim2 = req.decoded_nim
-        if(nim2 != nim) {
-            return res.status(403).send({ 
-                message: 'Kamu tidak dapat mengupdate data milik akun lain!' 
-            })
-        }
-            
         await MhsDB.query().update({
             name,
             whatsapp,

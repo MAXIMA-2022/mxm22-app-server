@@ -20,11 +20,9 @@ exports.readAllHInfo = async(req, res) => {
             .select('photoID', 'linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
-
             homeResult[i].media = mediaResult
         }
         
-
         return res.status(200).send(homeResult)
     }
     catch(err){
@@ -33,37 +31,69 @@ exports.readAllHInfo = async(req, res) => {
 }
 
 
-exports.readSpecificHInfo = async(req, res) => {
-    try{
-        const { homeID } = req.params
+exports.specificHomeBySearchKey = async(req, res) => {
+    try {
+        const { search_key } = req.params
 
-        const cekHome = await HInfoDB.query().where({ homeID })
+        const fixKey = (search_key.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
+
+        const cekHome = await HInfoDB.query().where({ search_key: fixKey })
         if(cekHome.length === 0 || cekHome === []){
-            return res.status(404).send({ 
+            return res.status(404).send({
                 message: 'Informasi HoME tidak ditemukan!'
             })
         }
-        
-        let homeResult = await HInfoDB.query().where({ homeID })
+
+        let homeResult = await HInfoDB.query().where({ search_key: fixKey })
 
         for(let i = 0; i < homeResult.length; i++){
             const mediaResult = await HMediaDB.query()
             .select('photoID', 'linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
-
             homeResult[i].media = mediaResult
         }
         
-
         return res.status(200).send(homeResult)
-        
-    }
-    catch(err){
+
+    } catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
 
+exports.specificHomeByChapter = async(req, res) => {
+    try {
+        const { chapterName } = req.params
+
+        const cekChapter = await CDialDB.query().where({ name: chapterName })
+        if(cekChapter.length === 0 || cekChapter === []){
+            return res.status(404).send({
+                message: 'Data Chapter tidak ditemukan!'
+            })
+        }
+
+        let homeResult = await HInfoDB.query()
+        .select('home_information.*')
+        .join(
+            'chapter_dialogues',
+            'chapter_dialogues.homeChapterID',
+            'home_information.chapter')
+        .where('chapter_dialogues.name', chapterName)    
+
+        for(let i = 0; i < homeResult.length; i++){
+            const mediaResult = await HMediaDB.query()
+            .select('photoID', 'linkMedia')
+            .where({ homeID: homeResult[i].homeID })
+
+            homeResult[i].media = mediaResult
+        }
+        
+        return res.status(200).send(homeResult)
+
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
 
 exports.createHInfo = async(req, res) => {
     try{
@@ -77,7 +107,6 @@ exports.createHInfo = async(req, res) => {
         }
 
         const {
-            search_key,
             name,
             chapter,
             shortDesc,
@@ -88,7 +117,10 @@ exports.createHInfo = async(req, res) => {
         } = req.body
 
         const { linkLogo } = req.files
+
+        
         const fixName = helper.toTitleCase(name).trim()
+        const searchKey = (fixName.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
         const uuidLogo = uuidv4()
 
         const homeIName = fixName.trim().split(' ').join('-')
@@ -115,7 +147,7 @@ exports.createHInfo = async(req, res) => {
         }
 
         await HInfoDB.query().insert({
-            search_key,
+            search_key: searchKey,
             linkLogo: urlFileLogo,
             name: fixName,
             chapter,
@@ -159,7 +191,6 @@ exports.updateHInfo = async(req, res) => {
 
         const { homeID } = req.params
         const {
-            search_key,
             name,
             chapter,
             shortDesc,
@@ -171,6 +202,7 @@ exports.updateHInfo = async(req, res) => {
 
         const { linkLogo } = req.files
         const fixName = helper.toTitleCase(name).trim()
+        const searchKey = (fixName.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
 
         if(!req.files || !linkLogo)
             res.status(400).send({ message: 'Logo HoME tidak boleh kosong!' })
@@ -200,7 +232,7 @@ exports.updateHInfo = async(req, res) => {
         }
 
         await HInfoDB.query().update({
-            search_key,
+            search_key: searchKey,
             linkLogo: urlFileLogo,
             name: fixName,
             chapter,

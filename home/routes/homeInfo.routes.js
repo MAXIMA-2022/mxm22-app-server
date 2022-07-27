@@ -8,10 +8,17 @@ module.exports = function(app){
         '/api/homeInfo',
         HInfoController.readAllHInfo
     )
+
     app.get(
-        '/api/homeInfo/:homeID',
-        HInfoController.readSpecificHInfo
+        '/api/homeInfo/chapter/:chapterName',
+        HInfoController.specificHomeByChapter
     )
+
+    app.get(
+        '/api/homeInfo/searchKey/:search_key',
+        HInfoController.specificHomeBySearchKey
+    )
+
 
     app.post(
         '/api/home/createHomeInfo',

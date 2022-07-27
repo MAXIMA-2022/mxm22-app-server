@@ -31,57 +31,69 @@ exports.readAllHInfo = async(req, res) => {
 }
 
 
-exports.readSpecificHInfo = async(req, res) => {
-    try{
-        const { param } = req.params
+exports.specificHomeBySearchKey = async(req, res) => {
+    try {
+        const { search_key } = req.params
 
-        const cekHomeByName = await HInfoDB.query().where({ name: param })
-        const cekHomeByChapter = await HInfoDB.query().where({ chapter: param })
-        if((cekHomeByName.length === 0 || cekHomeByName === []) && (cekHomeByChapter.length === 0 || cekHomeByChapter === [])){
-            return res.status(404).send({ 
+        const fixKey = (search_key.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
+
+        const cekHome = await HInfoDB.query().where({ search_key: fixKey })
+        if(cekHome.length === 0 || cekHome === []){
+            return res.status(404).send({
                 message: 'Informasi HoME tidak ditemukan!'
             })
         }
+
+        let homeResult = await HInfoDB.query().where({ search_key: fixKey })
+
+        for(let i = 0; i < homeResult.length; i++){
+            const mediaResult = await HMediaDB.query()
+            .select('photoID', 'linkMedia')
+            .where({ homeID: homeResult[i].homeID })
+
+            homeResult[i].media = mediaResult
+        }
         
-        let cekHome = ''
-        if(cekHomeByName.length !== 0 && cekHomeByName !== [])
-            cekHome = await HInfoDB.query().where({ name: param })
-                
-        if(cekHomeByChapter.length !== 0 && cekHomeByChapter !== [])
-            cekHome = await HInfoDB.query().where({ chapter: param })
+        return res.status(200).send(homeResult)
 
-
-        return res.status(200).send(cekHome)
-        
-        // let homeResult = await HInfoDB.query().where({ homeID: cekHome[0].homeID })
-        // for(let i = 0; i < homeResult.length; i++){
-        //     const mediaResult = await HMediaDB.query()
-        //     .select('photoID', 'linkMedia')
-        //     .where({ homeID: homeResult[0].homeID })
-
-        //     homeResult[i].media = mediaResult
-        // }
-
-        // let homeResult = ''
-        // let homeMed = ''
-        // for(let i = 0; i < cekHome.length; i++){
-        //     homeResult = await HInfoDB.query().where({ homeID: cekHome[i].homeID })
-        //     homeMed = await HMediaDB.query().where({ homeID: homeResult[0].homeID})
-        //     for(let j = 0; j < homeMed.length; j++){
-        //         const mediaResult = await HMediaDB.query()
-        //         .select('photoID', 'linkMedia')
-        //         .where({ homeID: homeMed[j].homeID })
-
-        //         homeResult[i].media = mediaResult 
-        //     }     
-        // }
-        
-    }
-    catch(err){
+    } catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
 
+exports.specificHomeByChapter = async(req, res) => {
+    try {
+        const { chapterName } = req.params
+
+        const cekChapter = await CDialDB.query().where({ name: chapterName })
+        if(cekChapter.length === 0 || cekChapter === []){
+            return res.status(404).send({
+                message: 'Data Chapter tidak ditemukan!'
+            })
+        }
+
+        let homeResult = await HInfoDB.query()
+        .select('home_information.*')
+        .join(
+            'chapter_dialogues',
+            'chapter_dialogues.homeChapterID',
+            'home_information.chapter')
+        .where('chapter_dialogues.name', chapterName)    
+
+        for(let i = 0; i < homeResult.length; i++){
+            const mediaResult = await HMediaDB.query()
+            .select('photoID', 'linkMedia')
+            .where({ homeID: homeResult[i].homeID })
+
+            homeResult[i].media = mediaResult
+        }
+        
+        return res.status(200).send(homeResult)
+
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
 
 exports.createHInfo = async(req, res) => {
     try{
@@ -95,7 +107,6 @@ exports.createHInfo = async(req, res) => {
         }
 
         const {
-            search_key,
             name,
             chapter,
             shortDesc,
@@ -106,7 +117,10 @@ exports.createHInfo = async(req, res) => {
         } = req.body
 
         const { linkLogo } = req.files
+
+        
         const fixName = helper.toTitleCase(name).trim()
+        const searchKey = (fixName.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
         const uuidLogo = uuidv4()
 
         const homeIName = fixName.trim().split(' ').join('-')
@@ -133,7 +147,7 @@ exports.createHInfo = async(req, res) => {
         }
 
         await HInfoDB.query().insert({
-            search_key,
+            search_key: searchKey,
             linkLogo: urlFileLogo,
             name: fixName,
             chapter,
@@ -177,7 +191,6 @@ exports.updateHInfo = async(req, res) => {
 
         const { homeID } = req.params
         const {
-            search_key,
             name,
             chapter,
             shortDesc,
@@ -189,6 +202,7 @@ exports.updateHInfo = async(req, res) => {
 
         const { linkLogo } = req.files
         const fixName = helper.toTitleCase(name).trim()
+        const searchKey = (fixName.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
 
         if(!req.files || !linkLogo)
             res.status(400).send({ message: 'Logo HoME tidak boleh kosong!' })
@@ -218,7 +232,7 @@ exports.updateHInfo = async(req, res) => {
         }
 
         await HInfoDB.query().update({
-            search_key,
+            search_key: searchKey,
             linkLogo: urlFileLogo,
             name: fixName,
             chapter,

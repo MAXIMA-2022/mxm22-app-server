@@ -13,6 +13,7 @@ app.use(fileUpload())
 require('./user/routes/mahasiswa.route')(app)
 require('./user/routes/organisator.route')(app)
 require('./user/routes/panitia.route')(app)
+require('./user/routes/divisi.route')(app)
 
 //state
 require('./state/routes/state_activities.route')(app)

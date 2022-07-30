@@ -8,15 +8,18 @@ module.exports = function(app){
         '/api/homeInfo',
         HInfoController.readAllHInfo
     )
-
     app.get(
         '/api/homeInfo/chapter/:chapterName',
         HInfoController.specificHomeByChapter
     )
-
     app.get(
         '/api/homeInfo/searchKey/:search_key',
         HInfoController.specificHomeBySearchKey
+    )
+    app.get(
+        '/api/homeInfo/homeID/:homeID',
+        middleware.verifyJWT, middleware.isPanitia,
+        HInfoController.specificHomeByID
     )
 
 

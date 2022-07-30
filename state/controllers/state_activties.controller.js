@@ -177,8 +177,7 @@ exports.updateState = async(req, res) => {
             name, 
             zoomLink, 
             day, 
-            quota, 
-            registered, 
+            quota,
             identifier, 
             category, 
             shortDesc

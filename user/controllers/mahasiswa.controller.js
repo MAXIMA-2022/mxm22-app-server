@@ -67,10 +67,19 @@ exports.login = async(req, res) => {
             })
         }
 
-        const JWTtoken = jwt.sign({nim: checkingNim[0].nim}, process.env.SECRET_KEY, {
-            expiresIn: 86400 //equals to 24H
+        const JWTtoken = jwt.sign({ 
+                name: checkingNim[0].name,
+                nim: checkingNim[0].nim,
+                email: checkingNim[0].email,
+                role: 'mahasiswa'
+            }, process.env.SECRET_KEY, {
+                expiresIn: 86400 //equals to 24H
         })
 
+        //              TESTING ONLY NOT FOR FINISHED PRODUCT
+        // const decoded = jwt.decode(JWTtoken, {complete: true})
+        // console.log(decoded.payload)
+        
         return res.status(200).send({
             message: "Login berhasil",
             token: JWTtoken

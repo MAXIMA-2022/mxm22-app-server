@@ -34,7 +34,6 @@ exports.readAllHInfo = async(req, res) => {
 exports.specificHomeBySearchKey = async(req, res) => {
     try {
         const { search_key } = req.params
-
         const fixKey = (search_key.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
 
         const cekHome = await HInfoDB.query().where({ search_key: fixKey })
@@ -45,7 +44,6 @@ exports.specificHomeBySearchKey = async(req, res) => {
         }
 
         let homeResult = await HInfoDB.query().where({ search_key: fixKey })
-
         for(let i = 0; i < homeResult.length; i++){
             const mediaResult = await HMediaDB.query()
             .select('photoID', 'linkMedia')
@@ -55,8 +53,8 @@ exports.specificHomeBySearchKey = async(req, res) => {
         }
         
         return res.status(200).send(homeResult)
-
-    } catch (err) {
+    } 
+    catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
@@ -68,7 +66,7 @@ exports.specificHomeByChapter = async(req, res) => {
         const cekChapter = await CDialDB.query().where({ name: chapterName })
         if(cekChapter.length === 0 || cekChapter === []){
             return res.status(404).send({
-                message: 'Data Chapter tidak ditemukan!'
+                message: 'Informasi HoME tidak ditemukan!'
             })
         }
 
@@ -89,11 +87,40 @@ exports.specificHomeByChapter = async(req, res) => {
         }
         
         return res.status(200).send(homeResult)
-
-    } catch (err) {
+    } 
+    catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
+
+
+exports.specificHomeByID = async(req, res) => {
+    try {
+        const { homeID } = req.params
+
+        const cekID = await HInfoDB.query().where({ homeID })
+        if(cekID.length === 0 || cekID === []){
+            return res.status(404).send({
+                message: 'Informasi HoME tidak ditemukan!'
+            })
+        }
+
+        let homeResult = await HInfoDB.query().where({ homeID })
+        for(let i = 0; i < homeResult.length; i++){
+            const mediaResult = await HMediaDB.query()
+            .select('photoID', 'linkMedia')
+            .where({ homeID: homeResult[i].homeID })
+
+            homeResult[i].media = mediaResult
+        }
+        
+        return res.status(200).send(homeResult)
+    } 
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
 
 exports.createHInfo = async(req, res) => {
     try{

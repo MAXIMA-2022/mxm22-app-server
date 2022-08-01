@@ -72,9 +72,23 @@ exports.login = async(req, res) => {
             })
         }
 
-        const JWTtoken = jwt.sign({ nim: checkingNim[0].nim }, process.env.SECRET_KEY, {
+        const getStateName = await StateDB.query().where({ stateID: checkingNim[0].stateID })
+
+        const JWTtoken = jwt.sign({ 
+                name: checkingNim[0].name,
+                nim: checkingNim[0].nim,
+                email: checkingNim[0].email,
+                stateID: checkingNim[0].stateID,
+                stateName: getStateName[0].name,
+                role: 'organisator'
+    
+            }, process.env.SECRET_KEY, {
             expiresIn: 86400 //equals to 24H
         })
+
+        //              TESTING ONLY NOT FOR FINISHED PRODUCT
+        // const decoded = jwt.decode(JWTtoken, {complete: true})
+        // console.log(decoded.payload)
 
         return res.status(200).send({
             message: "Berhasil login",

@@ -34,7 +34,17 @@ exports.readAllHInfo = async(req, res) => {
 exports.specificHomeBySearchKey = async(req, res) => {
     try {
         const { search_key } = req.params
+
+        if(search_key === null || search_key === ':search_key'){
+            return res.status(404).send({
+                message: 'Search Key kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const fixKey = (search_key.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
+
+
+
 
         const cekHome = await HInfoDB.query().where({ search_key: fixKey })
         if(cekHome.length === 0 || cekHome === []){
@@ -62,6 +72,12 @@ exports.specificHomeBySearchKey = async(req, res) => {
 exports.specificHomeByChapter = async(req, res) => {
     try {
         const { chapterName } = req.params
+
+        if(chapterName === null || chapterName === ':chapterName'){
+            return res.status(404).send({
+                message: 'chapter kosong! Harap diisi terlebih dahulu'
+            })
+        }
 
         const cekChapter = await CDialDB.query().where({ name: chapterName })
         if(cekChapter.length === 0 || cekChapter === []){
@@ -97,6 +113,12 @@ exports.specificHomeByChapter = async(req, res) => {
 exports.specificHomeByID = async(req, res) => {
     try {
         const { homeID } = req.params
+
+        if(homeID === null || homeID === ':homeID'){
+            return res.status(404).send({
+                message: 'HoME ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
 
         const cekID = await HInfoDB.query().where({ homeID })
         if(cekID.length === 0 || cekID === []){
@@ -217,6 +239,14 @@ exports.updateHInfo = async(req, res) => {
         }
 
         const { homeID } = req.params
+
+        if(homeID === null || homeID === ':homeID'){
+            return res.status(404).send({
+                message: 'HoME ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+
         const {
             name,
             chapter,
@@ -293,6 +323,14 @@ exports.updateHInfo = async(req, res) => {
 exports.deleteHInfo = async(req, res) => {
     try{
         const { homeID } = req.params
+
+        if(homeID === null || homeID === ':homeID'){
+            return res.status(404).send({
+                message: 'HoME ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        
         const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
 

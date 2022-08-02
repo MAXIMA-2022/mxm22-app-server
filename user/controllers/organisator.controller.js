@@ -115,6 +115,12 @@ exports.readSpecificData = async(req, res) => {
     try{
         const { nim } = req.params
 
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const cekNIM = await OrgDB.query().where({ nim })
         if(cekNIM.length === 0 || cekNIM === []){
             return res.status(404).send({ 
@@ -134,6 +140,13 @@ exports.readSpecificData = async(req, res) => {
 exports.updateData = async(req, res) => {
     try {
         const { nim } = req.params
+
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const { 
             name,
             email, 
@@ -179,6 +192,13 @@ exports.updateData = async(req, res) => {
 exports.updateVerified = async(req, res) => {
     try{
         const { nim } = req.params
+
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const { verified } = req.body
         const authorizedDiv = ['D01', 'D02']
         const division = req.division
@@ -216,6 +236,13 @@ exports.updateVerified = async(req, res) => {
 exports.deleteData = async(req, res) => {
     try{
         const { nim } = req.params
+
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const authorizedDiv = ['D01', 'D02']
         const division = req.division
 

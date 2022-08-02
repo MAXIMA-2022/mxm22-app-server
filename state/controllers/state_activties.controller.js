@@ -9,6 +9,15 @@ const fs = require('fs')
 const path = require('path')
 const { v4: uuidv4 } = require('uuid')
 
+exports.readState = async(req, res) => {
+    try {
+        const result = await sActDB.query().select('stateID', 'name')
+        return res.status(200).send(result)
+    } 
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
 
 exports.readAllState = async(req, res) => {
     try {
@@ -23,6 +32,12 @@ exports.readAllState = async(req, res) => {
 exports.readSpecificState = async(req, res) => {
     try {
         const { stateID } = req.params
+
+        if(stateID === null || stateID === ':stateID'){
+            return res.status(404).send({
+                message: 'STATE ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
 
         const cekSTATE = await sActDB.query().where({ stateID })
         if(cekSTATE.length === 0 || cekSTATE === []){
@@ -75,7 +90,6 @@ exports.createState = async(req, res) => {
 
         const { 
             name, 
-            zoomLink, 
             day,
             quota,
             identifier, 
@@ -126,7 +140,6 @@ exports.createState = async(req, res) => {
 
         await sActDB.query().insert({
             name: fixName,
-            zoomLink,
             day,
             stateLogo: urlFileLogo,
             quota,
@@ -173,9 +186,15 @@ exports.createState = async(req, res) => {
 exports.updateState = async(req, res) => {
     try{
         const { stateID } = req.params
+
+        if(stateID === null || stateID === ':stateID'){
+            return res.status(404).send({
+                message: 'STATE ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const { 
             name, 
-            zoomLink, 
             day, 
             quota,
             identifier, 
@@ -255,7 +274,6 @@ exports.updateState = async(req, res) => {
         
         await sActDB.query().update({
             name: fixName,
-            zoomLink,
             day,
             stateLogo: urlFileLogo,
             quota,
@@ -302,6 +320,13 @@ exports.updateState = async(req, res) => {
 exports.deleteState = async(req, res) => {
     try{
         const { stateID } = req.params
+
+        if(stateID === null || stateID === ':stateID'){
+            return res.status(404).send({
+                message: 'STATE ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const authorizedDiv = ['D01', 'D02', 'D03']
         const division = req.division
        

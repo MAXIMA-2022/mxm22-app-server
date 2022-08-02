@@ -34,6 +34,12 @@ exports.readSpecificHMedia = async (req, res) =>{
     try {
         const { photoID } = req.params
 
+        if(photoID === null || photoID === ':photoID'){
+            return res.status(404).send({
+                message: 'Photo ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         const cekHomeMedia = await HMediaDB.query().where({ photoID })
         if(cekHomeMedia.length === 0 || cekHomeMedia === []){
             return res.status(404).send({
@@ -195,6 +201,12 @@ exports.updateHMedia = async (req,res) =>{
 exports.deleteHMedia = async(req, res) => {
     try{
         const { photoID } = req.params
+
+        if(photoID === null || photoID === ':photoID'){
+            return res.status(404).send({
+                message: 'Photo ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
 
         const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division

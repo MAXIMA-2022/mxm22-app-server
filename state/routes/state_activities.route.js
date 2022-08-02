@@ -4,6 +4,12 @@ const validation = require ('../validation/validate')
 const toggle = require('../../toggle/middleware/toggle.middleware')
 
 module.exports = function(app){
+    // Public Access (Anonymous/public (but not logged in) access)
+    app.get(
+        '/api/state_activities/',
+        sActController.readState
+    )
+
     // Public Access (must login first)
     app.get(
         '/api/state/',

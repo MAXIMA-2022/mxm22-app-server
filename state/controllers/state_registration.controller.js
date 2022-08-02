@@ -43,6 +43,12 @@ exports.createStateReg = async(req, res) => {
         const cekSTATE = await sActDB.query().where({ stateID })
         const cekParticipant = await sRegisDB.query().where({ nim, stateID })
 
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
         if(nim2 != nim) {
             return res.status(403).send({ 
                 message: 'Kamu tidak dapat mendaftar STATE menggunakan akun lain!' 
@@ -134,7 +140,21 @@ exports.deleteRegistration = async(req, res) => {
     const { stateID, nim } = req.params
     const nim2 = req.decoded_nim
 
-    try{        
+
+
+    try{           
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        if(stateID === null || stateID === ':stateID'){
+            return res.status(404).send({
+                message: 'STATE ID kosong! Harap diisi terlebih dahulu'
+            })
+        } 
+
         if(nim2 != nim) {
             return res.status(403).send({ 
                 message: 'Kamu tidak dapat menghapus Registered STATE milik akun lain!' 
@@ -177,6 +197,19 @@ exports.attendState = async(req, res) => {
         const { attendanceCode } = req.body
         const attendanceTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
+
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        if(stateID === null || stateID === ':stateID'){
+            return res.status(404).send({
+                message: 'STATE ID kosong! Harap diisi terlebih dahulu'
+            })
+        } 
+
         
         if(nim2 != nim){
             return res.status(403).send({ 
@@ -216,6 +249,19 @@ exports.verifyAttendance = async(req, res) => {
         const { attendanceCode2 } = req.body
         const tokenTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
+
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        if(stateID === null || stateID === ':stateID'){
+            return res.status(404).send({
+                message: 'STATE ID kosong! Harap diisi terlebih dahulu'
+            })
+        } 
+
 
         if(nim2 != nim){
             return res.status(403).send({ 

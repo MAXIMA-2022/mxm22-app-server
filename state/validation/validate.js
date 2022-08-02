@@ -2,7 +2,6 @@ const { check, validationResult } = require('express-validator')
 
 exports.createStateActValidation = [
     check('name').notEmpty().withMessage('Nama STATE tidak boleh kosong'),
-    check('zoomLink').notEmpty().withMessage('Link Zoom tidak boleh kosong'),
     check('day').notEmpty().withMessage('Hari STATE tidak boleh kosong'),    
     check('quota').notEmpty().withMessage('Jumlah kuota  STATE tidak boleh kosong'),
     check('category').notEmpty().withMessage('Kategori STATE tidak boleh kosong'),
@@ -11,7 +10,6 @@ exports.createStateActValidation = [
 
 exports.updateStateActValidation = [
     check('name').notEmpty().withMessage('Nama STATE tidak boleh kosong'),
-    check('zoomLink').notEmpty().withMessage('Link Zoom tidak boleh kosong'),
     check('day').notEmpty().withMessage('Hari STATE tidak boleh kosong'),    
     check('quota').notEmpty().withMessage('Jumlah kuota  STATE tidak boleh kosong'),
     check('category').notEmpty().withMessage('Kategori STATE tidak boleh kosong'),

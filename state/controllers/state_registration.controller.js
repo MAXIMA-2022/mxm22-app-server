@@ -56,7 +56,8 @@ exports.createStateReg = async(req, res) => {
         }        
 
         const len = dbState.length
-        if(len > 3)
+        
+        if(len + 1 > 3)
             return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
 
         if(cekSTATE.length === 0 || cekSTATE === []){

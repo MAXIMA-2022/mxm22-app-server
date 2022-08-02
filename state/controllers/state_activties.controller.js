@@ -92,7 +92,6 @@ exports.createState = async(req, res) => {
             name, 
             day,
             quota,
-            identifier, 
             category, 
             shortDesc
         } = req.body
@@ -146,7 +145,6 @@ exports.createState = async(req, res) => {
             registered : 0,
             attendanceCode,
             attendanceCode2,
-            identifier,
             category,
             shortDesc,
             coverPhoto: urlFileCover
@@ -197,7 +195,6 @@ exports.updateState = async(req, res) => {
             name, 
             day, 
             quota,
-            identifier, 
             category, 
             shortDesc
         } = req.body
@@ -277,10 +274,8 @@ exports.updateState = async(req, res) => {
             day,
             stateLogo: urlFileLogo,
             quota,
-            registered,
             attendanceCode: attCode,
             attendanceCode2: attCode2,
-            identifier,
             category,
             shortDesc,
             coverPhoto: urlFileCover

@@ -75,7 +75,6 @@ exports.createState = async(req, res) => {
 
         const { 
             name, 
-            zoomLink, 
             day,
             quota,
             identifier, 
@@ -126,7 +125,6 @@ exports.createState = async(req, res) => {
 
         await sActDB.query().insert({
             name: fixName,
-            zoomLink,
             day,
             stateLogo: urlFileLogo,
             quota,
@@ -175,7 +173,6 @@ exports.updateState = async(req, res) => {
         const { stateID } = req.params
         const { 
             name, 
-            zoomLink, 
             day, 
             quota,
             identifier, 
@@ -255,7 +252,6 @@ exports.updateState = async(req, res) => {
         
         await sActDB.query().update({
             name: fixName,
-            zoomLink,
             day,
             stateLogo: urlFileLogo,
             quota,

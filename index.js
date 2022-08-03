@@ -23,7 +23,7 @@ require('./state/routes/state_registration.route')(app)
 require('./toggle/routes/toggle.route')(app)
 
 //home
-//require('./chapters/routes/chaptersDial.routes')(app)
+require('./chapters/routes/chaptersDial.routes')(app)
 require('./home/routes/homeInfo.routes')(app)
 require('./home/routes/homeMedia.routes')(app)
 

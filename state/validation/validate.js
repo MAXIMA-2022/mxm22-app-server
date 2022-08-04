@@ -93,39 +93,39 @@ exports.coverValidation = (req, res, next) => {
 }
 
 
-exports.logoUpdateValidation = (req, res, next) => {
-    const logoErrors = []
-    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+// exports.logoUpdateValidation = (req, res, next) => {
+//     const logoErrors = []
+//     const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
 
-    if (req.files && req.files.stateLogo) {
-        if (!acceptedType.includes(req.files.stateLogo.mimetype)) {
-            logoErrors.push({
-                key: 'stateLogo',
-                message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
-            })
-        }
-    }
+//     if (req.files && req.files.stateLogo) {
+//         if (!acceptedType.includes(req.files.stateLogo.mimetype)) {
+//             logoErrors.push({
+//                 key: 'stateLogo',
+//                 message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
+//             })
+//         }
+//     }
 
-    req.logoErrors = logoErrors
-    next()
-}
+//     req.logoErrors = logoErrors
+//     next()
+// }
 
-exports.coverUpdateValidation = (req, res, next) => {
-    const coverErrors = []
-    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+// exports.coverUpdateValidation = (req, res, next) => {
+//     const coverErrors = []
+//     const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
 
-    if (req.files && req.files.coverPhoto) {
-        if (!acceptedType.includes(req.files.coverPhoto.mimetype)) {
-            coverErrors.push({
-                key: 'coverPhoto',
-                message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
-            })
-        }
-    }
+//     if (req.files && req.files.coverPhoto) {
+//         if (!acceptedType.includes(req.files.coverPhoto.mimetype)) {
+//             coverErrors.push({
+//                 key: 'coverPhoto',
+//                 message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
+//             })
+//         }
+//     }
 
-    req.coverErrors = coverErrors
-    next()
-}
+//     req.coverErrors = coverErrors
+//     next()
+// }
 
 exports.runValidation = (req, res, next) => {
     const errors = validationResult(req).errors

@@ -42,7 +42,7 @@ module.exports = function(app){
         '/api/stateAct/update/:stateID',
         toggle.updateState, toggle.checkToggle,
         middleware.verifyJWT, middleware.isPanitia,
-        validation.coverUpdateValidation, validation.logoUpdateValidation, 
+        validation.logoValidation, validation.coverValidation, 
         validation.updateStateActValidation, validation.runValidation,
         sActController.updateState     
     )

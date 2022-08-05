@@ -43,9 +43,6 @@ exports.specificHomeBySearchKey = async(req, res) => {
 
         const fixKey = (search_key.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
 
-
-
-
         const cekHome = await HInfoDB.query().where({ search_key: fixKey })
         if(cekHome.length === 0 || cekHome === []){
             return res.status(404).send({
@@ -239,13 +236,11 @@ exports.updateHInfo = async(req, res) => {
         }
 
         const { homeID } = req.params
-
         if(homeID === null || homeID === ':homeID'){
             return res.status(404).send({
                 message: 'HoME ID kosong! Harap diisi terlebih dahulu'
             })
         }
-
 
         const {
             name,
@@ -329,7 +324,6 @@ exports.deleteHInfo = async(req, res) => {
                 message: 'HoME ID kosong! Harap diisi terlebih dahulu'
             })
         }
-
         
         const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division

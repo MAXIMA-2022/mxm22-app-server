@@ -226,12 +226,6 @@ exports.updateState = async(req, res) => {
 
         //File Upload
         const stateName = fixName.trim().split(' ').join('-')
-
-        if(!req.files || !stateLogo)
-            res.status(400).send({ message: 'Logo STATE tidak boleh kosong!' })
-        
-        if(!req.files || !coverPhoto)
-            res.status(400).send({ message: 'Cover Photo STATE tidak boleh kosong!' })
         
         const extnameLogo = path.extname(stateLogo.name)
         const basenameLogo = path.basename(stateLogo.name, extnameLogo).trim().split(' ').join('-')

@@ -22,12 +22,22 @@ exports.readState = async(req, res) => {
 exports.readAllState = async(req, res) => {
     try {
         const result = await sActDB.query()
+        for(let i = 0; i < result.length; i++){
+            const dateTime = await dayManDB.query().select('date').where({ day: result[i].day })                
+
+            let date = new Date(dateTime[0].date).toUTCString()
+            date = date.split(' ').slice(0, 4).join(' ')
+
+            result[i].date = date
+        }
+
         return res.status(200).send(result)      
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
+
 
 exports.readSpecificState = async(req, res) => {
     try {
@@ -45,13 +55,21 @@ exports.readSpecificState = async(req, res) => {
                  message: 'STATE ID ' + stateID + ' tidak ditemukan!' 
             })
         }
+
         const result = await sActDB.query().where({ stateID })
+        const dateTime = await dayManDB.query().select('date').where({ day: result[0].day })                
+
+        let date = new Date(dateTime[0].date).toUTCString()
+        date = date.split(' ').slice(0, 4).join(' ')
+        result[0].date = date
+
         return res.status(200).send(result)
     }
     catch (err) {
         return res.status(500).send({ message: err.message })
     }
 }
+
 
 exports.readPublicState = async(req, res) => {
     try{
@@ -68,6 +86,13 @@ exports.readPublicState = async(req, res) => {
             'day_management.day',
             'state_activities.day'
         )
+       
+        for(let i = 0; i < result.length; i++){            
+            let date = new Date(result[0].date).toUTCString();
+            date = date.split(' ').slice(0, 4).join(' ');
+
+            result[i].date = date
+        }
 
         return res.status(200).send(result)
     }
@@ -252,13 +277,6 @@ exports.updateState = async(req, res) => {
                 message: 'Jumlah Quota STATE lebih sedikit daripada jumlah yang telah mendaftar'
             })
         }
-        
-        // const cekStateName = await sActDB.query().where({ name:fixName })
-        // if(cekStateName.length !== 0 && cekStateName !== [] && cekStateName !== null && cekStateName !== undefined){
-        //     return res.status(409).send({ 
-        //         message: `STATE ${fixName} sudah terdaftar sebelumnya! Silahkan periksa kembali`
-        //     })
-        // }
 
         const attCode = helper.createAttendanceCode(name.trim().split(' ').join('-'))
         const attCode2 = helper.createAttendanceCode(name.trim().split(' ').join('-'))

@@ -108,6 +108,13 @@ exports.login = async(req, res)=>{
 exports.readAllData = async(req, res) => {
     try {
         const result = await PanitDB.query()
+
+        for(let i = 0; i < result.length; i++){
+            const div = await DivisiDB.query().select('name').where({ divisiID: result[i].divisiID })
+
+            result[i].divisiName = div[0].name
+        }
+
         return res.status(200).send(result)    
     } 
     catch (err) {
@@ -133,6 +140,9 @@ exports.readSpecificData = async(req, res) => {
         }
             
         const result = await PanitDB.query().where({ nim })
+        const div = await DivisiDB.query().select('name').where({ divisiID: result[0].divisiID })
+        result[0].divisi = div[0].name
+
         return res.status(200).send(result)
     }
     catch (err) {

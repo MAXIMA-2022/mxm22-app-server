@@ -103,7 +103,15 @@ exports.login = async(req, res) => {
 
 exports.readAllData = async(req, res) => {
     try {
-        const result = await OrgDB.query()
+        let result = await OrgDB.query()
+
+        for(let i = 0; i < result.length; i++){
+            const stateName = await StateDB.query().select('name')
+            .where({ stateID: result[i].stateID })
+
+            result[i].stateName = stateName[0].name
+        }
+
         return res.status(200).send(result)
     } 
     catch (err) {
@@ -127,8 +135,15 @@ exports.readSpecificData = async(req, res) => {
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
         }
+
+
             
         const result = await OrgDB.query().where({ nim })
+        const stateName = await StateDB.query().select('name')
+        .where({ stateID: result[0].stateID })
+
+        result[0].stateName = stateName[0].name
+
         return res.status(200).send(result)
     }
     catch (err) {

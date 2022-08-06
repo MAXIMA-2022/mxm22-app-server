@@ -1,6 +1,5 @@
 const HMediaDB = require('../models/homeMedia.model')
 const HInfoDB = require('../models/homeInfo.model')
-const helper = require('../../helpers/helper')
 const { Storage } = require('@google-cloud/storage');
 const storage = new Storage({ keyFilename:
     'keys/mxm22-bucket.json' })
@@ -21,7 +20,14 @@ const { v4: uuidv4 } = require('uuid')
 
 exports.readAllHMedia = async (req, res) =>{
     try {
-       const result = await HMediaDB.query()
+        const result = await HMediaDB.query()
+
+        for(let i = 0; i < result.length; i++){
+            const hName = await HInfoDB.query().select('name').where({ homeID: result[i].homeID })
+
+            result[i].homeName = hName[0].name
+        }
+
        return res.status(200).send(result)
     } 
     catch (err) {
@@ -48,6 +54,9 @@ exports.readSpecificHMedia = async (req, res) =>{
         }
 
         const result = await HMediaDB.query().where({ photoID })
+        const hName = await HInfoDB.query().select('name').where({ homeID: result[0].homeID })
+        result[0].homeName = hName[0].name
+
         return res.status(200).send(result)
     } 
     catch (err) {

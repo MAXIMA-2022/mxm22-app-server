@@ -1,10 +1,20 @@
 const sRegisDB = require('../model/state_registration.model')
 const sActDB = require('../model/state_activities.model')
+const MhsDB = require('../../user/model/mahasiswa.model')
 const helper = require('../../helpers/helper')
 
 exports.readAllRegistration = async(req, res) => {
     try {
-        const result = await sRegisDB.query()
+        let result = await sRegisDB.query()
+
+        for(let i = 0; i < result.length; i++){
+            const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
+            const nState = await sActDB.query().select('name').where({ stateID: result[i].stateID })
+
+            result[i].name = nMhs[0].name
+            result[i].stateName = nState[0].name
+        }
+ 
         return res.status(200).send(result)      
     }
     catch (err) {
@@ -56,7 +66,6 @@ exports.createStateReg = async(req, res) => {
         }        
 
         const len = dbState.length
-        
         if(len + 1 > 3)
             return res.status(403).send({ message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'})
 
@@ -141,8 +150,6 @@ exports.deleteRegistration = async(req, res) => {
     const { stateID, nim } = req.params
     const nim2 = req.decoded_nim
 
-
-
     try{           
         if(nim === null || nim === ':nim'){
             return res.status(404).send({
@@ -167,7 +174,7 @@ exports.deleteRegistration = async(req, res) => {
             return res.status(404).send({ 
                 message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
             }) 
-         }
+        }
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
         if(cekRegister.length === 0 || cekRegister === []){
@@ -262,7 +269,6 @@ exports.verifyAttendance = async(req, res) => {
                 message: 'STATE ID kosong! Harap diisi terlebih dahulu'
             })
         } 
-
 
         if(nim2 != nim){
             return res.status(403).send({ 

@@ -20,6 +20,10 @@ exports.readAllHInfo = async(req, res) => {
             .select('photoID', 'linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
+            const chapterName = await CDialDB.query().select('name')
+            .where({ homeChapterID: homeResult[i].chapter })
+
+            homeResult[i].chapterName = chapterName[0].name
             homeResult[i].media = mediaResult
         }
         
@@ -56,6 +60,11 @@ exports.specificHomeBySearchKey = async(req, res) => {
             .select('photoID', 'linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
+            
+            const chapterName = await CDialDB.query().select('name')
+            .where({ homeChapterID: homeResult[i].chapter })
+
+            homeResult[i].chapterName = chapterName[0].name
             homeResult[i].media = mediaResult
         }
         
@@ -96,6 +105,11 @@ exports.specificHomeByChapter = async(req, res) => {
             .select('photoID', 'linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
+            
+            const chapterName = await CDialDB.query().select('name')
+            .where({ homeChapterID: homeResult[i].chapter })
+
+            homeResult[i].chapterName = chapterName[0].name
             homeResult[i].media = mediaResult
         }
         
@@ -130,6 +144,10 @@ exports.specificHomeByID = async(req, res) => {
             .select('photoID', 'linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
+            const chapterName = await CDialDB.query().select('name')
+            .where({ homeChapterID: homeResult[i].chapter })
+
+            homeResult[i].chapterName = chapterName[0].name
             homeResult[i].media = mediaResult
         }
         

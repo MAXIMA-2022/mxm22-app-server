@@ -22,14 +22,14 @@ module.exports = function(app){
         HMediaController.createNewHMedia
     )
 
-    app.put(
-        '/api/home/updateHomeMedia/',
-        toggle.updateHome ,toggle.checkToggle,
-        validation.updateHMediaValidation, validation.updateMediaValidation,
-        validation.runValidation,
-        middleware.verifyJWT, middleware.isPanitia,
-        HMediaController.updateHMedia
-    )
+    // app.put(
+    //     '/api/home/updateHomeMedia/',
+    //     toggle.updateHome ,toggle.checkToggle,
+    //     validation.updateHMediaValidation, validation.updateMediaValidation,
+    //     validation.runValidation,
+    //     middleware.verifyJWT, middleware.isPanitia,
+    //     HMediaController.updateHMedia
+    // )
 
     app.delete(
         '/api/home/deleteHomeMedia/:photoID',

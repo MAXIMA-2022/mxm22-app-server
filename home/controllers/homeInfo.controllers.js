@@ -270,22 +270,8 @@ exports.updateHInfo = async(req, res) => {
             linkYoutube
         } = req.body
 
-        const { linkLogo } = req.files
         const fixName = helper.toTitleCase(name).trim()
         const searchKey = (fixName.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
-
-        if(!req.files || !linkLogo)
-            res.status(400).send({ message: 'Logo HoME tidak boleh kosong!' })
-            
-        const extnameLogo = path.extname(linkLogo.name)
-        const basenameLogo = path.basename(linkLogo.name, extnameLogo).trim().split(' ').join('-')
-
-        const uuidLogo = uuidv4()
-        const homeIName = fixName.trim().split(' ').join('-')
-        const fileNameLogo = `${homeIName}_${uuidLogo}_${basenameLogo}${extnameLogo}`
-        const uploadPathLogo = './homeLogo/' + fileNameLogo
-        const bucketName = 'mxm22-bucket-test'
-        const urlFileLogo = `https://storage.googleapis.com/${bucketName}/${fileNameLogo}`
 
         const cekHInfo = await HInfoDB.query().where({ homeID })
         if(cekHInfo.length === 0 || cekHInfo === []){
@@ -301,9 +287,52 @@ exports.updateHInfo = async(req, res) => {
             })
         }
 
+
+        if(req.files && req.files.linkLogo){
+            const linkLogo  = req.files.linkLogo
+           
+            const extnameLogo = path.extname(linkLogo.name)
+            const basenameLogo = path.basename(linkLogo.name, extnameLogo).trim().split(' ').join('-')
+
+            const uuidLogo = uuidv4()
+            const homeIName = fixName.trim().split(' ').join('-')
+            const fileNameLogo = `${homeIName}_${uuidLogo}_${basenameLogo}${extnameLogo}`
+            const uploadPathLogo = './homeLogo/' + fileNameLogo
+            const bucketName = 'mxm22-bucket-test'
+            const urlFileLogo = `https://storage.googleapis.com/${bucketName}/${fileNameLogo}`
+
+
+            await HInfoDB.query().update({
+                search_key: searchKey,
+                linkLogo: urlFileLogo,
+                name: fixName,
+                chapter,
+                shortDesc,
+                longDesc,
+                instagram,
+                lineID,
+                linkYoutube
+            }).where({ homeID })
+    
+            linkLogo.mv(uploadPathLogo, async (err) => {
+                if (err)
+                    return res.status(500).send({ message: err.messsage })
+                                
+                await storage.bucket(bucketName).upload(uploadPathLogo)
+          
+                fs.unlink(uploadPathLogo, (err) => {
+                    if (err)
+                        return res.status(500).send({ message: err.messsage })                    
+                })
+            })
+
+    
+            return res.status(200).send({ message: 'Data HoME berhasil diupdate' })
+        }
+
+
         await HInfoDB.query().update({
             search_key: searchKey,
-            linkLogo: urlFileLogo,
             name: fixName,
             chapter,
             shortDesc,
@@ -313,17 +342,6 @@ exports.updateHInfo = async(req, res) => {
             linkYoutube
         }).where({ homeID })
 
-        linkLogo.mv(uploadPathLogo, async (err) => {
-            if (err)
-                return res.status(500).send({ message: err.messsage })
-                            
-            await storage.bucket(bucketName).upload(uploadPathLogo)
-      
-            fs.unlink(uploadPathLogo, (err) => {
-                if (err)
-                    return res.status(500).send({ message: err.messsage })                    
-            })
-        })
 
         return res.status(200).send({ message: 'Data HoME berhasil diupdate' })
     }

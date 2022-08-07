@@ -224,7 +224,7 @@ exports.updateState = async(req, res) => {
             shortDesc
         } = req.body
 
-        const { stateLogo, coverPhoto } = req.files
+        
         const fixName = helper.toTitleCase(name).trim()
 
         const authorizedDiv = ['D01', 'D02']
@@ -249,28 +249,6 @@ exports.updateState = async(req, res) => {
             })
         }
 
-        //File Upload
-        const stateName = fixName.trim().split(' ').join('-')
-        
-        const extnameLogo = path.extname(stateLogo.name)
-        const basenameLogo = path.basename(stateLogo.name, extnameLogo).trim().split(' ').join('-')
-        const extnameCover = path.extname(coverPhoto.name)
-        const basenameCover = path.basename(coverPhoto.name, extnameCover).trim().split(' ').join('-')
-        
-        //logo
-        const uuidLogo = uuidv4()
-        fileNameLogo = `${stateName}_${uuidLogo}_${basenameLogo}${extnameLogo}`
-        uploadPathLogo = './stateLogo/' + fileNameLogo
-        bucketName = 'mxm22-bucket-test'
-        urlFileLogo = `https://storage.googleapis.com/${bucketName}/${fileNameLogo}`
-
-        //cover
-        uuidCover = uuidv4()
-        fileNameCover = `${stateName}_${uuidCover}_${basenameCover}${extnameCover}`
-        uploadPathCover = './stateLogo/' + fileNameCover
-        bucketName = 'mxm22-bucket-test'
-        urlFileCover = `https://storage.googleapis.com/${bucketName}/${fileNameCover}`
-
         const cekRegistered = await sActDB.query().where({ stateID })
         if(parseInt(quota) < cekRegistered[0].registered ){
             return res.status(409).send({
@@ -281,41 +259,105 @@ exports.updateState = async(req, res) => {
         const attCode = helper.createAttendanceCode(name.trim().split(' ').join('-'))
         const attCode2 = helper.createAttendanceCode(name.trim().split(' ').join('-'))
         
+        if(req.files && req.files.coverPhoto){
+            //File Upload
+            const coverPhoto = req.files.coverPhoto
+            const stateName = fixName.trim().split(' ').join('-')
+        
+            const extnameCover = path.extname(coverPhoto.name)
+            const basenameCover = path.basename(coverPhoto.name, extnameCover).trim().split(' ').join('-')
+
+            //cover
+            uuidCover = uuidv4()
+            fileNameCover = `${stateName}_${uuidCover}_${basenameCover}${extnameCover}`
+            uploadPathCover = './stateLogo/' + fileNameCover
+            bucketName = 'mxm22-bucket-test'
+            urlFileCover = `https://storage.googleapis.com/${bucketName}/${fileNameCover}`
+
+            await sActDB.query().update({
+                name: fixName,
+                day,
+                quota,
+                attendanceCode: attCode,
+                attendanceCode2: attCode2,
+                category,
+                shortDesc,
+                coverPhoto: urlFileCover
+            }).where({ stateID })
+
+            coverPhoto.mv(uploadPathCover, async(err) => {
+                if (err)
+                    return res.status(500).send({ message: err.messsage })
+                                
+                await storage.bucket(bucketName).upload(uploadPathCover)
+          
+                fs.unlink(uploadPathCover, (err) => {
+                    if (err)
+                        return res.status(500).send({ message: err.messsage })
+                })
+            })
+            
+            return res.status(200).send({ message: 'STATE berhasil diupdate' })
+        }
+
+        if(req.files && req.files.stateLogo){
+            //File Upload
+            const stateLogo = req.files.stateLogo
+            const stateName = fixName.trim().split(' ').join('-')
+
+            const extnameLogo = path.extname(stateLogo.name)
+            const basenameLogo = path.basename(stateLogo.name, extnameLogo).trim().split(' ').join('-')
+
+            //logo
+            const uuidLogo = uuidv4()
+            fileNameLogo = `${stateName}_${uuidLogo}_${basenameLogo}${extnameLogo}`
+            uploadPathLogo = './stateLogo/' + fileNameLogo
+            bucketName = 'mxm22-bucket-test'
+            urlFileLogo = `https://storage.googleapis.com/${bucketName}/${fileNameLogo}`
+
+
+            await sActDB.query().update({
+                name: fixName,
+                day,
+                stateLogo: urlFileLogo,
+                quota,
+                attendanceCode: attCode,
+                attendanceCode2: attCode2,
+                category,
+                shortDesc
+            }).where({ stateID })
+    
+            stateLogo.mv(uploadPathLogo, async (err) => {
+                if (err)
+                    return res.status(500).send({ message: err.messsage })
+                                
+                await storage.bucket(bucketName).upload(uploadPathLogo)
+          
+                fs.unlink(uploadPathLogo, (err) => {
+                    if (err)
+                        return res.status(500).send({ message: err.messsage })                    
+                })
+            })
+          
+            
+            return res.status(200).send({ message: 'STATE berhasil diupdate' })
+        }
+        
+
+
+
+        
         await sActDB.query().update({
             name: fixName,
             day,
-            stateLogo: urlFileLogo,
             quota,
             attendanceCode: attCode,
             attendanceCode2: attCode2,
             category,
             shortDesc,
-            coverPhoto: urlFileCover
         }).where({ stateID })
 
-        stateLogo.mv(uploadPathLogo, async (err) => {
-            if (err)
-                return res.status(500).send({ message: err.messsage })
-                            
-            await storage.bucket(bucketName).upload(uploadPathLogo)
       
-            fs.unlink(uploadPathLogo, (err) => {
-                if (err)
-                    return res.status(500).send({ message: err.messsage })                    
-            })
-        })
-      
-        coverPhoto.mv(uploadPathCover, async(err) => {
-            if (err)
-                return res.status(500).send({ message: err.messsage })
-                            
-            await storage.bucket(bucketName).upload(uploadPathCover)
-      
-            fs.unlink(uploadPathCover, (err) => {
-                if (err)
-                    return res.status(500).send({ message: err.messsage })
-            })
-        })
         
         return res.status(200).send({ message: 'STATE berhasil diupdate' })
     }

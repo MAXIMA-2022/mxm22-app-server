@@ -26,7 +26,7 @@ exports.readAllHMedia = async (req, res) =>{
 }
 
 
-exports.readSpecificHMedia = async (req, res) =>{
+exports.specificByPhotoID = async (req, res) =>{
     try {
         const { photoID } = req.params
 
@@ -54,6 +54,47 @@ exports.readSpecificHMedia = async (req, res) =>{
     }
 }
 
+
+exports.specificByHomeID = async(req, res) =>{
+    try {
+        const { homeID } = req.params
+
+        const authorizedDiv = ['D01', 'D02', 'D04']
+        const division = req.division
+
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }
+
+        if(homeID === null || homeID === ':homeID'){
+            return res.status(404).send({
+                message: 'Home ID kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        const cekMedia = await HMediaDB.query().where({ homeID })
+        if(cekMedia.length === 0 || cekMedia === []){
+            return res.status(404).send({
+                message: `Media dari HoME ID ${homeID} tidak ditemukan!`
+            })
+        }
+
+        const result = await HMediaDB.query().where({ homeID })
+        for(let i = 0; i < result.length; i++){
+            const hName = await HInfoDB.query().select('name').where({ homeID: result[i].homeID })
+
+            result[i].homeName = hName[0].name
+        }
+
+        return res.status(200).send(result)
+
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+
+}
 
 exports.createNewHMedia = async (req,res) => {
     try {

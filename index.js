@@ -16,6 +16,7 @@ require('./user/routes/panitia.route')(app)
 require('./user/routes/divisi.route')(app)
 
 //state
+require('./state/routes/day_management.route')(app)
 require('./state/routes/state_activities.route')(app)
 require('./state/routes/state_registration.route')(app)
 

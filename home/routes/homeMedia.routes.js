@@ -9,8 +9,14 @@ module.exports = function(app){
         HMediaController.readAllHMedia
     )
     app.get(
-        '/api/homeMedia/:photoID',
-        HMediaController.readSpecificHMedia
+        '/api/homeMedia/photoID/:photoID',
+        HMediaController.specificByPhotoID
+    )
+
+    app.get(
+        '/api/homeMedia/homeID/:homeID',
+        middleware.verifyJWT, middleware.isPanitia,
+        HMediaController.specificByHomeID
     )
 
     app.post(

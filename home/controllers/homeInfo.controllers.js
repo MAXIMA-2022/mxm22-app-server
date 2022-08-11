@@ -175,9 +175,13 @@ exports.createHInfo = async(req, res) => {
             chapter,
             shortDesc,
             longDesc,
-            instagram,
-            lineID,
-            linkYoutube
+            linkInstagram,
+            linkLine,
+            linkYoutube,
+            linkFacebook,
+            linkTwitter,
+            linkTiktok,
+            linkLinkedIn
         } = req.body
 
         const { linkLogo } = req.files
@@ -217,9 +221,13 @@ exports.createHInfo = async(req, res) => {
             chapter,
             shortDesc,
             longDesc,
-            instagram,
-            lineID,
-            linkYoutube
+            linkInstagram,
+            linkLine,
+            linkYoutube,
+            linkFacebook,
+            linkTwitter,
+            linkTiktok,
+            linkLinkedIn
         })
 
         linkLogo.mv(uploadPathLogo, async (err) => {
@@ -265,9 +273,13 @@ exports.updateHInfo = async(req, res) => {
             chapter,
             shortDesc,
             longDesc,
-            instagram,
-            lineID,
-            linkYoutube
+            linkInstagram,
+            linkLine,
+            linkYoutube,
+            linkFacebook,
+            linkTwitter,
+            linkTiktok,
+            linkLinkedIn
         } = req.body
 
         const fixName = helper.toTitleCase(name).trim()
@@ -309,9 +321,13 @@ exports.updateHInfo = async(req, res) => {
                 chapter,
                 shortDesc,
                 longDesc,
-                instagram,
-                lineID,
-                linkYoutube
+                linkInstagram,
+                linkLine,
+                linkYoutube,
+                linkFacebook,
+                linkTwitter,
+                linkTiktok,
+                linkLinkedIn
             }).where({ homeID })
     
             linkLogo.mv(uploadPathLogo, async (err) => {
@@ -337,9 +353,13 @@ exports.updateHInfo = async(req, res) => {
             chapter,
             shortDesc,
             longDesc,
-            instagram,
-            lineID,
-            linkYoutube
+            linkInstagram,
+            linkLine,
+            linkYoutube,
+            linkFacebook,
+            linkTwitter,
+            linkTiktok,
+            linkLinkedIn
         }).where({ homeID })
 
 

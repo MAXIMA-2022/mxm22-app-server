@@ -2,7 +2,6 @@ const sRegisDB = require('../model/state_registration.model')
 const sActDB = require('../model/state_activities.model')
 const MhsDB = require('../../user/model/mahasiswa.model')
 const helper = require('../../helpers/helper')
-const logging = require('../../loggings/controllers/loggings.controllers')
 const address = require('address')
 
 exports.readAllRegistration = async(req, res) => {
@@ -30,7 +29,6 @@ exports.createStateReg = async(req, res) => {
         const { stateID } = req.body
         const { nim } = req.params
         const nim2 = req.decoded_nim
-        const ip = address.ip()
         
         const dbState = await sActDB.query()
         .select(
@@ -57,14 +55,13 @@ exports.createStateReg = async(req, res) => {
         const cekParticipant = await sRegisDB.query().where({ nim, stateID })
 
         if(nim === null || nim === ':nim'){
-            logging.registerStateLog('RegisterState', nim2, nim, ip, 'NIM anda kosong! Harap diisi terlebih dahulu')
             return res.status(404).send({
                 message: 'NIM anda kosong! Harap diisi terlebih dahulu'
             })
         }
 
         if(nim2 != nim) {
-            logging.registerStateLog('RegisterState', nim2, nim, ip, 'Kamu tidak dapat mendaftar STATE menggunakan akun lain!')
+
             return res.status(403).send({ 
                 message: 'Kamu tidak dapat mendaftar STATE menggunakan akun lain!' 
             })
@@ -72,7 +69,7 @@ exports.createStateReg = async(req, res) => {
 
         const len = dbState.length
         if(len + 1 > 3){
-            logging.registerStateLog('RegisterState', nim2, nim, ip, 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!')
+            
             return res.status(403).send({ 
                 message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'
             })
@@ -80,14 +77,12 @@ exports.createStateReg = async(req, res) => {
             
 
         if(cekSTATE.length === 0 || cekSTATE === []){
-            logging.registerStateLog('RegisterState', nim2, nim, ip, 'STATE yang kamu input tidak terdaftar, dicek lagi ya!')
             return res.status(404).send({ 
                 message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
             }) 
         }
                  
         if(cekParticipant.length !== 0 && cekParticipant !== []){
-            logging.registerStateLog('RegisterState', nim2, nim, ip, 'Kamu telah mendaftar pada STATE ini!')
             return res.status(403).send({ 
                 message: 'Kamu telah mendaftar pada STATE ini!' 
             })
@@ -110,7 +105,6 @@ exports.createStateReg = async(req, res) => {
 
             for(let i = 0; i < len; i++){
                 if(day === mhsDay2[i].day){
-                    logging.registerStateLog('RegisterState', nim2, nim, ip, 'Kamu tidak dapat mendaftar pada lebih dari 1 STATE pada hari yang sama!')
                     return res.status(400).send({ 
                         message: 'Kamu tidak dapat mendaftar pada lebih dari 1 STATE pada hari yang sama!' 
                     })
@@ -122,7 +116,6 @@ exports.createStateReg = async(req, res) => {
         const qt1 = data[0].quota
         const qt2 = data[0].registered + 1
         if(qt2 > qt1){
-            logging.registerStateLog('RegisterState', nim2, nim, ip, 'Mohon maaf MAXIMERS, quota untuk STATE ' + data[0].name + ' sudah penuh')
             return res.status(400).send({ 
                 message: 'Mohon maaf MAXIMERS, quota untuk STATE ' + data[0].name + ' sudah penuh' 
             })
@@ -159,8 +152,6 @@ exports.createStateReg = async(req, res) => {
         .update({
             registered: dbActivities[0].registered + 1
         }).where('stateID', stateID)
-
-        logging.registerStateLog('RegisterState', nim2, nim, ip, 'No Error Found')
         
         return res.status(200).send({ message: 'Registrasi STATE berhasil dilakukan' })
     }
@@ -173,25 +164,21 @@ exports.createStateReg = async(req, res) => {
 exports.deleteRegistration = async(req, res) => {
     const { stateID, nim } = req.params
     const nim2 = req.decoded_nim
-    const ip = address.ip()
 
     try{           
         if(nim === null || nim === ':nim'){
-            logging.cancelStateLog('CancelState', nim2, nim, ip, 'NIM anda kosong! Harap diisi terlebih dahulu')
             return res.status(404).send({
                 message: 'NIM anda kosong! Harap diisi terlebih dahulu'
             })
         }
 
         if(stateID === null || stateID === ':stateID'){
-            logging.cancelStateLog('CancelState', nim2, nim, ip, 'STATE ID kosong! Harap diisi terlebih dahulu')
             return res.status(404).send({
                 message: 'STATE ID kosong! Harap diisi terlebih dahulu'
             })
         } 
 
         if(nim2 != nim) {
-            logging.cancelStateLog('CancelState', nim2, nim, ip, 'Kamu tidak dapat menghapus Registered STATE milik akun lain!')
             return res.status(403).send({ 
                 message: 'Kamu tidak dapat menghapus Registered STATE milik akun lain!' 
             })
@@ -199,7 +186,6 @@ exports.deleteRegistration = async(req, res) => {
 
         const cekSTATE = await sActDB.query().where({ stateID })
         if(cekSTATE.length === 0 || cekSTATE === []){
-            logging.cancelStateLog('CancelState', nim2, nim, ip, 'STATE yang kamu input tidak terdaftar, dicek lagi ya!')
             return res.status(404).send({ 
                 message: 'STATE yang kamu input tidak terdaftar, dicek lagi ya!' 
             }) 
@@ -207,7 +193,6 @@ exports.deleteRegistration = async(req, res) => {
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
         if(cekRegister.length === 0 || cekRegister === []){
-            logging.cancelStateLog('CancelState', nim2, nim, ip, 'Kamu belum mendaftar pada STATE ini!' )
             return res.status(403).send({ 
                 message: 'Kamu belum mendaftar pada STATE ini!' 
             })
@@ -222,7 +207,6 @@ exports.deleteRegistration = async(req, res) => {
             registered: dbActivities[0].registered - 1
         })
         
-        logging.cancelStateLog('CancelState', nim2, nim, ip, 'No Error Found')
         return res.status(200).send({ message: 'Registrasi STATE berhasil dihapus' })
     }
     catch (err) {
@@ -236,17 +220,14 @@ exports.attendState = async(req, res) => {
         const { attendanceCode } = req.body
         const attendanceTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
-        const ip = address.ip()
 
         if(nim === null || nim === ':nim'){
-            logging.attendStateLog('AttendState', nim2, nim, ip, 'NIM anda kosong! Harap diisi terlebih dahulu')
             return res.status(404).send({
                 message: 'NIM anda kosong! Harap diisi terlebih dahulu'
             })
         }
 
         if(stateID === null || stateID === ':stateID'){
-            logging.attendStateLog('AttendState', nim2, nim, ip, 'STATE ID kosong! Harap diisi terlebih dahulu')
             return res.status(404).send({
                 message: 'STATE ID kosong! Harap diisi terlebih dahulu'
             })
@@ -254,7 +235,6 @@ exports.attendState = async(req, res) => {
 
         
         if(nim2 != nim){
-            logging.attendStateLog('AttendState', nim2, nim, ip, 'Kamu tidak dapat melakukan absensi STATE milik orang lain')
             return res.status(403).send({ 
                 message: 'Kamu tidak dapat melakukan absensi STATE milik orang lain' 
             })
@@ -262,7 +242,6 @@ exports.attendState = async(req, res) => {
         
         const cekAttendanceCode = await sActDB.query().where({ stateID, attendanceCode })
         if(cekAttendanceCode.length === 0 || cekAttendanceCode === []){
-            logging.attendStateLog('AttendState', nim2, nim, ip, 'Token yang kamu masukkan salah!')
             return res.status(404).send({ 
                 message: 'Token yang kamu masukkan salah!'
             })
@@ -270,7 +249,6 @@ exports.attendState = async(req, res) => {
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID })
         if(cekRegister.length === 0 || cekRegister === []){
-            logging.attendStateLog('AttendState', nim2, nim, ip, 'Kamu belum mendaftar pada STATE ini!')
             return res.status(404).send({ 
                 message: 'Kamu belum mendaftar pada STATE ini!' 
             })
@@ -280,7 +258,6 @@ exports.attendState = async(req, res) => {
         .patch({ attendanceTime, inEventAttendance: 1 })
         .where({ nim, stateID })
 
-        logging.attendStateLog('AttendState', nim2, nim, ip, 'No Error Found')
         return res.status(200).send({ message: 'Proses absensi selesai' })
     } 
     catch (err) {
@@ -298,21 +275,18 @@ exports.verifyAttendance = async(req, res) => {
         const ip = address.ip()
 
         if(nim === null || nim === ':nim'){
-            logging.verifyAttendanceLog('VerifyAttendance', nim2, nim, ip, 'NIM anda kosong! Harap diisi terlebih dahulu')
             return res.status(404).send({
                 message: 'NIM anda kosong! Harap diisi terlebih dahulu'
             })
         }
 
         if(stateID === null || stateID === ':stateID'){
-            logging.verifyAttendanceLog('VerifyAttendance', nim2, nim, ip, 'STATE ID kosong! Harap diisi terlebih dahulu')
             return res.status(404).send({
                 message: 'STATE ID kosong! Harap diisi terlebih dahulu'
             })
         } 
 
         if(nim2 != nim){
-            logging.verifyAttendanceLog('VerifyAttendance', nim2, nim, ip, 'Kamu tidak bisa melakukan absensi STATE milik orang lain')
             return res.status(403).send({ 
                 message: 'Kamu tidak bisa melakukan absensi STATE milik orang lain' 
             })
@@ -320,7 +294,6 @@ exports.verifyAttendance = async(req, res) => {
 
         const cekAttendanceCode = await sActDB.query().where({ stateID, attendanceCode2 })
         if(cekAttendanceCode.length === 0 || cekAttendanceCode === []){
-            logging.verifyAttendanceLog('VerifyAttendance', nim2, nim, ip, 'Token yang kamu masukkan salah!')
             return res.status(404).send({ 
                 message: 'Token yang kamu masukkan salah!'
             })
@@ -328,7 +301,6 @@ exports.verifyAttendance = async(req, res) => {
 
         const cekRegister = await sRegisDB.query().where({ nim, stateID }) 
         if(cekRegister.length === 0 || cekRegister === []){
-            logging.verifyAttendanceLog('VerifyAttendance', nim2, nim, ip, 'Kamu belum mendaftar pada STATE ini!')
             return res.status(404).send({ 
                 message: 'Kamu belum mendaftar pada STATE ini!' 
             })
@@ -336,7 +308,6 @@ exports.verifyAttendance = async(req, res) => {
 
         const cekAttendance = await sRegisDB.query().select('attendanceTime', 'inEventAttendance').where({ nim, stateID }) 
         if(cekAttendance[0].inEventAttendance === 0 || cekAttendance[0].attendanceTime === 0){
-            logging.verifyAttendanceLog('VerifyAttendance', nim2, nim, ip, 'Kamu belum melakukan absensi yang pertama!')
             return res.status(404).send({
                 message: 'Kamu belum melakukan absensi yang pertama!'
             })
@@ -346,7 +317,6 @@ exports.verifyAttendance = async(req, res) => {
         .patch({ exitAttendance: 1, tokenTime: tokenTime })
         .where({ nim, stateID })
 
-        logging.verifyAttendanceLog('VerifyAttendance', nim2, nim, ip, 'No Error Found')
         return res.status(200).send({ message: 'Proses absensi selesai' })
     } 
     catch (err) {

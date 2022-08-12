@@ -1,6 +1,4 @@
 const MhsDB = require('../model/mahasiswa.model')
-const logging = require('../../loggings/controllers/loggings.controllers')
-const address = require('address')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -21,11 +19,9 @@ exports.register = async(req, res) => {
         } = req.body
 
         const hashPass = await bcrypt.hashSync(password, 8)
-        const ip = address.ip()
 
         const cekNIM = await MhsDB.query().where({ nim })
         if(cekNIM.length !== 0 && cekNIM !== []){
-            logging.registerLog('Register/Mahasiswa', nim, ip, 'Akun anda sebelumnya telah terdaftar')
             return res.status(409).send({ 
                 message: 'Akun anda sebelumnya telah terdaftar'
             })
@@ -45,8 +41,6 @@ exports.register = async(req, res) => {
             prodi
         })
 
-        logging.registerLog('Register/Mahasiswa', nim, ip, 'No Error Found')
-
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
@@ -58,11 +52,9 @@ exports.register = async(req, res) => {
 exports.login = async(req, res) => {
     try{
         const { nim, password } = req.body
-        const ip = address.ip()
 
         const checkingNim = await MhsDB.query().where({ nim })
         if(checkingNim.length === 0){
-            logging.loginLog('Login/Mahasiswa', nim, ip, 'NIM ' + nim + ' tidak terdaftar! Harap melakukan register dahulu')
             return res.status(404).send({
                 message : 'NIM ' + nim + ' tidak terdaftar! Harap melakukan register dahulu'
             })
@@ -70,11 +62,9 @@ exports.login = async(req, res) => {
 
         const isPassValid = bcrypt.compareSync(password, checkingNim[0].password)
         if(!isPassValid){
-            logging.loginLog('Login/Mahasiswa', nim, ip, 'NIM atau password salah!')
             return res.status(400).send({ 
                 message: 'NIM atau password salah!' 
             })
-            
         }
 
         const JWTtoken = jwt.sign({ 
@@ -86,8 +76,6 @@ exports.login = async(req, res) => {
                 expiresIn: 86400 //equals to 24H
         })
 
-        logging.loginLog('Login/Mahasiswa', nim, ip, 'No Error Found')
-
         //              TESTING ONLY NOT FOR FINISHED PRODUCT
         // const decoded = jwt.decode(JWTtoken, {complete: true})
         // console.log(decoded.payload)
@@ -98,7 +86,6 @@ exports.login = async(req, res) => {
         })
     }
     catch(err){
-        
         return res.status(500).send({ message: err.message })
     }
 }

@@ -1,7 +1,5 @@
 const OrgDB = require('../model/organisator.model')
 const StateDB = require('../../state/model/state_activities.model')
-const logging = require('../../loggings/controllers/loggings.controllers')
-const address = require('address')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -18,11 +16,8 @@ exports.register = async(req, res) => {
         const hashPass = await bcrypt.hashSync(password, 8)
         const verified2 = 0
 
-        const ip = address.ip()
-
         const cekNIM = await OrgDB.query().where({ nim })
         if(cekNIM.length !== 0 && cekNIM !== []){
-            logging.registerLog('Register/Organisator', nim, ip, 'Akun anda sebelumnya telah terdaftar')
             return res.status(409).send({ 
                 message: 'Akun anda sebelumnya telah terdaftar' 
             })      
@@ -30,7 +25,6 @@ exports.register = async(req, res) => {
 
         const cekSTATE = await StateDB.query().where({ stateID })
         if(cekSTATE.length === 0 || cekSTATE === []){
-            logging.registerLog('Register/Organisator', nim, ip, 'STATE yang kamu input tidak terdaftar!' )
             return res.status(404).send({ 
                 message: 'STATE yang kamu input tidak terdaftar!' 
             })
@@ -45,8 +39,6 @@ exports.register = async(req, res) => {
             verified: verified2
         })
 
-        logging.registerLog('Register/Organisator', nim, ip, 'No Error Found')
-
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
@@ -59,11 +51,8 @@ exports.login = async(req, res) => {
     try{
         const { nim, password } = req.body
 
-        const ip = address.ip()
-
         const checkingNim = await OrgDB.query().where({ nim })
         if(checkingNim.length === 0){
-            logging.loginLog('Login/Organisator', nim, ip, 'NIM ' + nim + ' tidak terdaftar! Harap melakukan register dahulu')
             return res.status(404).send({ 
                 message : 'NIM ' + nim + ' tidak terdaftar! Harap melakukan register dahulu'
             })
@@ -71,7 +60,6 @@ exports.login = async(req, res) => {
 
         const isPassValid = bcrypt.compareSync(password, checkingNim[0].password)
         if(!isPassValid){
-            logging.loginLog('Login/Organisator', nim, ip, 'NIM atau password salah!')
             return res.status(400).send({ 
                 message: 'NIM atau password salah!'
             })
@@ -79,7 +67,6 @@ exports.login = async(req, res) => {
 
         const ver = await OrgDB.query().select('verified').where({ nim })
         if(ver[0].verified !== 1){
-            logging.loginLog('Login/Organisator', nim, ip, 'Akun anda belum terverifikasi!')
             return res.status(400).send({
                 message: 'Akun anda belum terverifikasi!'
             })
@@ -102,8 +89,6 @@ exports.login = async(req, res) => {
         //              TESTING ONLY NOT FOR FINISHED PRODUCT
         // const decoded = jwt.decode(JWTtoken, {complete: true})
         // console.log(decoded.payload)
-        
-        logging.loginLog('Login/Organisator', nim, ip, 'No Error Found')
 
         return res.status(200).send({
             message: "Berhasil login",

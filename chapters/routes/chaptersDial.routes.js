@@ -5,7 +5,6 @@ const validation = require('../validation/validate')
 module.exports = function(app){
     app.get(
         '/api/chapter',
-        middleware.verifyJWT, middleware.isPanitia,
         controller.readAllChapter
     )
 

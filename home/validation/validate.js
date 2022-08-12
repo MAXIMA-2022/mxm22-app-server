@@ -3,15 +3,11 @@ const { check, validationResult } = require('express-validator')
 exports.createHInfoValidation = [
     check('name').notEmpty().withMessage('Nama HOME tidak boleh kosong'),    
     check('chapter').notEmpty().withMessage('Chapter Dialogue HOME tidak boleh kosong'),
-    check('instagram').notEmpty().withMessage('Username Instagram HOME tidak boleh kosong'),
-    check('lineID').notEmpty().withMessage('ID Line HOME tidak boleh kosong'),
 ]
 
 exports.updateHInfoValidation = [
     check('name').notEmpty().withMessage('Nama HOME tidak boleh kosong'),    
     check('chapter').notEmpty().withMessage('Chapter Dialogue HOME tidak boleh kosong'),
-    check('instagram').notEmpty().withMessage('Username Instagram HOME tidak boleh kosong'),
-    check('lineID').notEmpty().withMessage('ID Line HOME tidak boleh kosong'),
 ]
 
 exports.createHMediaValidation = [

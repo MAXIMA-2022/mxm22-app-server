@@ -28,7 +28,7 @@ module.exports = function(app){
         toggle.createHome, toggle.checkToggle,
         middleware.verifyJWT, middleware.isPanitia, 
         validHInfo.createHInfoValidation, validHInfo.insertLogoValidation,
-        validHInfo.linkValidation, validHInfo.runValidation,
+        validHInfo.runValidation,
         HInfoController.createHInfo
     )
 

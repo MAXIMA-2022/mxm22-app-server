@@ -186,7 +186,7 @@ exports.createHInfo = async(req, res) => {
 
         const { linkLogo } = req.files
 
-        
+        const videoID = helper.generateVideoID(linkYoutube)
         const fixName = helper.toTitleCase(name).trim()
         const searchKey = (fixName.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
         const uuidLogo = uuidv4()
@@ -223,7 +223,7 @@ exports.createHInfo = async(req, res) => {
             longDesc,
             linkInstagram,
             linkLine,
-            linkYoutube,
+            linkYoutube: `https://www.youtube.com/embed/${videoID}`,
             linkFacebook,
             linkTwitter,
             linkTiktok,
@@ -282,6 +282,7 @@ exports.updateHInfo = async(req, res) => {
             linkLinkedIn
         } = req.body
 
+        const videoID = helper.generateVideoID(linkYoutube)
         const fixName = helper.toTitleCase(name).trim()
         const searchKey = (fixName.toLowerCase().replace(/\(/g, '').replace(/\)/g, '').replace(/\./g, '').replace(/\'/g, '').replace(/\&/, 'and').split(' ').join('-'))
 
@@ -323,7 +324,7 @@ exports.updateHInfo = async(req, res) => {
                 longDesc,
                 linkInstagram,
                 linkLine,
-                linkYoutube,
+                linkYoutube: `https://www.youtube.com/embed/${videoID}`,
                 linkFacebook,
                 linkTwitter,
                 linkTiktok,
@@ -355,7 +356,7 @@ exports.updateHInfo = async(req, res) => {
             longDesc,
             linkInstagram,
             linkLine,
-            linkYoutube,
+            linkYoutube: `https://www.youtube.com/embed/${videoID}`,
             linkFacebook,
             linkTwitter,
             linkTiktok,

@@ -57,15 +57,20 @@ exports.specificHomeBySearchKey = async(req, res) => {
         let homeResult = await HInfoDB.query().where({ search_key: fixKey })
         for(let i = 0; i < homeResult.length; i++){
             const mediaResult = await HMediaDB.query()
-            .select('photoID', 'linkMedia')
+            .select('linkMedia')
             .where({ homeID: homeResult[i].homeID })
 
-            
+            const mediaArray = []
+
+            for(let j = 0; j < mediaResult.length; j++){
+                mediaArray.push(mediaResult[j].linkMedia)
+            }    
+
             const chapterName = await CDialDB.query().select('name')
             .where({ homeChapterID: homeResult[i].chapter })
 
             homeResult[i].chapterName = chapterName[0].name
-            homeResult[i].media = mediaResult
+            homeResult[i].media = mediaArray
         }
         
         return res.status(200).send(homeResult)

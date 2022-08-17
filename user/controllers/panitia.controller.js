@@ -1,7 +1,6 @@
 const PanitDB = require('../model/panitia.model')
 const DivisiDB = require('../model/divisi.model')
 const bcrypt = require('bcrypt')
-const address = require('address')
 const jwt = require('jsonwebtoken')
 
 exports.register = async(req, res) => {
@@ -16,7 +15,6 @@ exports.register = async(req, res) => {
 
         const hashPass = await bcrypt.hashSync(password, 8)
         const verified2 = 0
-        const ip = address.ip()
 
         const cekNIM = await PanitDB.query().where({ nim })
         if(cekNIM.length !== 0){
@@ -57,7 +55,6 @@ exports.register = async(req, res) => {
 exports.login = async(req, res)=>{
     try{
         const { nim, password } = req.body
-        const ip = address.ip()
 
         const checkingNim = await PanitDB.query().where({ nim })
         if(checkingNim.length === 0){

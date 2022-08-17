@@ -2,7 +2,6 @@ const sRegisDB = require('../model/state_registration.model')
 const sActDB = require('../model/state_activities.model')
 const MhsDB = require('../../user/model/mahasiswa.model')
 const helper = require('../../helpers/helper')
-const address = require('address')
 
 exports.readAllRegistration = async(req, res) => {
     try {
@@ -272,7 +271,6 @@ exports.verifyAttendance = async(req, res) => {
         const { attendanceCode2 } = req.body
         const tokenTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
-        const ip = address.ip()
 
         if(nim === null || nim === ':nim'){
             return res.status(404).send({

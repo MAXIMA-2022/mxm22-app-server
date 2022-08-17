@@ -2,6 +2,14 @@ const toggleDB = require('../model/toggle.model')
 
 exports.readAllToggle = async (req,res) =>{
     try {
+        const authorizedDiv = ['D01', 'D02', 'D04']
+        const division = req.division
+        
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }
         const result = await toggleDB.query()
         return res.status(200).send(result)  
     } 
@@ -16,7 +24,7 @@ exports.updateToggleValue = async(req,res)=>{
         const { id } = req.params
         const { toggle } = req.body
 
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D04']
         const division = req.division
         const cekToggleID = await toggleDB.query().where({ id })
         

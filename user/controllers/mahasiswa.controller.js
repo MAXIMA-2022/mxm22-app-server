@@ -1,5 +1,4 @@
 const MhsDB = require('../model/mahasiswa.model')
-const address = require('address')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -10,7 +9,8 @@ exports.register = async(req, res) => {
             nim, 
             password, 
             whatsapp, 
-            email, 
+            email,
+            angkatan, 
             idInstagram, 
             idLine, 
             tanggalLahir, 
@@ -20,8 +20,7 @@ exports.register = async(req, res) => {
         } = req.body
 
         const hashPass = await bcrypt.hashSync(password, 8)
-        const ip = address.ip()
-
+        
         const cekNIM = await MhsDB.query().where({ nim })
         if(cekNIM.length !== 0 && cekNIM !== []){
             return res.status(409).send({ 
@@ -35,6 +34,7 @@ exports.register = async(req, res) => {
             password: hashPass,
             whatsapp,
             email,
+            angkatan,
             idInstagram,
             idLine,
             tanggalLahir,
@@ -43,7 +43,7 @@ exports.register = async(req, res) => {
             prodi
         })
 
-
+    
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
@@ -68,7 +68,6 @@ exports.login = async(req, res) => {
             return res.status(400).send({ 
                 message: 'NIM atau password salah!' 
             })
-            
         }
 
         const JWTtoken = jwt.sign({ 
@@ -80,7 +79,6 @@ exports.login = async(req, res) => {
                 expiresIn: 86400 //equals to 24H
         })
 
-
         //              TESTING ONLY NOT FOR FINISHED PRODUCT
         // const decoded = jwt.decode(JWTtoken, {complete: true})
         // console.log(decoded.payload)
@@ -91,7 +89,6 @@ exports.login = async(req, res) => {
         })
     }
     catch(err){
-        
         return res.status(500).send({ message: err.message })
     }
 }
@@ -146,7 +143,8 @@ exports.updateData = async(req, res) => {
         const { 
             name, 
             whatsapp, 
-            email, 
+            email,
+            angkatan, 
             idInstagram, 
             idLine, 
             tanggalLahir, 
@@ -175,6 +173,7 @@ exports.updateData = async(req, res) => {
             name,
             whatsapp,
             email,
+            angkatan,
             idInstagram,
             idLine,
             tanggalLahir,

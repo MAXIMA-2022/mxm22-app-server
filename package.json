@@ -32,7 +32,6 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.1.0",
     "mongodb": "^4.8.1",
-    "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "objection": "^3.0.1",
     "path": "^0.12.7",

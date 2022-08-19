@@ -155,7 +155,7 @@ exports.createState = async(req, res) => {
         }
 
         await sActDB.query().insert({
-            name: fixName,
+            name,
             day,
             stateLogo: urlFileLogo,
             quota,
@@ -253,7 +253,7 @@ exports.updateState = async(req, res) => {
 
 
             await sActDB.query().update({
-                name: fixName,
+                name,
                 day,
                 stateLogo: urlFileLogo,
                 quota,

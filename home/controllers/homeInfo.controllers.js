@@ -320,7 +320,7 @@ exports.updateHInfo = async(req, res) => {
             await HInfoDB.query().update({
                 search_key: searchKey,
                 linkLogo: urlFileLogo,
-                name: fixName,
+                name,
                 chapter,
                 longDesc,
                 linkInstagram,

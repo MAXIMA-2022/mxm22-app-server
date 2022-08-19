@@ -59,15 +59,6 @@ exports.specificByHomeID = async(req, res) =>{
     try {
         const { homeID } = req.params
 
-        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
-        const division = req.division
-
-        if(!authorizedDiv.includes(division)){
-            return res.status(403).send({
-                message: "Divisi anda tidak punya otoritas yang cukup!"
-            })
-        }
-
         if(homeID === null || homeID === ':homeID'){
             return res.status(404).send({
                 message: 'Home ID kosong! Harap diisi terlebih dahulu'

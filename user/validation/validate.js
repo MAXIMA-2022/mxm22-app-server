@@ -2,18 +2,18 @@ const { check, validationResult } = require('express-validator')
 
 // Register
 exports.mhsRegisValidation = [
-  check('nim').notEmpty().withMessage('Halo, Maximates! NIM tidak boleh kosong, dicek lagi ya!'),
-  check('name').notEmpty().withMessage('Halo, Maximates! Nama tidak boleh kosong, dicek lagi ya!'),
-  check('email').notEmpty().withMessage('Halo, Maximates! Email tidak boleh kosong, dicek lagi ya!'),
-  check('angkatan').notEmpty().withMessage('Halo, Maximates! Tahun Angkatan tidak boleh kosong, dicek lagi ya!'),
-  check('password').notEmpty().withMessage('Halo, Maximates! Password tidak boleh kosong, dicek lagi ya!'),
-  check('tempatLahir').notEmpty().withMessage('Halo, Maximates! Tempat lahir tidak boleh kosong, dicek lagi ya!'),
-  check('tanggalLahir').notEmpty().withMessage('Halo, Maximates! Tanggal lahir tidak boleh kosong, dicek lagi ya!'),
-  check('jenisKelamin').notEmpty().withMessage('Halo, Maximates! Jenis kelamin tidak boleh kosong, dicek lagi ya!'),
-  check('prodi').notEmpty().withMessage('Halo, Maximates! Prodi tidak boleh kosong, dicek lagi ya!'),
-  check('whatsapp').notEmpty().withMessage('Halo, Maximates! Nomor Whatsapp tidak boleh kosong, dicek lagi ya!'),
-  check('idLine').notEmpty().withMessage('Halo, Maximates! ID Line tidak boleh kosong, dicek lagi ya!'),
-  check('idInstagram').notEmpty().withMessage('Halo, Maximates! Username Instagram tidak boleh kosong, dicek lagi ya!')
+  check('nim').notEmpty().withMessage('Halo Maximers, NIM tidak boleh kosong, dicek lagi ya!'),
+  check('name').notEmpty().withMessage('Halo Maximers, Nama tidak boleh kosong, dicek lagi ya!'),
+  check('email').notEmpty().withMessage('Halo Maximers, Email tidak boleh kosong, dicek lagi ya!'),
+  check('angkatan').notEmpty().withMessage('Halo Maximers, Tahun Angkatan tidak boleh kosong, dicek lagi ya!'),
+  check('password').notEmpty().withMessage('Halo Maximers, Password tidak boleh kosong, dicek lagi ya!'),
+  check('tempatLahir').notEmpty().withMessage('Halo Maximers, Tempat lahir tidak boleh kosong, dicek lagi ya!'),
+  check('tanggalLahir').notEmpty().withMessage('Halo Maximers, Tanggal lahir tidak boleh kosong, dicek lagi ya!'),
+  check('jenisKelamin').notEmpty().withMessage('Halo Maximers, Jenis kelamin tidak boleh kosong, dicek lagi ya!'),
+  check('prodi').notEmpty().withMessage('Halo Maximers, Prodi tidak boleh kosong, dicek lagi ya!'),
+  check('whatsapp').notEmpty().withMessage('Halo Maximers, Nomor Whatsapp tidak boleh kosong, dicek lagi ya!'),
+  check('idLine').notEmpty().withMessage('Halo Maximers, ID Line tidak boleh kosong, dicek lagi ya!'),
+  check('idInstagram').notEmpty().withMessage('Halo Maximers, Username Instagram tidak boleh kosong, dicek lagi ya!')
 ]
 
 exports.panitiaRegisValidation = [
@@ -39,8 +39,8 @@ exports.loginValidation = [
 ]
 
 exports.mhsLoginValidation = [
-  check('nim').notEmpty().withMessage('Halo, Maximates! NIM tidak boleh kosong, dicek lagi ya!'),
-  check('password').notEmpty().withMessage('Halo, Maximates! Password tidak boleh kosong, dicek lagi ya!')
+  check('nim').notEmpty().withMessage('Halo Maximers, NIM tidak boleh kosong, dicek lagi ya!'),
+  check('password').notEmpty().withMessage('Halo Maximers, Password tidak boleh kosong, dicek lagi ya!')
 ]
 
 // Update

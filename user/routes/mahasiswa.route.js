@@ -13,7 +13,7 @@ module.exports = function(app){
     app.post(
         '/api/mhs/login',
         toggle.signInMahasiswa, toggle.checkToggle,
-        validation.loginValidation, validation.runValidation,
+        validation.mhsLoginValidation, validation.runValidation,
         MhsController.login
     )
 

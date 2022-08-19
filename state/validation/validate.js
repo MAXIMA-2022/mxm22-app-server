@@ -3,17 +3,11 @@ const { check, validationResult } = require('express-validator')
 exports.createStateActValidation = [
     check('name').notEmpty().withMessage('Nama STATE tidak boleh kosong'),
     check('day').notEmpty().withMessage('Hari STATE tidak boleh kosong'),    
-    check('quota').notEmpty().withMessage('Jumlah kuota  STATE tidak boleh kosong'),
-    check('category').notEmpty().withMessage('Kategori STATE tidak boleh kosong'),
-
 ]
 
 exports.updateStateActValidation = [
     check('name').notEmpty().withMessage('Nama STATE tidak boleh kosong'),
     check('day').notEmpty().withMessage('Hari STATE tidak boleh kosong'),    
-    check('quota').notEmpty().withMessage('Jumlah kuota  STATE tidak boleh kosong'),
-    check('category').notEmpty().withMessage('Kategori STATE tidak boleh kosong'),
-
 ]
 
 exports.createStateRegisValidation = [
@@ -63,35 +57,6 @@ exports.logoValidation = (req, res, next) => {
   next()
 }
 
-exports.coverValidation = (req, res, next) => {
-  const coverErrors = []
-  const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
-
-  switch (true) {
-      case !req.files :
-          coverErrors.push({
-              key: 'coverPhoto',
-              message: 'Foto Cover tidak boleh kosong'
-          })
-      break
-      case !req.files.coverPhoto :
-          coverErrors.push({
-              key: 'coverPhoto',
-              message: 'Gambar Logo tidak boleh kosong'
-          })
-      break
-      case !acceptedType.includes(req.files.coverPhoto.mimetype) :
-          coverErrors.push({
-              key: 'coverPhoto',
-              message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
-          })
-      break
-  }
-
-  req.coverErrors = coverErrors
-  next()
-}
-
 
 exports.logoUpdateValidation = (req, res, next) => {
     const logoErrors = []
@@ -107,23 +72,6 @@ exports.logoUpdateValidation = (req, res, next) => {
     }
 
     req.logoErrors = logoErrors
-    next()
-}
-
-exports.coverUpdateValidation = (req, res, next) => {
-    const coverErrors = []
-    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
-
-    if (req.files && req.files.coverPhoto) {
-        if (!acceptedType.includes(req.files.coverPhoto.mimetype)) {
-            coverErrors.push({
-                key: 'coverPhoto',
-                message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
-            })
-        }
-    }
-
-    req.coverErrors = coverErrors
     next()
 }
 

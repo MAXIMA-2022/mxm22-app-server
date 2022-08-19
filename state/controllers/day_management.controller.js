@@ -5,7 +5,7 @@ exports.readAllData = async(req, res)=>{
         let result = await DayManDB.query()
 
         for(let i = 0; i < result.length; i++){
-            let date = new Date(result[0].date).toUTCString()
+            let date = new Date(result[i].date).toUTCString()
             result[i].date = date
         }
 

@@ -60,15 +60,13 @@ exports.createStateReg = async(req, res) => {
         }
 
         if(nim2 != nim) {
-
             return res.status(403).send({ 
                 message: 'Kamu tidak dapat mendaftar STATE menggunakan akun lain!' 
             })
         }        
 
         const len = dbState.length
-        if(len + 1 > 3){
-            
+        if(len + 1 > 3){          
             return res.status(403).send({ 
                 message: 'Kamu hanya dapat mendaftar pada maksimal 3 STATE saja!'
             })

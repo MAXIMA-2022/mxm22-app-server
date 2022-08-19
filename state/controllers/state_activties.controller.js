@@ -88,7 +88,7 @@ exports.readPublicState = async(req, res) => {
         )
        
         for(let i = 0; i < result.length; i++){            
-            let date = new Date(result[0].date).toUTCString();
+            let date = new Date(result[i].date).toUTCString();
             date = date.split(' ').slice(0, 4).join(' ');
 
             result[i].date = date
@@ -116,37 +116,29 @@ exports.createState = async(req, res) => {
         const { 
             name, 
             day,
-            quota,
-            category, 
-            shortDesc
+            quota
         } = req.body
 
-        const { stateLogo, coverPhoto } = req.files
+        const { stateLogo } = req.files
 
         const fixName = helper.toTitleCase(name).trim()
         const attendanceCode = helper.createAttendanceCode(name)
         const attendanceCode2 = helper.createAttendanceCode(name)
  
         const uuidLogo = uuidv4()
-        const uuidCover = uuidv4()
 
         const stateName = fixName.trim().split(' ').join('-')
         
         const extnameLogo = path.extname(stateLogo.name)
         const basenameLogo = path.basename(stateLogo.name, extnameLogo).trim().split(' ').join('-')
-        const extnameCover = path.extname(coverPhoto.name)
-        const basenameCover = path.basename(coverPhoto.name, extnameCover).trim().split(' ').join('-')
 
         const fileNameLogo = `${stateName}_${uuidLogo}_${basenameLogo}${extnameLogo}`
-        const fileNameCover = `${stateName}_${uuidCover}_${basenameCover}${extnameCover}`
     
         const uploadPathLogo = 'stateLogo/' + fileNameLogo
-        const uploadPathCover = 'stateLogo/' + fileNameCover
 
         const bucketName = 'mxm22-bucket-test'
 
         const urlFileLogo = `https://storage.googleapis.com/${bucketName}/${fileNameLogo}`
-        const urlFileCover = `https://storage.googleapis.com/${bucketName}/${fileNameCover}`
 
         const cekStateName = await sActDB.query().where({ name:fixName })
         if(cekStateName.length !== 0 && cekStateName !== []){
@@ -169,10 +161,7 @@ exports.createState = async(req, res) => {
             quota,
             registered : 0,
             attendanceCode,
-            attendanceCode2,
-            category,
-            shortDesc,
-            coverPhoto: urlFileCover
+            attendanceCode2
         })
 
         stateLogo.mv(uploadPathLogo, async (err) => {
@@ -187,16 +176,6 @@ exports.createState = async(req, res) => {
             })
         })
       
-        coverPhoto.mv(uploadPathCover, async(err) => {
-            if (err)
-                return res.status(500).send({ message: err.messsage })
-                            
-            await storage.bucket(bucketName).upload(uploadPathCover)
-            fs.unlink(uploadPathCover, (err) => {
-                if (err)
-                    return res.status(500).send({ message: err.messsage })
-            })
-        })
         
         return res.status(200).send({ message: 'STATE baru berhasil ditambahkan' })
     }
@@ -219,9 +198,7 @@ exports.updateState = async(req, res) => {
         const { 
             name, 
             day, 
-            quota,
-            category, 
-            shortDesc
+            quota
         } = req.body
 
         
@@ -258,47 +235,6 @@ exports.updateState = async(req, res) => {
 
         const attCode = helper.createAttendanceCode(name.trim().split(' ').join('-'))
         const attCode2 = helper.createAttendanceCode(name.trim().split(' ').join('-'))
-        
-        if(req.files && req.files.coverPhoto){
-            //File Upload
-            const coverPhoto = req.files.coverPhoto
-            const stateName = fixName.trim().split(' ').join('-')
-        
-            const extnameCover = path.extname(coverPhoto.name)
-            const basenameCover = path.basename(coverPhoto.name, extnameCover).trim().split(' ').join('-')
-
-            //cover
-            uuidCover = uuidv4()
-            fileNameCover = `${stateName}_${uuidCover}_${basenameCover}${extnameCover}`
-            uploadPathCover = './stateLogo/' + fileNameCover
-            bucketName = 'mxm22-bucket-test'
-            urlFileCover = `https://storage.googleapis.com/${bucketName}/${fileNameCover}`
-
-            await sActDB.query().update({
-                name: fixName,
-                day,
-                quota,
-                attendanceCode: attCode,
-                attendanceCode2: attCode2,
-                category,
-                shortDesc,
-                coverPhoto: urlFileCover
-            }).where({ stateID })
-
-            coverPhoto.mv(uploadPathCover, async(err) => {
-                if (err)
-                    return res.status(500).send({ message: err.messsage })
-                                
-                await storage.bucket(bucketName).upload(uploadPathCover)
-          
-                fs.unlink(uploadPathCover, (err) => {
-                    if (err)
-                        return res.status(500).send({ message: err.messsage })
-                })
-            })
-            
-            return res.status(200).send({ message: 'STATE berhasil diupdate' })
-        }
 
         if(req.files && req.files.stateLogo){
             //File Upload
@@ -323,8 +259,6 @@ exports.updateState = async(req, res) => {
                 quota,
                 attendanceCode: attCode,
                 attendanceCode2: attCode2,
-                category,
-                shortDesc
             }).where({ stateID })
     
             stateLogo.mv(uploadPathLogo, async (err) => {
@@ -343,21 +277,14 @@ exports.updateState = async(req, res) => {
             return res.status(200).send({ message: 'STATE berhasil diupdate' })
         }
         
-
-
-
-        
         await sActDB.query().update({
             name: fixName,
             day,
             quota,
             attendanceCode: attCode,
-            attendanceCode2: attCode2,
-            category,
-            shortDesc,
+            attendanceCode2: attCode2
         }).where({ stateID })
 
-      
         
         return res.status(200).send({ message: 'STATE berhasil diupdate' })
     }

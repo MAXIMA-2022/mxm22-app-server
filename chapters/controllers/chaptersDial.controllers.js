@@ -19,7 +19,7 @@ exports.createChapter = async(req, res) => {
             name
         } = req.body
 
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -64,7 +64,7 @@ exports.updateChapter = async(req, res) => {
         const { homeChapterID } = req.params
         const { name } = req.body
 
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -103,7 +103,7 @@ exports.updateChapter = async(req, res) => {
 exports.deleteChapter = async(req, res) => {
     try {
         const { homeChapterID } = req.params
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){

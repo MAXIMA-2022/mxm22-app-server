@@ -204,7 +204,7 @@ exports.updateState = async(req, res) => {
         
         const fixName = helper.toTitleCase(name).trim()
 
-        const authorizedDiv = ['D01', 'D02']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division    
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({
@@ -303,7 +303,7 @@ exports.deleteState = async(req, res) => {
             })
         }
 
-        const authorizedDiv = ['D01', 'D02', 'D03']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
        
         if(!authorizedDiv.includes(division)){

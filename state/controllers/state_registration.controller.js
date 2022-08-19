@@ -2,6 +2,8 @@ const sRegisDB = require('../model/state_registration.model')
 const sActDB = require('../model/state_activities.model')
 const MhsDB = require('../../user/model/mahasiswa.model')
 const helper = require('../../helpers/helper')
+const address = require('address')
+const logging = require('../../loggings/controllers/loggings.controllers')
 
 exports.readAllRegistration = async(req, res) => {
     try {
@@ -24,11 +26,12 @@ exports.readAllRegistration = async(req, res) => {
 
 
 exports.createStateReg = async(req, res) => {
-    try{
+    const { nim } = req.params        
+    const ip = address.ip()
+
+    try{    
         const { stateID } = req.body
-        const { nim } = req.params
         const nim2 = req.decoded_nim
-        
         const dbState = await sActDB.query()
         .select(
             'state_activities.*',
@@ -153,16 +156,19 @@ exports.createStateReg = async(req, res) => {
         return res.status(200).send({ message: 'Registrasi STATE berhasil dilakukan' })
     }
     catch (err) {
-        return res.status(500).send({ message: err.message })
+        logging.registerStateLog('RegisterState', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
     } 
 }
 
 
 exports.deleteRegistration = async(req, res) => {
-    const { stateID, nim } = req.params
+    const { nim } = req.params
     const nim2 = req.decoded_nim
+    const ip = address.ip()
 
-    try{           
+    try{      
+        const { stateID } = req.params
         if(nim === null || nim === ':nim'){
             return res.status(404).send({
                 message: 'NIM anda kosong! Harap diisi terlebih dahulu'
@@ -207,13 +213,17 @@ exports.deleteRegistration = async(req, res) => {
         return res.status(200).send({ message: 'Registrasi STATE berhasil dihapus' })
     }
     catch (err) {
-        return res.status(500).send({ message: err.message })
+        logging.cancelStateLog('CancelState', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
     }
 }
 
 exports.attendState = async(req, res) => {
+    const { nim } = req.params
+    const ip = address.ip()
+
     try {
-        const { nim, stateID } = req.params
+        const { stateID } = req.params
         const { attendanceCode } = req.body
         const attendanceTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
@@ -258,14 +268,18 @@ exports.attendState = async(req, res) => {
         return res.status(200).send({ message: 'Proses absensi selesai' })
     } 
     catch (err) {
-        return res.status(500).send({ message: err.message })
+        logging.attendStateLog('AttendState', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
     }
 }
 
 
 exports.verifyAttendance = async(req, res) => {
+    const { nim } = req.params
+    const ip = address.ip()
+
     try {
-        const { nim, stateID } = req.params
+        const { stateID } = req.params
         const { attendanceCode2 } = req.body
         const tokenTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
@@ -316,6 +330,7 @@ exports.verifyAttendance = async(req, res) => {
         return res.status(200).send({ message: 'Proses absensi selesai' })
     } 
     catch (err) {
-        return res.status(500).send({ message: err.message })
+        logging.verifyAttendanceLog('VerifyAttendance', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
     }
 }

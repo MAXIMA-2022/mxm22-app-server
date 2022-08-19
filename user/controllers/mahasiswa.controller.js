@@ -1,12 +1,15 @@
 const MhsDB = require('../model/mahasiswa.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const address = require('address')
+const logging = require('../../loggings/controllers/loggings.controllers')
 
 exports.register = async(req, res) => {
+    const { nim } = req.body
+    const ip = address.ip()
     try{
         const { 
-            name, 
-            nim, 
+            name,  
             password, 
             whatsapp, 
             email,
@@ -47,15 +50,16 @@ exports.register = async(req, res) => {
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
-        return res.status(500).send({ message: err.message })
+        logging.registerLog('Register/Mahasiswa', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
     }
 }
 
 
 exports.login = async(req, res) => {
+    const { nim, password } = req.body
+    const ip = address.ip()
     try{
-        const { nim, password } = req.body
-
         const checkingNim = await MhsDB.query().where({ nim })
         if(checkingNim.length === 0){
             return res.status(404).send({
@@ -89,7 +93,8 @@ exports.login = async(req, res) => {
         })
     }
     catch(err){
-        return res.status(500).send({ message: err.message })
+        logging.loginLog('Login/Mahasiswa', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
     }
 }
 

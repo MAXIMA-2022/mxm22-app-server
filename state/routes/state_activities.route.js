@@ -33,16 +33,15 @@ module.exports = function(app){
         '/api/stateAct/createState',
         toggle.createState, toggle.checkToggle,
         middleware.verifyJWT, middleware.isPanitia,      
-        validation.logoValidation, validation.coverValidation, 
-        validation.createStateActValidation, validation.runValidation,
+        validation.logoValidation, validation.createStateActValidation, 
+        validation.runValidation,
         sActController.createState
     )
 
     app.put(
         '/api/stateAct/update/:stateID',
         toggle.updateState, toggle.checkToggle,
-        middleware.verifyJWT, middleware.isPanitia,
-        validation.coverUpdateValidation, validation.logoUpdateValidation,
+        middleware.verifyJWT, middleware.isPanitia, validation.logoUpdateValidation,
         validation.updateStateActValidation, validation.runValidation,
         sActController.updateState     
     )

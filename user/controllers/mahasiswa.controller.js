@@ -24,7 +24,7 @@ exports.register = async(req, res) => {
         const cekNIM = await MhsDB.query().where({ nim })
         if(cekNIM.length !== 0 && cekNIM !== []){
             return res.status(409).send({ 
-                message: 'Akun anda sebelumnya telah terdaftar'
+                message: 'Halo Maximers, akun anda sebelumnya telah terdaftar'
             })
         }
             
@@ -59,14 +59,14 @@ exports.login = async(req, res) => {
         const checkingNim = await MhsDB.query().where({ nim })
         if(checkingNim.length === 0){
             return res.status(404).send({
-                message : 'NIM ' + nim + ' tidak terdaftar! Harap melakukan register dahulu'
+                message : 'Halo Maximers, NIM anda (' + nim + ') tidak terdaftar! Harap melakukan register dahulu'
             })
         }
 
         const isPassValid = bcrypt.compareSync(password, checkingNim[0].password)
         if(!isPassValid){
             return res.status(400).send({ 
-                message: 'NIM atau password salah!' 
+                message: 'Halo Maximers, NIM atau password salah!' 
             })
         }
 

@@ -59,7 +59,7 @@ exports.specificByHomeID = async(req, res) =>{
     try {
         const { homeID } = req.params
 
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -99,7 +99,7 @@ exports.specificByHomeID = async(req, res) =>{
 exports.createNewHMedia = async (req,res) => {
     try {
         const { homeID } = req.body
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -171,7 +171,7 @@ exports.deleteHMedia = async(req, res) => {
             })
         }
 
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
         if(!authorizedDiv.includes(division)){
             return res.status(403).send({

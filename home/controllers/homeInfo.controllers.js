@@ -166,7 +166,7 @@ exports.specificHomeByID = async(req, res) => {
 
 exports.createHInfo = async(req, res) => {
     try{
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -255,7 +255,7 @@ exports.createHInfo = async(req, res) => {
 
 exports.updateHInfo = async(req, res) => {
     try{
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -382,7 +382,7 @@ exports.deleteHInfo = async(req, res) => {
             })
         }
         
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){

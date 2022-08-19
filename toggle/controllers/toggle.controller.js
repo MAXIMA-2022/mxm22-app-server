@@ -2,7 +2,7 @@ const toggleDB = require('../model/toggle.model')
 
 exports.readAllToggle = async (req,res) =>{
     try {
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
         
         if(!authorizedDiv.includes(division)){
@@ -24,7 +24,7 @@ exports.updateToggleValue = async(req,res)=>{
         const { id } = req.params
         const { toggle } = req.body
 
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
         const cekToggleID = await toggleDB.query().where({ id })
         

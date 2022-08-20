@@ -4,7 +4,6 @@ const middleware = require('../../user/middleware/user.middleware')
 module.exports = function(app){
     app.get(
         '/api/toggle/',
-        middleware.verifyJWT, middleware.isPanitia,
         toggle.readAllToggle
     )
 

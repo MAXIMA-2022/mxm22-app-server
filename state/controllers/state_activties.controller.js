@@ -278,7 +278,7 @@ exports.updateState = async(req, res) => {
         }
         
         await sActDB.query().update({
-            name: fixName,
+            name,
             day,
             quota,
             attendanceCode: attCode,

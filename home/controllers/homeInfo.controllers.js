@@ -221,7 +221,7 @@ exports.createHInfo = async(req, res) => {
         await HInfoDB.query().insert({
             search_key: searchKey,
             linkLogo: urlFileLogo,
-            name: fixName,
+            name,
             chapter,
             longDesc,
             linkInstagram,

@@ -8,6 +8,11 @@ module.exports = function(app){
         controller.readAllChapter
     )
 
+    app.get(
+        '/api/chapter/:homeChapterID',
+        controller.readSpecificChapter
+    )
+
     app.post(
         '/api/chapter/createChapter',
         middleware.verifyJWT, middleware.isPanitia,

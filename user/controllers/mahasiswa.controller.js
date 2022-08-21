@@ -19,6 +19,7 @@ exports.register = async(req, res) => {
             prodi 
         } = req.body
 
+        const nim2 = nim.replace(/^0+/, '')
         const hashPass = await bcrypt.hashSync(password, 8)
         
         const cekNIM = await MhsDB.query().where({ nim })
@@ -30,7 +31,7 @@ exports.register = async(req, res) => {
             
         await MhsDB.query().insert({
             name,
-            nim, 
+            nim: nim2, 
             password: hashPass,
             whatsapp,
             email,

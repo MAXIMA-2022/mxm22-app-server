@@ -57,7 +57,7 @@ exports.linkValidation = async (req, res, next) => {
 
 exports.insertMediaValidation = async (req, res, next) => {
     const mediaErrors = []
-    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
 
     let linkMedia = []
 
@@ -91,7 +91,7 @@ exports.insertMediaValidation = async (req, res, next) => {
 
 exports.updateLogoValidation = (req, res, next) => {
     const fileErrors = []
-    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
 
     let isAccepted = ''
 

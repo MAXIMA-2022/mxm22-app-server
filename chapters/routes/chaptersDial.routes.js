@@ -9,7 +9,7 @@ module.exports = function(app){
     )
 
     app.get(
-        '/api/chapter/:homeChapterID',
+        '/api/chapter/:name',
         controller.readSpecificChapter
     )
 

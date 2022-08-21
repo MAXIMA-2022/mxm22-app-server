@@ -13,8 +13,8 @@ exports.readAllChapter = async(req, res) => {
 
 exports.readSpecificChapter = async(req, res) => {
     try {
-        const { homeChapterID } = req.params
-        const result = await CDialDB.query().where({ homeChapterID })
+        const { name } = req.params
+        const result = await CDialDB.query().where({ name })
 
         return res.status(200).send(result)
     } catch (err) {

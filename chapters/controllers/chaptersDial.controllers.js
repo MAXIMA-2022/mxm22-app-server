@@ -14,8 +14,14 @@ exports.readAllChapter = async(req, res) => {
 exports.readSpecificChapter = async(req, res) => {
     try {
         const { name } = req.params
-        const result = await CDialDB.query().where({ name })
+        const cekChapter = await CDialDB.query().where({ name })
+        if(cekChapter.length === 0 || cekChapter === []){
+            return res.status(404).send({
+                message: 'Chapter tidak ditemukan'
+            })
+        }
 
+        const result = await CDialDB.query().where({ name })
         return res.status(200).send(result)
     } catch (err) {
         return res.status(500).send({ message: err.message })

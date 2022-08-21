@@ -21,7 +21,7 @@ exports.createHMediaValidation = [
 
 exports.insertLogoValidation = (req, res, next) => {
     const logoErrors = []
-    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
 
     if (!req.files || !req.files.linkLogo) {
         logoErrors.push({

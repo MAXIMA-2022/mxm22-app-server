@@ -63,6 +63,17 @@ exports.panitUpdateValidation = [
   check('divisiID').notEmpty().withMessage('Halo, Maximates! ID Divisi tidak boleh kosong, dicek lagi ya!'),
 ]
 
+exports.resetPassValidation = [
+  check('token').notEmpty().withMessage('Halo, Maximers! Token tidak boleh kosong, dicek lagi ya!'),
+  check('password').notEmpty().withMessage('Halo, Maximers! Password tidak boleh kosong, dicek lagi ya!'),
+  check('confirmPassword').notEmpty().withMessage('Halo, Maximers! Confirm Password tidak boleh kosong, dicek lagi ya!'),
+]
+
+exports.sendTokenValidation = [
+  check('nim').notEmpty().withMessage('Halo, Maximers! NIM tidak boleh kosong, dicek lagi ya!'),
+]
+
+
 exports.panitVerifiedValidation = [
   check('verified').notEmpty().withMessage('Verified tidak boleh kosong'),
 ]

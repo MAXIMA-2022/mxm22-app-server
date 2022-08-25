@@ -2,6 +2,7 @@ const MhsController = require('../controllers/mahasiswa.controller')
 const validation = require('../validation/validate')
 const middleware = require('../middleware/user.middleware')
 const toggle = require('../../toggle/middleware/toggle.middleware')
+const tokenController = require('../controllers/reset_password.controller')
 
 module.exports = function(app){
     app.post(
@@ -39,5 +40,30 @@ module.exports = function(app){
         '/api/mhs/delete/:nim',
         middleware.verifyJWT, middleware.isPanitia,
         MhsController.deleteData
+    )
+
+    //buat yang pake email service
+    app.post(
+        '/api/mhs/sendEmail',
+        validation.sendTokenValidation, validation.runValidation,
+        MhsController.sendToken
+    )
+    
+    app.put(
+        '/api/mhs/resetPass',
+        validation.resetPassValidation, validation.runValidation,
+        MhsController.resetingPass
+    )
+
+    //buat yang ga pake email service
+    app.get(
+        '/api/getToken/',
+        tokenController.generateToken
+    )
+
+    app.put(
+        '/api/mhs/resetPass2',
+        validation.resetPassValidation, validation.sendTokenValidation, validation.runValidation,
+        MhsController.resetingPass2
     )
 }

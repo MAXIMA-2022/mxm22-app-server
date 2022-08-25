@@ -2,12 +2,16 @@ const PanitDB = require('../model/panitia.model')
 const DivisiDB = require('../model/divisi.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const address = require('address')
+const logging = require('../../loggings/controllers/loggings.controllers')
 
 exports.register = async(req, res) => {
+    const { nim } = req.body
+    const ip = address.ip()
+
     try{
         const { 
             name, 
-            nim, 
             password, 
             email, 
             divisiID
@@ -48,14 +52,15 @@ exports.register = async(req, res) => {
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
+        logging.registerLog('Register/Panitia', nim, ip, err.message)
         return res.status(500).send({ message: err.message })
     }
 }
 
 exports.login = async(req, res)=>{
+    const { nim, password } = req.body
+    const ip = address.ip()
     try{
-        const { nim, password } = req.body
-
         const checkingNim = await PanitDB.query().where({ nim })
         if(checkingNim.length === 0){
             return res.status(404).send({
@@ -101,6 +106,7 @@ exports.login = async(req, res)=>{
         })
     }
     catch(err){
+        logging.loginLog('Login/Panitia', nim, ip, err.message)
         return res.status(500).send({ message: err.message })
     }
 }

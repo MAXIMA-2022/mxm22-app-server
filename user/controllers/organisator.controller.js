@@ -2,11 +2,15 @@ const OrgDB = require('../model/organisator.model')
 const StateDB = require('../../state/model/state_activities.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const address = require('address')
+const logging = require('../../loggings/controllers/loggings.controllers')
 
 exports.register = async(req, res) => {
+    const { nim } = req.body
+    const ip = address.ip()
+
     try{
-        const { 
-            nim, 
+        const {  
             name, 
             email, 
             password, 
@@ -44,14 +48,18 @@ exports.register = async(req, res) => {
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
+        logging.registerLog('Register/Organisator', nim, ip, err.message)
         return res.status(500).send({ message: err.message })
     }
 }
 
 
 exports.login = async(req, res) => {
+    const { nim } = req.body
+    const ip = address.ip()
+
     try{
-        const { nim, password } = req.body
+        const { password } = req.body
 
 
         const checkingNim = await OrgDB.query().where({ nim })
@@ -99,6 +107,7 @@ exports.login = async(req, res) => {
         })
     }
     catch(err){
+        logging.loginLog('Login/Organisator', nim, ip, err.message)
         return res.status(500).send({ message: err.message })
     }
 }

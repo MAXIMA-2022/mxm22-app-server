@@ -130,3 +130,22 @@ exports.verifyAttendanceLog = async(type, nim, ip, err) => {
         console.log(err)
     }
 }
+
+exports.resetPWLog = async(type, nim, ip, err) => {
+    try {
+        const resetPassword = db.collection('mxm22-resetPassword-loggings')
+        
+        const data = {
+            type,
+            nim,
+            ip_address: ip,
+            err,
+            date_time: helper.createAttendanceTime()
+        }
+
+        const result = await resetPassword.insertOne(data)
+        console.log(`resetPWLog's data was inserted with the _id: ${result.insertedId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}

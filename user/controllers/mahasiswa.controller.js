@@ -2,11 +2,24 @@ const MhsDB = require('../model/mahasiswa.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const address = require('address')
+const helper = require('../../helpers/helper')
 const logging = require('../../loggings/controllers/loggings.controllers')
+const tokenDB = require('../model/reset_password.model')
+const nodemailer = require('nodemailer')
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth:{
+        user: process.env.EMAIL,  
+        pass: process.env.PASS,
+    }
+})
+
 
 exports.register = async(req, res) => {
     const { nim } = req.body
     const ip = address.ip()
+
     try{
         const { 
             name,  
@@ -47,7 +60,6 @@ exports.register = async(req, res) => {
             prodi
         })
 
-    
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
@@ -60,6 +72,7 @@ exports.register = async(req, res) => {
 exports.login = async(req, res) => {
     const { nim, password } = req.body
     const ip = address.ip()
+
     try{
         const checkingNim = await MhsDB.query().where({ nim })
         if(checkingNim.length === 0){
@@ -229,3 +242,144 @@ exports.deleteData = async(req, res) => {
         return res.status(500).send({ message: err.message })
     }
 }
+
+//buat yang pake email service
+exports.sendToken = async(req, res) => {
+    const { nim } = req.body
+    const ip = address.ip()
+
+    try{
+        const cekEmail = await MhsDB.query().where({ nim })
+        const date_time = helper.createAttendanceTime()
+
+        if(cekEmail.length === 0 || cekEmail === []){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
+        }
+        
+        const token = helper.createOTP()
+        
+        const option = {
+            from: "Maxima 2022' <noreply@gmail.com>",
+            to: `${cekEmail[0].email}`,
+            subject: "Reset Password",
+            text: `Hai Maximers,\n\nBerikut adalah token untuk reset password : ${token}. \n\nSilahkan melanjutkan proses reset password anda dengan memasukkan token dengan benar.`
+        }
+    
+        transporter.sendMail(option, (err, info) => {
+            if(err) console.error(err)
+            console.log(`Email terkirim : ${option.to}`)
+        })
+
+        await tokenDB.query()
+        .insert({
+            nim,
+            token,
+            confirm: 0,
+            requestDate: date_time
+        })
+
+        return res.status(200).send({ 
+            message: 'Email Berhasil dikirim'
+        })
+    }
+    catch (err) {
+        logging.resetPWLog('Reset Password Mahasiswa', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
+    }
+}
+
+
+//buat yang ga pake email service
+exports.resetingPass2 = async(req, res) => {
+    const { token, nim, password, confirmPassword } = req.body
+    const ip = address.ip()
+
+    try{
+        const cekToken = await tokenDB.query().where({ token })
+        if(cekToken.length === 0 || cekToken === []){
+            return res.status(404).send({ 
+                message: 'Token yang dimasukkan salah!'
+            })
+        }
+
+        const exp = cekToken[0].confirm
+        if(exp !== 0){
+            return res.status(404).send({ 
+                message: 'Token yang dimasukkan sudah pernah digunakan!'
+            })
+        }
+
+        if(password !== confirmPassword){
+            return res.status(409).send({ 
+                message: 'Password tidak sama!'
+            })
+        }
+
+        const hashPass = await bcrypt.hashSync(password, 8)
+        await MhsDB.query().update({
+            password: hashPass
+        }).where({ nim })
+
+        await tokenDB.query()
+        .update({ 
+            nim,
+            confirm: 1 
+        }).where({ token })
+
+        return res.status(200).send({ message: 'Password berhasil direset'})
+    }
+    catch (err) {
+        logging.resetPWLog('Reset Password Mahasiswa', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
+    }
+}
+
+
+//for updating pass (new pass)
+exports.resetingPass = async(req, res) => {
+    const { token, password, confirmPassword } = req.body
+    const getNim = await tokenDB.query().where({ token })
+    const nim = getNim[0].nim
+    const ip = address.ip()
+
+    try{
+        const cekToken = await tokenDB.query().where({ token })
+        if(cekToken.length === 0 || cekToken === []){
+            return res.status(404).send({ 
+                message: 'Token yang dimasukkan salah!'
+            })
+        }
+
+        const exp = cekToken[0].confirm
+        if(exp !== 0){
+            return res.status(404).send({ 
+                message: 'Token yang dimasukkan sudah pernah digunakan!'
+            })
+        }
+
+        if(password !== confirmPassword){
+            return res.status(409).send({ 
+                message: 'Password tidak sama!'
+            })
+        }
+
+        const hashPass = await bcrypt.hashSync(password, 8)
+        await MhsDB.query().update({
+            password: hashPass
+        }).where({ nim })
+
+        await tokenDB.query()
+        .update({ confirm: 1 }).where({ token })
+
+        return res.status(200).send({ message: 'Password berhasil direset'})
+    }
+    catch (err) {
+        logging.resetPWLog('Reset Password Mahasiswa', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
+    }
+}
+
+
+

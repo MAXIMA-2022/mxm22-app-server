@@ -28,6 +28,7 @@ require('./chapters/routes/chaptersDial.routes')(app)
 require('./home/routes/homeInfo.routes')(app)
 require('./home/routes/homeMedia.routes')(app)
 
+
 app.get('/', (req, res) => {
     res.status(200).send('<h1>Welcome to MAXIMA 2022 API</h1>')
 })

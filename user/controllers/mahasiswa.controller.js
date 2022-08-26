@@ -299,6 +299,13 @@ exports.resetingPass2 = async(req, res) => {
     const ip = address.ip()
 
     try{
+        const cekEmail = await MhsDB.query().where({ nim: nim2 })
+        if(cekEmail.length === 0 || cekEmail === []){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
+        }
+
         const cekToken = await tokenDB.query().where({ token })
         if(cekToken.length === 0 || cekToken === []){
             return res.status(404).send({ 

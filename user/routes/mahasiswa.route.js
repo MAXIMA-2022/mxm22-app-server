@@ -56,14 +56,15 @@ module.exports = function(app){
     )
 
     //buat yang ga pake email service
-    app.get(
+    app.post(
         '/api/getToken/',
+        validation.getTokenValidation, validation.runValidation,
         tokenController.generateToken
     )
 
     app.put(
         '/api/mhs/resetPass2',
-        validation.resetPassValidation, validation.sendTokenValidation, validation.runValidation,
+        validation.resetPassValidation, validation.runValidation,
         MhsController.resetingPass2
     )
 }

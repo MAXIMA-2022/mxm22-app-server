@@ -294,8 +294,9 @@ exports.sendToken = async(req, res) => {
 
 //buat yang ga pake email service
 exports.resetingPass2 = async(req, res) => {
-    const { token, nim, password, confirmPassword } = req.body
-    const nim2 = nim.replace(/^0+/, '')
+    const { token, password, confirmPassword } = req.body
+    const getNim = await tokenDB.query().where({ token })
+    const nim2 = getNim[0].nim
     const ip = address.ip()
 
     try{
@@ -333,7 +334,6 @@ exports.resetingPass2 = async(req, res) => {
 
         await tokenDB.query()
         .update({ 
-            nim: nim2,
             confirm: 1 
         }).where({ token })
 

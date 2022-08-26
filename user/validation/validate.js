@@ -78,6 +78,10 @@ exports.panitVerifiedValidation = [
   check('verified').notEmpty().withMessage('Verified tidak boleh kosong'),
 ]
 
+exports.getTokenValidation = [
+  check('nim').notEmpty().withMessage('Halo Maximers, NIM tidak boleh kosong, dicek lagi ya!')
+]
+
 exports.orgUpdateValidation = [
   check('nim').notEmpty().withMessage('Nim tidak boleh kosong'),
   check('name').notEmpty().withMessage('Nama tidak boleh kosong'),

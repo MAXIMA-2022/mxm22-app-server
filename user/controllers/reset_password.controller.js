@@ -11,7 +11,7 @@ exports.generateToken = async (req, res) => {
             requestDate: date_time
         })
 
-        return res.status(200).send({ message: `token = ${token}` })
+        return res.status(200).send({ token })
     } 
     catch (err) {
         return res.status(500).send({

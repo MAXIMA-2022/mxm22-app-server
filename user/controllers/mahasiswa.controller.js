@@ -246,10 +246,11 @@ exports.deleteData = async(req, res) => {
 //buat yang pake email service
 exports.sendToken = async(req, res) => {
     const { nim } = req.body
+    const nim2 = nim.replace(/^0+/, '')
     const ip = address.ip()
 
     try{
-        const cekEmail = await MhsDB.query().where({ nim })
+        const cekEmail = await MhsDB.query().where({ nim: nim2 })
         const date_time = helper.createAttendanceTime()
 
         if(cekEmail.length === 0 || cekEmail === []){
@@ -274,7 +275,7 @@ exports.sendToken = async(req, res) => {
 
         await tokenDB.query()
         .insert({
-            nim,
+            nim: nim2,
             token,
             confirm: 0,
             requestDate: date_time
@@ -285,7 +286,7 @@ exports.sendToken = async(req, res) => {
         })
     }
     catch (err) {
-        logging.resetPWLog('Reset Password Mahasiswa', nim, ip, err.message)
+        logging.resetPWLog('Reset Password Mahasiswa', nim2, ip, err.message)
         return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
     }
 }
@@ -294,9 +295,17 @@ exports.sendToken = async(req, res) => {
 //buat yang ga pake email service
 exports.resetingPass2 = async(req, res) => {
     const { token, nim, password, confirmPassword } = req.body
+    const nim2 = nim.replace(/^0+/, '')
     const ip = address.ip()
 
     try{
+        const cekEmail = await MhsDB.query().where({ nim: nim2 })
+        if(cekEmail.length === 0 || cekEmail === []){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
+        }
+
         const cekToken = await tokenDB.query().where({ token })
         if(cekToken.length === 0 || cekToken === []){
             return res.status(404).send({ 
@@ -320,18 +329,18 @@ exports.resetingPass2 = async(req, res) => {
         const hashPass = await bcrypt.hashSync(password, 8)
         await MhsDB.query().update({
             password: hashPass
-        }).where({ nim })
+        }).where({ nim: nim2 })
 
         await tokenDB.query()
         .update({ 
-            nim,
+            nim: nim2,
             confirm: 1 
         }).where({ token })
 
         return res.status(200).send({ message: 'Password berhasil direset'})
     }
     catch (err) {
-        logging.resetPWLog('Reset Password Mahasiswa', nim, ip, err.message)
+        logging.resetPWLog('Reset Password Mahasiswa', nim2, ip, err.message)
         return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
     }
 }

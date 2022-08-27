@@ -102,6 +102,38 @@ exports.readPublicState = async(req, res) => {
 }
 
 
+exports.readStateByDay = async(req, res) => {
+    try{
+        const { day } = req.params
+
+        if(day === null || day === ':day'){
+            return res.status(404).send({
+                message: 'Day kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        const cekDay = await sActDB.query().where({ day })
+        if(cekDay.length === 0 || cekDay === []){
+            return res.status(404).send({
+                 message: 'Day ' + day + ' tidak ditemukan!' 
+            })
+        }
+
+        const result = await sActDB.query().where({ day })
+        const dateTime = await dayManDB.query().select('date').where({ day: result[0].day })                
+
+        let date = new Date(dateTime[0].date).toUTCString()
+        date = date.split(' ').slice(0, 4).join(' ')
+        result[0].date = date
+
+        return res.status(200).send(result)
+    }
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+
 exports.createState = async(req, res) => {
     try{
         const authorizedDiv = ['D01', 'D02', 'D03', 'D04']

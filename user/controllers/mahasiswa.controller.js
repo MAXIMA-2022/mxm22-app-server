@@ -250,7 +250,11 @@ exports.sendToken = async(req, res) => {
     const ip = address.ip()
 
     try{
-        const cekEmail = await MhsDB.query().where({ nim: nim2 })
+        if(cekEmail.length === 0 || cekEmail === []){
+            return res.status(404).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
+        }
         const date_time = helper.createAttendanceTime()
 
         if(cekEmail.length === 0 || cekEmail === []){
@@ -306,6 +310,13 @@ exports.resetingPass2 = async(req, res) => {
             })
         }
 
+        const cekNim = await tokenDB.query().where({ token })
+        if(parseInt(nim2) !== cekNim[0].nim){
+            return res.status(404).send({
+                message: 'NIM yang diinput tidak sama'
+            })
+        }
+
         const cekToken = await tokenDB.query().where({ token })
         if(cekToken.length === 0 || cekToken === []){
             return res.status(404).send({ 
@@ -333,7 +344,6 @@ exports.resetingPass2 = async(req, res) => {
 
         await tokenDB.query()
         .update({ 
-            nim: nim2,
             confirm: 1 
         }).where({ token })
 

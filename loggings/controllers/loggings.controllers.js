@@ -149,3 +149,22 @@ exports.resetPWLog = async(type, nim, ip, err) => {
         console.log(err)
     }
 }
+
+exports.generateTokenLog = async(type, nim, ip, err) => {
+    try {
+        const generateToken = db.collection('mxm22-generateToken-loggings')
+        
+        const data = {
+            type,
+            nim,
+            ip_address: ip,
+            err,
+            date_time: helper.createAttendanceTime()
+        }
+
+        const result = await generateToken.insertOne(data)
+        console.log(`generateTokenLog's data was inserted with the _id: ${result.insertedId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}

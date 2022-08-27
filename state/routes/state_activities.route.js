@@ -29,6 +29,13 @@ module.exports = function(app){
         sActController.readSpecificState
     )
 
+    //Resticted Access (Panit Acc Only)
+    app.get(
+        '/api/stateActivities/:day',
+        middleware.verifyJWT, middleware.isPanitia,
+        sActController.readStateByDay
+    )
+
     app.post(
         '/api/stateAct/createState',
         toggle.createState, toggle.checkToggle,

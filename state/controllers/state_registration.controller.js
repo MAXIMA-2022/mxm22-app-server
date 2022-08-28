@@ -11,15 +11,37 @@ exports.readAllRegistration = async(req, res) => {
 
         for(let i = 0; i < result.length; i++){
             const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
-            const nState = await sActDB.query().select('name').where({ stateID: result[i].stateID })
+            const nState = await sActDB.query().where({ stateID: result[i].stateID })
 
             result[i].name = nMhs[0].name
             result[i].stateName = nState[0].name
+            result[i].stateLogo = nState[0].stateLogo
         }
  
         return res.status(200).send(result)      
     }
     catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+exports.readSpecificRegistration = async(req, res) => {
+    const { nim } = req.params
+    try{
+        let result = await sRegisDB.query().where({ nim })
+
+        for(let i = 0; i < result.length; i++){
+            const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
+            const nState = await sActDB.query().where({ stateID: result[i].stateID })
+
+            result[i].name = nMhs[0].name
+            result[i].stateName = nState[0].name
+            result[i].stateLogo = nState[0].stateLogo
+        }
+ 
+        return res.status(200).send(result)  
+
+    } catch(err) {
         return res.status(500).send({ message: err.message })
     }
 }
@@ -157,10 +179,10 @@ exports.createStateReg = async(req, res) => {
         await sRegisDB.query().insert({
             stateID,
             nim,
-            attendanceTime: 0,
+            attendanceTime: null,
             inEventAttendance: 0,
             exitAttendance: 0,
-            tokenTime: 0
+            tokenTime: null
         })
 
         const dbActivities = await sActDB.query()

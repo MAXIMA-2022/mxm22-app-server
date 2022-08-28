@@ -4,7 +4,7 @@ const middleware = require('../../user/middleware/user.middleware')
 module.exports = function (app){
     app.get(
         '/api/dayManagement/',
-        middleware.verifyJWT, middleware.isPanitia,
+        middleware.verifyJWT, 
         dayMan.readAllData
     )
 }

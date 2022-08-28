@@ -6,13 +6,19 @@ const toggle = require('../../toggle/middleware/toggle.middleware')
 module.exports = function(app) {
     app.get(
         '/api/stateReg',
-        middleware.verifyJWT, middleware.isPanitia,
+        middleware.verifyJWT,
         sRegController.readAllRegistration
     )
     app.get(
         '/api/stateRegBySID/:stateID',
         middleware.verifyJWT, middleware.isPanitia,
         sRegController.readStateRegByStateID
+    )
+
+    app.get(
+        '/api/stateReg/:nim',
+        middleware.verifyJWT,
+        sRegController.readSpecificRegistration
     )
 
     app.post(

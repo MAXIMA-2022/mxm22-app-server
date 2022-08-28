@@ -66,10 +66,11 @@ exports.readStateRegByStateID = async(req, res) => {
 
         const result = await sRegisDB.query().where({ stateID })
         const nMhs = await MhsDB.query().select('name').where({ nim: result[0].nim })
-        const nState = await sActDB.query().select('name').where({ stateID: result[0].stateID })
+        const nState = await sActDB.query().where({ stateID: result[0].stateID })
 
         result[0].name = nMhs[0].name
         result[0].stateName = nState[0].name
+        result[0].stateLogo = nState[0].stateLogo
  
         return res.status(200).send(result)
     }

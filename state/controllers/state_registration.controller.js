@@ -11,7 +11,7 @@ exports.readAllRegistration = async(req, res) => {
 
         for(let i = 0; i < result.length; i++){
             const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
-            const nState = await sActDB.query().select('name').where({ stateID: result[i].stateID })
+            const nState = await sActDB.query().where({ stateID: result[i].stateID })
 
             result[i].name = nMhs[0].name
             result[i].stateName = nState[0].name
@@ -32,7 +32,7 @@ exports.readSpecificRegistration = async(req, res) => {
 
         for(let i = 0; i < result.length; i++){
             const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
-            const nState = await sActDB.query().select('name').where({ stateID: result[i].stateID })
+            const nState = await sActDB.query().where({ stateID: result[i].stateID })
 
             result[i].name = nMhs[0].name
             result[i].stateName = nState[0].name

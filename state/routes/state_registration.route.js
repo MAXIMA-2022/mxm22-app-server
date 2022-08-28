@@ -10,6 +10,12 @@ module.exports = function(app) {
         sRegController.readAllRegistration
     )
 
+    app.get(
+        '/api/stateReg/:nim',
+        middleware.verifyJWT,
+        sRegController.readSpecificRegistration
+    )
+
     app.post(
         '/api/stateReg/createSRegis/:nim',
         toggle.stateRegistration, toggle.checkToggle,

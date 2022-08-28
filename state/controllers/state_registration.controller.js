@@ -65,12 +65,14 @@ exports.readStateRegByStateID = async(req, res) => {
         }
 
         const result = await sRegisDB.query().where({ stateID })
-        const nMhs = await MhsDB.query().select('name').where({ nim: result[0].nim })
-        const nState = await sActDB.query().where({ stateID: result[0].stateID })
+        for(let i = 0; i < result.length; i++){
+            const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
+            const nState = await sActDB.query().where({ stateID: result[i].stateID })
 
-        result[0].name = nMhs[0].name
-        result[0].stateName = nState[0].name
-        result[0].stateLogo = nState[0].stateLogo
+            result[i].name = nMhs[0].name
+            result[i].stateName = nState[0].name
+            result[i].stateLogo = nState[0].stateLogo
+        }
  
         return res.status(200).send(result)
     }

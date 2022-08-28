@@ -58,12 +58,18 @@ exports.readStateRegByStateID = async(req, res) => {
         }
 
         cekSID = await sActDB.query().where({ stateID })
-        if(cekSID.length === [] || cekSID === 0){
+        if(cekSID.length === 0 || cekSID === []){
             return res.status(404).send({
                 message: 'STATE ID ' + stateID + ' tidak ditemukan!'
             })
         }
 
+        cekRegList = await sRegisDB.query().where({ stateID })
+        if(cekRegList.length === 0 || cekRegList === []){
+            return res.status(404).send({
+                message: 'STATE ID ' + stateID + ' belum ada yang mendaftar'
+            })
+        }
         const result = await sRegisDB.query().where({ stateID })
         for(let i = 0; i < result.length; i++){
             const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })

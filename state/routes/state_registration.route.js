@@ -6,7 +6,7 @@ const toggle = require('../../toggle/middleware/toggle.middleware')
 module.exports = function(app) {
     app.get(
         '/api/stateReg',
-        middleware.verifyJWT, middleware.isPanitia,
+        middleware.verifyJWT,
         sRegController.readAllRegistration
     )
 

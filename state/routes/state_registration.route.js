@@ -9,6 +9,11 @@ module.exports = function(app) {
         middleware.verifyJWT,
         sRegController.readAllRegistration
     )
+    app.get(
+        '/api/stateRegBySID/:stateID',
+        middleware.verifyJWT, middleware.isPanitia,
+        sRegController.readStateRegByStateID
+    )
 
     app.get(
         '/api/stateReg/:nim',

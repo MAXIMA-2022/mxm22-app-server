@@ -125,10 +125,10 @@ exports.createStateReg = async(req, res) => {
         await sRegisDB.query().insert({
             stateID,
             nim,
-            attendanceTime: 0,
+            attendanceTime: null,
             inEventAttendance: 0,
             exitAttendance: 0,
-            tokenTime: 0
+            tokenTime: null
         })
 
         const dbActivities = await sActDB.query()

@@ -15,6 +15,7 @@ exports.readAllRegistration = async(req, res) => {
 
             result[i].name = nMhs[0].name
             result[i].stateName = nState[0].name
+            result[i].stateLogo = nState[0].stateLogo
         }
  
         return res.status(200).send(result)      
@@ -35,6 +36,7 @@ exports.readSpecificRegistration = async(req, res) => {
 
             result[i].name = nMhs[0].name
             result[i].stateName = nState[0].name
+            result[i].stateLogo = nState[0].stateLogo
         }
  
         return res.status(200).send(result)  

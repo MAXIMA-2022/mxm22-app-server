@@ -6,8 +6,14 @@ exports.readAllData = async(req, res)=>{
 
         for(let i = 0; i < result.length; i++){
             let date = new Date(result[i].date).toUTCString()
-            result[i].date = date
-        }
+            let date2 = new Date(result[i].date)
+            let time = date2.toLocaleTimeString('en-GB',  {
+                hour: '2-digit',
+                minute: '2-digit',
+            })
+
+                result[i].date = `${date.split(' ').slice(0, 4).join(' ')}  ${time} WIB`
+            }
 
         return res.status(200).send(result)
 

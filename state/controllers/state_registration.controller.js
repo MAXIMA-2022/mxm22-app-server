@@ -28,6 +28,13 @@ exports.readAllRegistration = async(req, res) => {
 exports.readSpecificRegistration = async(req, res) => {
     const { nim } = req.params
     try{
+        const cekRegList = await sRegisDB.query().where({ nim })
+        if(cekRegList.length === 0 || cekRegList === []){
+            return res.status(404).send({
+                message: 'Mahasiswa dengan NIM ' + nim + ' belum melakukan pendaftaran STATE'
+            })
+        }
+
         let result = await sRegisDB.query().where({ nim })
 
         for(let i = 0; i < result.length; i++){

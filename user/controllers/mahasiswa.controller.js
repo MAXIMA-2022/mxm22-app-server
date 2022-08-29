@@ -250,11 +250,7 @@ exports.sendToken = async(req, res) => {
     const ip = address.ip()
 
     try{
-        if(cekEmail.length === 0 || cekEmail === []){
-            return res.status(404).send({ 
-                message: 'NIM ' + nim + ' tidak ditemukan!'
-            })
-        }
+        const cekEmail = await MhsDB.query().where({ nim: nim2 })
         const date_time = helper.createAttendanceTime()
 
         if(cekEmail.length === 0 || cekEmail === []){
@@ -266,7 +262,7 @@ exports.sendToken = async(req, res) => {
         const token = helper.createOTP()
         
         const option = {
-            from: "Maxima 2022' <noreply@gmail.com>",
+            from: "Maxima 2022 <noreply@gmail.com>",
             to: `${cekEmail[0].email}`,
             subject: "Reset Password",
             text: `Hai Maximers,\n\nBerikut adalah token untuk reset password : ${token}. \n\nSilahkan melanjutkan proses reset password anda dengan memasukkan token dengan benar.`

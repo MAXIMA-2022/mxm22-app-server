@@ -16,6 +16,12 @@ module.exports = function(app) {
     )
 
     app.get(
+        '/api/stateReg2/:stateID',
+        middleware.verifyJWT, middleware.isOrganisator,
+        sRegController.readStateRegByStateID
+    )
+
+    app.get(
         '/api/stateReg/:nim',
         middleware.verifyJWT,
         sRegController.readSpecificRegistration

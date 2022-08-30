@@ -16,7 +16,7 @@ module.exports = function(app) {
     )
 
     app.get(
-        '/api/stateReg2/:stateID',
+        '/api/stateRegBySID2/:stateID',
         middleware.verifyJWT, middleware.isOrganisator,
         sRegController.readStateRegByStateID
     )

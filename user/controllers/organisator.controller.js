@@ -20,7 +20,6 @@ exports.register = async(req, res) => {
         const hashPass = await bcrypt.hashSync(password, 8)
         const verified2 = 0
 
-
         const cekNIM = await OrgDB.query().where({ nim })
         if(cekNIM.length !== 0 && cekNIM !== []){
             return res.status(409).send({ 
@@ -44,7 +43,6 @@ exports.register = async(req, res) => {
             verified: verified2
         })
 
-
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
     }
     catch(err){
@@ -60,7 +58,6 @@ exports.login = async(req, res) => {
 
     try{
         const { password } = req.body
-
 
         const checkingNim = await OrgDB.query().where({ nim })
         if(checkingNim.length === 0){
@@ -147,8 +144,6 @@ exports.readSpecificData = async(req, res) => {
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
         }
-
-
             
         const result = await OrgDB.query().where({ nim })
         const stateName = await StateDB.query().select('name')
@@ -227,7 +222,7 @@ exports.updateVerified = async(req, res) => {
         }
 
         const { verified } = req.body
-        const authorizedDiv = ['D01', 'D02', 'D04']
+        const authorizedDiv = ['D01', 'D02', 'D03', 'D04']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){

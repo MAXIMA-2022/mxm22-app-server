@@ -18,6 +18,7 @@ module.exports = function(app){
     )
 
     //Restricted Access
+    //Panit Access
     app.get(
         '/api/stateAct',
         middleware.verifyJWT, middleware.isPanitia,
@@ -26,6 +27,18 @@ module.exports = function(app){
     app.get(
         '/api/stateAct/:stateID',
         middleware.verifyJWT, middleware.isPanitia,
+        sActController.readSpecificState
+    )
+
+    //Organisator Access
+    app.get(
+        '/api/stateAct2',
+        middleware.verifyJWT, middleware.isOrganisator,
+        sActController.readAllState
+    )
+    app.get(
+        '/api/stateAct2/:stateID',
+        middleware.verifyJWT, middleware.isOrganisator,
         sActController.readSpecificState
     )
 

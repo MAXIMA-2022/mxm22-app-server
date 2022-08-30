@@ -88,6 +88,48 @@ exports.readStateRegByStateID = async(req, res) => {
 }
 
 
+exports.readStateRegByStateID2 = async(req, res) => {
+    try{
+        const { stateID } = req.params
+
+        if(stateID === null || stateID === ':stateID'){
+            return res.status(404).send({
+                message: 'STATE ID! Harap diisi terlebih dahulu'
+            })
+        }
+
+        cekSID = await sActDB.query().where({ stateID })
+        if(cekSID.length === 0 || cekSID === []){
+            return res.status(404).send({
+                message: 'STATE ID ' + stateID + ' tidak ditemukan!'
+            })
+        }
+
+        cekRegList = await sRegisDB.query().where({ stateID })
+        if(cekRegList.length === 0 || cekRegList === []){
+            return res.status(404).send({
+                message: 'STATE ID ' + stateID + ' belum ada yang mendaftar'
+            })
+        }
+        const result = await sRegisDB.query().where({ stateID })
+        for(let i = 0; i < result.length; i++){
+            const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
+            const nState = await sActDB.query().where({ stateID: result[i].stateID })
+
+            result[i].name = nMhs[0].name
+            result[i].stateName = nState[0].name
+            result[i].stateLogo = nState[0].stateLogo
+        }
+ 
+        return res.status(200).send(result)
+    }
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+
+
 exports.createStateReg = async(req, res) => {
     const { nim } = req.params        
     const ip = address.ip()

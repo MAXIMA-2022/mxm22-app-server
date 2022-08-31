@@ -118,10 +118,17 @@ exports.createStateReg = async(req, res) => {
 
         const cekSTATE = await sActDB.query().where({ stateID })
         const cekParticipant = await sRegisDB.query().where({ nim, stateID })
+        const cekAngkatan = await MhsDB.query().where({ nim })
 
         if(nim === null || nim === ':nim'){
             return res.status(404).send({
                 message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        if(cekAngkatan[0].angkatan !== 2022){
+            return res.status(406).send({
+                message: 'Kamu tidak dapat mendaftar STATE selain mahasiswa angkatan 2022'
             })
         }
 

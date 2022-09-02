@@ -128,14 +128,14 @@ exports.readSpecificData = async(req, res) => {
         const { nim } = req.params
 
         if(nim === null || nim === ':nim'){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'NIM anda kosong! Harap diisi terlebih dahulu'
             })
         }
 
         const cekNIM = await MhsDB.query().where({ nim })
         if(cekNIM.length === 0 || cekNIM === []){
-            return res.status(404).send({ 
+            return res.status(200).send({ 
                 message: 'NIM ' + nim + ' tidak ditemukan!'
             })
         }

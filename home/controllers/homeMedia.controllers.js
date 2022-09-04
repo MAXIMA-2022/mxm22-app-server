@@ -31,14 +31,14 @@ exports.specificByPhotoID = async (req, res) =>{
         const { photoID } = req.params
 
         if(photoID === null || photoID === ':photoID'){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'Photo ID kosong! Harap diisi terlebih dahulu'
             })
         }
 
         const cekHomeMedia = await HMediaDB.query().where({ photoID })
         if(cekHomeMedia.length === 0 || cekHomeMedia === []){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: "Media HoME tidak ditemukan!"
             })
         }
@@ -60,14 +60,14 @@ exports.specificByHomeID = async(req, res) =>{
         const { homeID } = req.params
 
         if(homeID === null || homeID === ':homeID'){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'Home ID kosong! Harap diisi terlebih dahulu'
             })
         }
 
         const cekMedia = await HMediaDB.query().where({ homeID })
         if(cekMedia.length === 0 || cekMedia === []){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: `Media dari HoME ID ${homeID} tidak ditemukan!`
             })
         }

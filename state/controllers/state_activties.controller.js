@@ -44,14 +44,14 @@ exports.readSpecificState = async(req, res) => {
         const { stateID } = req.params
 
         if(stateID === null || stateID === ':stateID'){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'STATE ID kosong! Harap diisi terlebih dahulu'
             })
         }
 
         const cekSTATE = await sActDB.query().where({ stateID })
         if(cekSTATE.length === 0 || cekSTATE === []){
-            return res.status(404).send({
+            return res.status(200).send({
                  message: 'STATE ID ' + stateID + ' tidak ditemukan!' 
             })
         }
@@ -107,14 +107,14 @@ exports.readStateByDay = async(req, res) => {
         const { day } = req.params
 
         if(day === null || day === ':day'){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'Day kosong! Harap diisi terlebih dahulu'
             })
         }
 
         const cekDay = await sActDB.query().where({ day })
         if(cekDay.length === 0 || cekDay === []){
-            return res.status(404).send({
+            return res.status(200).send({
                  message: 'Day ' + day + ' tidak ditemukan!' 
             })
         }

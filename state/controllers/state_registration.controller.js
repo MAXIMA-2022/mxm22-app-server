@@ -52,21 +52,21 @@ exports.readStateRegByStateID = async(req, res) => {
         const { stateID } = req.params
 
         if(stateID === null || stateID === ':stateID'){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'STATE ID! Harap diisi terlebih dahulu'
             })
         }
 
         cekSID = await sActDB.query().where({ stateID })
         if(cekSID.length === 0 || cekSID === []){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'STATE ID ' + stateID + ' tidak ditemukan!'
             })
         }
 
         cekRegList = await sRegisDB.query().where({ stateID })
         if(cekRegList.length === 0 || cekRegList === []){
-            return res.status(404).send({
+            return res.status(200).send({
                 message: 'STATE ID ' + stateID + ' belum ada yang mendaftar'
             })
         }
@@ -227,7 +227,7 @@ exports.createStateReg = async(req, res) => {
     }
     catch (err) {
         logging.registerStateLog('RegisterState', nim, ip, err.message)
-        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
+        return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
     } 
 }
 
@@ -284,7 +284,7 @@ exports.deleteRegistration = async(req, res) => {
     }
     catch (err) {
         logging.cancelStateLog('CancelState', nim, ip, err.message)
-        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
+        return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
     }
 }
 
@@ -339,7 +339,7 @@ exports.attendState = async(req, res) => {
     } 
     catch (err) {
         logging.attendStateLog('AttendState', nim, ip, err.message)
-        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
+        return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
     }
 }
 
@@ -401,6 +401,6 @@ exports.verifyAttendance = async(req, res) => {
     } 
     catch (err) {
         logging.verifyAttendanceLog('VerifyAttendance', nim, ip, err.message)
-        return res.status(500).send({ message: 'Halo Maximamers, maaf ada kesalahan dari internal' })
+        return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
     }
 }

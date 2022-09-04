@@ -52,6 +52,7 @@ module.exports = function(app) {
 
     app.delete(
         '/api/stateReg/deleteSRegis/:stateID/:nim',
+        toggle.stateRegistration, toggle.checkToggle,
         middleware.verifyJWT, middleware.isMahasiswa,
         sRegController.deleteRegistration
     )

@@ -12,8 +12,8 @@ exports.readAllData = async(req, res)=>{
                 minute: '2-digit',
             })
 
-                result[i].date = `${date.split(' ').slice(0, 4).join(' ')}  ${time} WIB`
-            }
+            result[i].date = `${date.split(' ').slice(0, 4).join(' ')}  ${time} WIB`
+        }
 
         return res.status(200).send(result)
 

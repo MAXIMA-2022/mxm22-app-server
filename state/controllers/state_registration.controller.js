@@ -4,6 +4,7 @@ const MhsDB = require('../../user/model/mahasiswa.model')
 const helper = require('../../helpers/helper')
 const address = require('address')
 const logging = require('../../loggings/controllers/loggings.controllers')
+const ToggleDB = require('../../toggle/model/toggle.model')
 
 exports.readAllRegistration = async(req, res) => {
     try {
@@ -298,18 +299,26 @@ exports.attendState = async(req, res) => {
         const attendanceTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
 
-        if(nim === null || nim === ':nim'){
-            return res.status(404).send({
-                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
-            })
-        }
-
         if(stateID === null || stateID === ':stateID'){
             return res.status(404).send({
                 message: 'STATE ID kosong! Harap diisi terlebih dahulu'
             })
         } 
 
+        const getDay = await sActDB.query().where({ stateID })
+        const cekToggle = await ToggleDB.query().where({ name: getDay[0].day })
+        
+        if(cekToggle[0].toggle === 0){
+            return res.status(403).send({
+                message: 'Absensi STATE telah ditutup!'
+            })
+        }
+
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
         
         if(nim2 != nim){
             return res.status(403).send({ 
@@ -354,17 +363,26 @@ exports.verifyAttendance = async(req, res) => {
         const tokenTime = helper.createAttendanceTime()
         const nim2 = req.decoded_nim
 
-        if(nim === null || nim === ':nim'){
-            return res.status(404).send({
-                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
-            })
-        }
-
         if(stateID === null || stateID === ':stateID'){
             return res.status(404).send({
                 message: 'STATE ID kosong! Harap diisi terlebih dahulu'
             })
         } 
+
+        const getDay = await sActDB.query().where({ stateID })
+        const cekToggle = await ToggleDB.query().where({ name: getDay[0].day })
+        
+        if(cekToggle[0].toggle === 0){
+            return res.status(403).send({
+                message: 'Absensi STATE telah ditutup!'
+            })
+        }
+
+        if(nim === null || nim === ':nim'){
+            return res.status(404).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
 
         if(nim2 != nim){
             return res.status(403).send({ 

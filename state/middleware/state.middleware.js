@@ -12,7 +12,6 @@ exports.openAbsenAwal = async (req, res, next) => {
 }
 
 exports.closeAbsenAwal = async(req, res, next) => {
-    console.log("test")
     if(d.getHours() >= 17 && d.getMinutes() > 45){
         await ToggleDB.query().update({
             toggle: 0

@@ -322,7 +322,7 @@ exports.attendState = async(req, res) => {
         const cekAbsenAwal = await ToggleDB.query().where({ name: 'absenAwal' })
         const cekToggle = await ToggleDB.query().where({ name: getDay[0].day })
         
-        if(cekToggle[0].toggle === 0 || cekAbsenAwal === 0){
+        if(cekToggle[0].toggle === 0 || cekAbsenAwal[0].toggle === 0){
             return res.status(403).send({
                 message: 'Absensi STATE telah ditutup!'
             })
@@ -387,7 +387,7 @@ exports.verifyAttendance = async(req, res) => {
         const cekAbsenAkhir = await ToggleDB.query().where({ name: 'absenAkhir' })
         const cekToggle = await ToggleDB.query().where({ name: getDay[0].day })
         
-        if(cekToggle[0].toggle === 0 || cekAbsenAkhir === 0){
+        if(cekToggle[0].toggle === 0 || cekAbsenAkhir[0].toggle === 0){
             return res.status(403).send({
                 message: 'Absensi STATE telah ditutup!'
             })

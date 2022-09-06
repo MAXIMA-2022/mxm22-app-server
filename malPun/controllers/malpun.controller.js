@@ -1,6 +1,5 @@
 const MalpunDB = require('../models/malpun.model')
 
-
 exports.getAllData = async(req, res) => {
     try {
         const result = await MalpunDB.query()

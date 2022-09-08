@@ -1,9 +1,10 @@
 const { check, validationResult } = require('express-validator')
 
 exports.regisMalpunValidation = [
+    check('nama').notEmpty().withMessage('Nama tidak boleh kosong'),
     check('email').notEmpty().withMessage('Email tidak boleh kosong'),
-    check('name').notEmpty().withMessage('Nama tidak boleh kosong'),
-    check('phoneNumber').notEmpty().withMessage('Nomor Handphone tidak boleh kosong')
+    check('no_hp').notEmpty().withMessage('Nomor Handphone tidak boleh kosong'),
+    check('proof').notEmpty().withMessage('Bukti tidak boleh kosong')
 ]
 
 exports.runValidation = (req, res, next) => {

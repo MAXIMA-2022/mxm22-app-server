@@ -4,14 +4,13 @@ const validation = require('../validation/validation')
 
 module.exports = function(app){
     app.get(
-        '/api/panit/malpun/',
+        '/api/malpun/',
         middleware.verifyJWT, middleware.isPanitia,
         malpunController.getAllData
     )
 
     app.get(
-        '/api/panit/malpun/:regNo',
-        middleware.verifyJWT, middleware.isPanitia,
+        '/api/malpun/:id',
         malpunController.getSpecificData
     )
 

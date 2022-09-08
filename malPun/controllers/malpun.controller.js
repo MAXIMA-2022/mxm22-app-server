@@ -13,12 +13,12 @@ exports.getAllData = async(req, res) => {
 
 exports.getSpecificData = async(req, res) => {
     try {
-        const { regNo } = req.params
-        const cekRegNo = await MalpunDB.query().where({ regNo })
+        const { id } = req.params
+        const cekRegNo = await MalpunDB.query().where({ id })
 
         if(cekRegNo.length === 0 || cekRegNo === []){
             return res.status(200).send({
-                 message: 'Register Number ' + regNo + ' tidak ditemukan!' 
+                 message: 'Data dengan ID ' + id + ' tidak ditemukan!' 
             })
         }
 
@@ -32,20 +32,24 @@ exports.getSpecificData = async(req, res) => {
 
 exports.regisMalpun = async(req, res) => {
     try {
-        console.log("test1")
         const {
+            nama,
+            nim,
+            angkatan,
             email,
-            name,
-            phoneNumber
+            no_hp,
+            proof
         } = req.body
-        
-        console.log("test2")
+
         await MalpunDB.query().insert({
-            email, 
-            name,
-            phoneNumber
+            nama,
+            nim,
+            angkatan,
+            email,
+            no_hp,
+            proof
         }) 
-        console.log("test3")
+
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
     } 
     catch (err) {

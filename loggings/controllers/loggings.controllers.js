@@ -73,6 +73,24 @@ exports.registerStateLog = async(type, nim, ip, err) => {
     }
 }
 
+exports.registerMhsMnpLog = async(type, nim, ip, err) =>{
+    try {
+        const registerMhsMnp = db.collection('mxm22-registerMhsMnp-loggings')
+        const data = {
+            type,
+            nim,
+            ip_address: ip,
+            err,
+            date_time: helper.createAttendanceTime()
+        }
+
+        const result = await registerMhsMnp.insertOne(data)
+        console.log(`registerMhsMnpLog's data was inserted with the _id: ${result.insertedId}`);
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 exports.cancelStateLog = async(type, nim, ip, err) => {
     try {
         const cancelState = db.collection('mxm22-cancelState-loggings')
@@ -164,6 +182,27 @@ exports.generateTokenLog = async(type, nim, ip, err) => {
 
         const result = await generateToken.insertOne(data)
         console.log(`generateTokenLog's data was inserted with the _id: ${result.insertedId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.registerMalpunLog = async(type, name, nim, ip, err) => {
+    try {
+        const registerMalpun = db.collection('mxm22-registerMalpun-loggings')
+
+        const data = {
+            type,
+            name,
+            nim,
+            ip_address: ip,
+            err,
+            date_time: helper.createAttendanceTime()
+        }
+
+        const result = await registerMalpun.insertOne(data)
+
+        console.log(`registerMalpunLog's data was inserted with the _id: ${result.insertedId}`)
     } catch (err) {
         console.log(err)
     }

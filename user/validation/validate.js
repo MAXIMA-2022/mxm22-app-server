@@ -88,8 +88,40 @@ exports.orgUpdateValidation = [
   check('email').notEmpty().withMessage('Email tidak boleh kosong')
 ]
 
+exports.ktmValidation = (req, res, next) => {
+    const ktmErrors = []
+
+    const acceptedType = ['image/png', 'image/jpg', 'image/jpeg']
+
+    switch (true) {
+      case !req.files :
+        ktmErrors.push({
+          key: 'ktm',
+          message: 'Foto KTM tidak boleh kosong'
+        })
+        break
+      case !req.files.ktm :
+        ktmErrors.push({
+          key: 'ktm',
+          message: 'Foto KTM tidak boleh kosong'
+        })
+        break
+      case (!acceptedType.includes(req.files.ktm.mimetype)) :
+        ktmErrors.push({
+          key: 'ktm',
+          message: 'Harap menggunakan tipe file png, jpg, atau jpeg'
+        })
+        break
+    }
+
+    req.ktmErrors = ktmErrors
+    next()
+}
+
 exports.runValidation = (req, res, next) => {
   const errors = validationResult(req).errors
+  const ktmErrors = req.ktmErrors
+
   const listErrors = []
   if (errors.length !== 0) {
     errors.map(error => {
@@ -98,6 +130,10 @@ exports.runValidation = (req, res, next) => {
         message: error.msg
       })
     })
+  }
+
+  if(ktmErrors !== undefined && ktmErrors.length !== 0){
+    listErrors.push(ktmErrors[0])
   }
 
   if (listErrors.length !== 0) { return res.status(400).send(listErrors) }

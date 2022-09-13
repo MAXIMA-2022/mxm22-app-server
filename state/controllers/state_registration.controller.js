@@ -26,6 +26,7 @@ exports.readAllRegistration = async(req, res) => {
     }
 }
 
+
 exports.readSpecificRegistration = async(req, res) => {
     const { nim } = req.params
     try{
@@ -41,8 +42,8 @@ exports.readSpecificRegistration = async(req, res) => {
         }
  
         return res.status(200).send(result)  
-
-    } catch(err) {
+    } 
+    catch(err) {
         return res.status(500).send({ message: err.message })
     }
 }

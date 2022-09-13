@@ -208,7 +208,6 @@ exports.createState = async(req, res) => {
             })
         })
       
-        
         return res.status(200).send({ message: 'STATE baru berhasil ditambahkan' })
     }
     catch (err) {

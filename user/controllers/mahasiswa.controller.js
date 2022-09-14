@@ -76,85 +76,85 @@ exports.register = async(req, res) => {
     }
 }
 
-exports.registerMhsMNP = async(req, res)=> {
-    const { nim } = req.body
-    const ip = address.ip()
+// exports.registerMhsMNP = async(req, res)=> {
+//     const { nim } = req.body
+//     const ip = address.ip()
 
-    try {
-        const { 
-            name,  
-            password, 
-            whatsapp, 
-            email,
-            angkatan, 
-            idInstagram, 
-            idLine, 
-            tanggalLahir, 
-            tempatLahir, 
-            jenisKelamin, 
-            prodi 
-        } = req.body
+//     try {
+//         const { 
+//             name,  
+//             password, 
+//             whatsapp, 
+//             email,
+//             angkatan, 
+//             idInstagram, 
+//             idLine, 
+//             tanggalLahir, 
+//             tempatLahir, 
+//             jenisKelamin, 
+//             prodi 
+//         } = req.body
 
-        const { ktm } = req.files
+//         const { ktm } = req.files
 
-        const fixName = helper.toTitleCase(name).trim()
-        const uuidKtm = uuidv4()
-        const nim2 = nim.replace(/^0+/, '')
-        const mhsName = fixName.trim().split(' ').join('-')
+//         const fixName = helper.toTitleCase(name).trim()
+//         const uuidKtm = uuidv4()
+//         const nim2 = nim.replace(/^0+/, '')
+//         const mhsName = fixName.trim().split(' ').join('-')
 
-        const extnameKtm = path.extname(ktm.name)
-        const basenameKtm = path.basename(ktm.name, extnameKtm).trim().split(' ').join('-')
+//         const extnameKtm = path.extname(ktm.name)
+//         const basenameKtm = path.basename(ktm.name, extnameKtm).trim().split(' ').join('-')
 
-        const filenameKtm = `${mhsName}_${nim2}_${uuidKtm}_${basenameKtm}_${extnameKtm}`
-        const uploadPathKtm = 'fotoKtm/'+ filenameKtm
-        const bucketName = 'mxm22-bucket-test'
+//         const filenameKtm = `${mhsName}_${nim2}_${uuidKtm}_${basenameKtm}_${extnameKtm}`
+//         const uploadPathKtm = 'fotoKtm/'+ filenameKtm
+//         const bucketName = 'mxm22-bucket-test'
 
-        const urlFileKtm = `https://storage.googleapis.com/${bucketName}/${filenameKtm}`
+//         const urlFileKtm = `https://storage.googleapis.com/${bucketName}/${filenameKtm}`
 
-        const hashPass = await bcrypt.hashSync(password, 8)
+//         const hashPass = await bcrypt.hashSync(password, 8)
         
-        const cekNIM = await MhsDB.query().where({ nim })
-        if(cekNIM.length !== 0 && cekNIM !== []){
-            return res.status(409).send({ 
-                message: 'Halo Maximers, akun anda sebelumnya telah terdaftar'
-            })
-        }
+//         const cekNIM = await MhsDB.query().where({ nim })
+//         if(cekNIM.length !== 0 && cekNIM !== []){
+//             return res.status(409).send({ 
+//                 message: 'Halo Maximers, akun anda sebelumnya telah terdaftar'
+//             })
+//         }
             
-        await MhsDB.query().insert({
-            name,
-            nim: nim2, 
-            password: hashPass,
-            whatsapp,
-            email,
-            angkatan,
-            idInstagram,
-            idLine,
-            tanggalLahir,
-            tempatLahir,
-            jenisKelamin,
-            prodi,
-            ktm: urlFileKtm,
-            // verified: 0
-        })
+//         await MhsDB.query().insert({
+//             name,
+//             nim: nim2, 
+//             password: hashPass,
+//             whatsapp,
+//             email,
+//             angkatan,
+//             idInstagram,
+//             idLine,
+//             tanggalLahir,
+//             tempatLahir,
+//             jenisKelamin,
+//             prodi,
+//             ktm: urlFileKtm,
+//             // verified: 0
+//         })
 
-        ktm.mv(uploadPathKtm, async (err) => {
-            if (err)
-                return res.status(500).send({ message: err.messsage })
+//         ktm.mv(uploadPathKtm, async (err) => {
+//             if (err)
+//                 return res.status(500).send({ message: err.messsage })
                         
-            await storage.bucket(bucketName).upload(uploadPathKtm)
-            fs.unlink(uploadPathKtm, (err) => {
-                if (err) {
-                    return res.status(500).send({ message: err.messsage })
-                }        
-            })
-        })
+//             await storage.bucket(bucketName).upload(uploadPathKtm)
+//             fs.unlink(uploadPathKtm, (err) => {
+//                 if (err) {
+//                     return res.status(500).send({ message: err.messsage })
+//                 }        
+//             })
+//         })
 
-        return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
-    } catch (err) {
-        logging.registerMhsMnpLog('Register/Mahasiswa/MNP', nim, ip, err.message)
-        return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
-    }
-}
+//         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
+//     } catch (err) {
+//         logging.registerMhsMnpLog('Register/Mahasiswa/MNP', nim, ip, err.message)
+//         return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
+//     }
+// }
 
 
 exports.login = async(req, res) => {

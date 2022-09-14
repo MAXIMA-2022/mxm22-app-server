@@ -12,12 +12,12 @@ module.exports = function(app){
         MhsController.register
     )
 
-    app.post(
-        '/api/mhsMnp/register',
-        toggle.signUpMahasiswa, toggle.checkToggle,
-        validation.mhsRegisValidation, validation.ktmValidation, validation.runValidation,
-        MhsController.registerMhsMNP
-    )
+    // app.post(
+    //     '/api/mhsMnp/register',
+    //     toggle.signUpMahasiswa, toggle.checkToggle,
+    //     validation.mhsRegisValidation, validation.ktmValidation, validation.runValidation,
+    //     MhsController.registerMhsMNP
+    // )
 
     app.post(
         '/api/mhs/login',

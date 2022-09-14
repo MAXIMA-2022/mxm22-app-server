@@ -6,6 +6,13 @@ const helper = require('../../helpers/helper')
 const logging = require('../../loggings/controllers/loggings.controllers')
 const tokenDB = require('../model/reset_password.model')
 const nodemailer = require('nodemailer')
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage({ keyFilename:
+    'keys/mxm22-bucket.json' })
+
+const fs = require('fs')
+const path = require('path')
+const { v4: uuidv4 } = require('uuid')
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -57,7 +64,8 @@ exports.register = async(req, res) => {
             tanggalLahir,
             tempatLahir,
             jenisKelamin,
-            prodi
+            prodi,
+            verified: 1
         })
 
         return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
@@ -68,12 +76,99 @@ exports.register = async(req, res) => {
     }
 }
 
+exports.registerMhsMNP = async(req, res)=> {
+    const { nim } = req.body
+    const ip = address.ip()
+
+    try {
+        const { 
+            name,  
+            password, 
+            whatsapp, 
+            email,
+            angkatan, 
+            idInstagram, 
+            idLine, 
+            tanggalLahir, 
+            tempatLahir, 
+            jenisKelamin, 
+            prodi 
+        } = req.body
+
+        const { ktm } = req.files
+
+        const fixName = helper.toTitleCase(name).trim()
+        const uuidKtm = uuidv4()
+        const nim2 = nim.replace(/^0+/, '')
+        const mhsName = fixName.trim().split(' ').join('-')
+
+        const extnameKtm = path.extname(ktm.name)
+        const basenameKtm = path.basename(ktm.name, extnameKtm).trim().split(' ').join('-')
+
+        const filenameKtm = `${mhsName}_${nim2}_${uuidKtm}_${basenameKtm}_${extnameKtm}`
+        const uploadPathKtm = 'fotoKtm/'+ filenameKtm
+        const bucketName = 'mxm22-bucket-test'
+
+        const urlFileKtm = `https://storage.googleapis.com/${bucketName}/${filenameKtm}`
+
+        const hashPass = await bcrypt.hashSync(password, 8)
+        
+        const cekNIM = await MhsDB.query().where({ nim })
+        if(cekNIM.length !== 0 && cekNIM !== []){
+            return res.status(409).send({ 
+                message: 'Halo Maximers, akun anda sebelumnya telah terdaftar'
+            })
+        }
+            
+        await MhsDB.query().insert({
+            name,
+            nim: nim2, 
+            password: hashPass,
+            whatsapp,
+            email,
+            angkatan,
+            idInstagram,
+            idLine,
+            tanggalLahir,
+            tempatLahir,
+            jenisKelamin,
+            prodi,
+            ktm: urlFileKtm,
+            // verified: 0
+        })
+
+        ktm.mv(uploadPathKtm, async (err) => {
+            if (err)
+                return res.status(500).send({ message: err.messsage })
+                        
+            await storage.bucket(bucketName).upload(uploadPathKtm)
+            fs.unlink(uploadPathKtm, (err) => {
+                if (err) {
+                    return res.status(500).send({ message: err.messsage })
+                }        
+            })
+        })
+
+        return res.status(200).send({ message: 'Akun baru berhasil ditambahkan' })
+    } catch (err) {
+        logging.registerMhsMnpLog('Register/Mahasiswa/MNP', nim, ip, err.message)
+        return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
+    }
+}
+
 
 exports.login = async(req, res) => {
     const { nim, password } = req.body
     const ip = address.ip()
 
     try{
+        const ver = await MhsDB.query().select('verified').where({ nim })
+        if(ver[0].verified !== 1){
+            return res.status(400).send({
+                message: 'Akun anda belum terverifikasi!'
+            })
+        }
+
         const checkingNim = await MhsDB.query().where({ nim })
         if(checkingNim.length === 0){
             return res.status(404).send({
@@ -115,7 +210,7 @@ exports.login = async(req, res) => {
 
 exports.readAllData = async(req, res) => {
     try {
-        const result = await MhsDB.query()
+        const result = await MhsDB.query().whereNull('ktm')
         return res.status(200).send(result)
     }
     catch (err) {
@@ -140,7 +235,42 @@ exports.readSpecificData = async(req, res) => {
             })
         }
         
-        const result = await MhsDB.query().where({ nim })
+        const result = await MhsDB.query().where({ nim }).whereNull('ktm')
+        return res.status(200).send(result) 
+    }
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+exports.readAllMnpData = async(req, res) => {
+    try {
+        const result = await MhsDB.query().whereNotNull('ktm')
+        return res.status(200).send(result)
+    }
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+exports.readSpecificMnpData = async(req, res) => {
+    try{
+        const { nim } = req.params
+
+        if(nim === null || nim === ':nim'){
+            return res.status(200).send({
+                message: 'NIM anda kosong! Harap diisi terlebih dahulu'
+            })
+        }
+
+        const cekNIM = await MhsDB.query().where({ nim }).whereNotNull('ktm')
+        if(cekNIM.length === 0 || cekNIM === []){
+            return res.status(200).send({ 
+                message: 'NIM ' + nim + ' tidak ditemukan!'
+            })
+        }
+        
+        const result = await MhsDB.query().where({ nim }).whereNotNull('ktm')
         return res.status(200).send(result) 
     }
     catch (err) {

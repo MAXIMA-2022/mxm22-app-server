@@ -11,6 +11,14 @@ module.exports = function(app){
         validation.mhsRegisValidation, validation.runValidation,
         MhsController.register
     )
+
+    app.post(
+        '/api/mhsMnp/register',
+        toggle.signUpMahasiswa, toggle.checkToggle,
+        validation.mhsRegisValidation, validation.ktmValidation, validation.runValidation,
+        MhsController.registerMhsMNP
+    )
+
     app.post(
         '/api/mhs/login',
         toggle.signInMahasiswa, toggle.checkToggle,
@@ -27,6 +35,17 @@ module.exports = function(app){
         '/api/mhs/:nim',
         middleware.verifyJWT, middleware.isPanitia,
         MhsController.readSpecificData
+    )
+
+    app.get(
+        '/api/mhsMnp/',
+        middleware.verifyJWT, middleware.isPanitia,
+        MhsController.readAllMnpData
+    )
+    app.get(
+        '/api/mhsMnp/:nim',
+        middleware.verifyJWT, middleware.isPanitia,
+        MhsController.readSpecificMnpData
     )
 
     app.put(

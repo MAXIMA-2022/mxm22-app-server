@@ -4,20 +4,26 @@ const validation = require('../validation/validation')
 
 module.exports = function(app){
     app.get(
-        '/api/panit/malpun/',
+        '/api/malpun/',
         middleware.verifyJWT, middleware.isPanitia,
         malpunController.getAllData
     )
 
     app.get(
-        '/api/panit/malpun/:regNo',
-        middleware.verifyJWT, middleware.isPanitia,
+        '/api/malpun/:id',
         malpunController.getSpecificData
     )
 
+    // app.post(
+    //     '/api/malpun/regis',
+    //     validation.regisMalpunValidation, validation.proofValidation, validation.runValidation,
+    //     malpunController.regisMalpun
+    // )
+
     app.post(
-        '/api/malpun/regis',
-        validation.regisMalpunValidation, validation.runValidation,
-        malpunController.regisMalpun
-    )
+        '/api/malpun/mhs/regis',
+        middleware.verifyJWT, middleware.isMahasiswa,
+        validation.malpunMhsValidation, validation.runValidation,
+        malpunController.regisMalpunMhs 
+    ) 
 }

@@ -162,13 +162,6 @@ exports.login = async(req, res) => {
     const ip = address.ip()
 
     try{
-        const ver = await MhsDB.query().select('verified').where({ nim })
-        if(ver[0].verified !== 1){
-            return res.status(400).send({
-                message: 'Akun anda belum terverifikasi!'
-            })
-        }
-
         const checkingNim = await MhsDB.query().where({ nim })
         if(checkingNim.length === 0){
             return res.status(404).send({
@@ -182,7 +175,13 @@ exports.login = async(req, res) => {
                 message: 'Halo Maximers, NIM atau password salah!' 
             })
         }
-
+        
+        const ver = await MhsDB.query().select('verified').where({ nim })
+        if(ver[0].verified !== 1){
+            return res.status(400).send({
+                message: 'Akun anda belum terverifikasi!'
+            })
+        }
         const JWTtoken = jwt.sign({ 
                 name: checkingNim[0].name,
                 nim: checkingNim[0].nim,

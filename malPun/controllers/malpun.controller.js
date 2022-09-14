@@ -146,7 +146,7 @@ exports.regisMalpunMhs = async(req, res) =>{
     }
 
     const data = await MhsDB.query().where({ nim })
-    nama = data[0].nama
+    nama = data[0].name
     email = data[0].email
     angkatan = data[0].angkatan
     no_hp = data[0].whatsapp

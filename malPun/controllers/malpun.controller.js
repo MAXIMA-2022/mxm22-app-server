@@ -10,6 +10,7 @@ const storage = new Storage({ keyFilename:
 const fs = require('fs')
 const path = require('path')
 const { v4: uuidv4 } = require('uuid')
+const address = require('address')
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -80,10 +81,10 @@ exports.getSpecificData = async(req, res) => {
 //         const extnameProof = path.extname(proof.name)
 //         const basenameProof = path.basename(proof.name, extnameProof).trim().split(' ').join('-')
 
-//         const fileNameProof = `${proofs}_${uuidProof}_${basenameProof}${extnameProof}`
+//         const fileNameProof = ${proofs}_${uuidProof}_${basenameProof}${extnameProof}
 //         const uploadPathProof = 'proofMalpun/' + fileNameProof
 //         const bucketName = 'mxm22-bucket-test'
-//         const urlFileProof = `https://storage.googleapis.com/${bucketName}/${fileNameProof}`
+//         const urlFileProof = https://storage.googleapis.com/${bucketName}/${fileNameProof}
 
 
 //         await MalpunDB.query().insert({
@@ -111,7 +112,7 @@ exports.getSpecificData = async(req, res) => {
 //             from: "Maxima 2022 <noreply@gmail.com>",
 //             to: `${email}`,
 //             subject: "Bukti Registrasi Malam Puncak",
-//             text: `Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima 2022.`
+//             text: Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima 2022.
 //         }
 
 //         transporter.sendMail(option, (err, info) => {
@@ -131,6 +132,7 @@ exports.getSpecificData = async(req, res) => {
 exports.regisMalpunMhs = async(req, res) =>{
     const { nim } = req.body
     const nim2 = req.decoded_nim
+    const ip = address.ip()
     
     const cekNIM = await MhsDB.query().where({ nim })
     if(cekNIM.length === 0 || cekNIM === []){
@@ -171,7 +173,7 @@ exports.regisMalpunMhs = async(req, res) =>{
             from: "Maxima 2022 <noreply@gmail.com>",
             to: `${email}`,
             subject: "Bukti Registrasi Malam Puncak",
-            text: `Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima.`
+            text: "Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima."
         }
 
         transporter.sendMail(option, (err, info) => {
@@ -182,7 +184,7 @@ exports.regisMalpunMhs = async(req, res) =>{
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
     } 
     catch (err) {
-        logging.registerMalpunLog('Register/Malpun', nama, nim ,err.message)
+        logging.registerMalpunLog('Register/Malpun', nama, nim ,ip ,err.message)
         return res.status(500).send({ message: 'Halo Maximers, maaf ada kesalahan dari internal' })
     }
 }

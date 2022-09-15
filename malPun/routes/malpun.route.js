@@ -14,6 +14,12 @@ module.exports = function(app){
         malpunController.getSpecificData
     )
 
+    app.get(
+        '/api/public/malpun/',
+        middleware.verifyJWT,
+        malpunController.getSpecificDataPublic
+    )
+
     // app.post(
     //     '/api/malpun/regis',
     //     validation.regisMalpunValidation, validation.proofValidation, validation.runValidation,

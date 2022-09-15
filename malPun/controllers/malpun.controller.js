@@ -50,6 +50,25 @@ exports.getSpecificData = async(req, res) => {
 }
 
 
+exports.getSpecificDataPublic = async(req, res) => {
+    try {
+        const nim = req.decoded_nim
+
+        const cekRegNo = await MalpunDB.query().where({ nim })
+        if(cekRegNo.length === 0 || cekRegNo === []){
+            return res.status(200).send({
+                 message: 'Anda belum mendaftar Malam Puncak' 
+            })
+        }
+
+        return res.status(200).send(cekRegNo)  
+
+    } catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+
 // exports.regisMalpun = async(req, res) => {
 //     const { 
 //         nama,

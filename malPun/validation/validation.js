@@ -7,9 +7,7 @@ exports.regisMalpunValidation = [
 ]
 
 exports.malpunMhsValidation = [
-  check('nama').notEmpty().withMessage('Nama tidak boleh kosong'),
-  check('email').notEmpty().withMessage('Email tidak boleh kosong'),
-  check('no_hp').notEmpty().withMessage('Nomor Handphone tidak boleh kosong')
+  check('nim').notEmpty().withMessage('NIM tidak boleh kosong')
 ]
 
 exports.proofValidation = (req, res, next) => {

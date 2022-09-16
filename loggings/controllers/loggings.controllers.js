@@ -187,22 +187,41 @@ exports.generateTokenLog = async(type, nim, ip, err) => {
     }
 }
 
-exports.registerMalpunLog = async(type, name, nim, ip, err) => {
+exports.registerMalpunMabaLog = async(type, nim, ip, err) => {
     try {
-        const registerMalpun = db.collection('mxm22-registerMalpun-loggings')
+        const registerMalpun1 = db.collection('mxm22-registerMalpunMaba-loggings')
 
         const data = {
             type,
-            name,
             nim,
             ip_address: ip,
             err,
             date_time: helper.createAttendanceTime()
         }
 
-        const result = await registerMalpun.insertOne(data)
+        const result = await registerMalpun1.insertOne(data)
 
-        console.log(`registerMalpunLog's data was inserted with the _id: ${result.insertedId}`)
+        console.log(`registerMalpunMabaLog's data was inserted with the _id: ${result.insertedId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.registerMalpunOutsiderLog = async(type, nama, ip, err) => {
+    try {
+        const registerMalpun2 = db.collection('mxm22-registerMalpunOutsider-loggings')
+
+        const data = {
+            type,
+            nama,
+            ip_address: ip,
+            err,
+            date_time: helper.createAttendanceTime()
+        }
+
+        const result = await registerMalpun2.insertOne(data)
+
+        console.log(`registerMalpunOutsiderLog's data was inserted with the _id: ${result.insertedId}`)
     } catch (err) {
         console.log(err)
     }

@@ -1,16 +1,8 @@
 const MalpunOutDB = require('../models/malpunOutsider.model')
 const MhsDB = require('../../user/model/mahasiswa.model')
 const logging = require('../../loggings/controllers/loggings.controllers')
-const nodemailer = require('nodemailer')
 const address = require('address')
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth:{
-        user: process.env.MAILER_EMAIL,  
-        pass: process.env.MAILER_PASS,
-    }
-})
 
 exports.getAllDataOuts = async(req, res) => {
     try {
@@ -43,18 +35,6 @@ exports.regisMalpunOuts = async(req, res) => {
             name,
             email
         }) 
-    
-        const option = {
-            from: "Maxima 2022 <noreply@gmail.com>",
-            to: `${email}`,
-            subject: "Bukti Registrasi Malam Puncak",
-            text: "Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima 2022."
-        }
-
-        transporter.sendMail(option, (err, info) => {
-            if(err) console.error(err)
-            console.log(`Email terkirim : ${option.to}`)
-        })
         
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
     } 

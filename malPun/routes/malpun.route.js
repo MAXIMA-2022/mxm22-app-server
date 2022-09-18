@@ -10,26 +10,21 @@ module.exports = function(app){
     )
 
     app.get(
-        '/api/malpun/:id',
+        '/api/malpunSpecific/',
+        middleware.verifyJWT, middleware.isMahasiswa,
         malpunController.getSpecificData
     )
 
-    app.get(
-        '/api/public/malpun/',
-        middleware.verifyJWT,
-        malpunController.getSpecificDataPublic
-    )
-
-    // app.post(
-    //     '/api/malpun/regis',
-    //     validation.regisMalpunValidation, validation.proofValidation, validation.runValidation,
-    //     malpunController.regisMalpun
-    // )
-
     app.post(
-        '/api/malpun/mhs/regis',
+        '/api/malpun/regis',
         middleware.verifyJWT, middleware.isMahasiswa,
         validation.malpunMhsValidation, validation.runValidation,
         malpunController.regisMalpunMhs 
     ) 
+
+    app.put(
+        '/api/malpun/verifyMaba/:nim',
+        middleware.verifyJWT, middleware.isPanitia,
+        malpunController.updateVerifyMaba
+    )
 }

@@ -30,6 +30,7 @@ require('./home/routes/homeMedia.routes')(app)
 
 //malPun
 require('./malPun/routes/malpun.route')(app)
+require('./malPun/routes/malpunOutsider.route')(app)
 
 app.get('/', (req, res) => {
     res.status(200).send('<h1>Welcome to MAXIMA 2022 API</h1>')

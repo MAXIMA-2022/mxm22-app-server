@@ -3,6 +3,9 @@ const MhsDB = require('../../user/model/mahasiswa.model')
 const logging = require('../../loggings/controllers/loggings.controllers')
 const address = require('address')
 const nodemailer = require('nodemailer')
+const hbs = require('nodemailer-express-handlebars')
+const path = require('path')
+
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -11,6 +14,19 @@ const transporter = nodemailer.createTransport({
         pass: process.env.MAILER_PASS,
     }
 })
+
+const hbsOption = {
+    viewEngine: {
+        extName: ".handlebars",
+        partialsDir: path.resolve(__dirname, "mailTemplate"),
+        defaultLayout: false,
+      },
+      viewPath: path.resolve(__dirname, "mailTemplate"),
+      extName: ".handlebars",
+}
+
+transporter.use('compile', hbs(hbsOption))
+
 
 exports.getAllData = async(req, res) => {
     try {
@@ -69,21 +85,23 @@ exports.regisMalpunMhs = async(req, res) =>{
 
         const data = await MhsDB.query().where({ nim })
         
-        await MalpunDB.query().insert({
-            nim: newNim
-        }) 
 
         const option = {
             from: "Maxima 2022 <noreply@gmail.com>",
             to: `${data[0].email}`,
-            subject: "Bukti Registrasi Malam Puncak",
-            text: "Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima."
+            subject: "[You\’ve got your Ticket, Maximers]",
+            text: "Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima.",
+            template: 'index'
         }
 
         transporter.sendMail(option, (err, info) => {
             if(err) console.error(err)
             console.log(`Email terkirim : ${option.to}`)
         })
+
+        await MalpunDB.query().insert({
+            nim: newNim
+        }) 
 
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
     } 

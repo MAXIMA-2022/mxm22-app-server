@@ -226,3 +226,57 @@ exports.registerMalpunOutsiderLog = async(type, nama, ip, err) => {
         console.log(err)
     }
 }
+
+exports.verifyMalpunMabaLog = async(type, namaPanit, divisiPanit, nimTarget, ip , verifValue) => {
+    try {
+        const verifyMalpunMaba = db.collection('mxm22-verifyMalpunMaba-loggings')
+
+        let verified = ''
+
+        if(verifValue == 1){
+            verified = `${namaPanit} dari ${divisiPanit} telah VERIFIKASI mahasiswa ${nimTarget}`
+        }else{
+            verified = `${namaPanit} dari ${divisiPanit} telah MEMBATALKAN VERIFIKASI mahasiswa ${nimTarget}`
+        }
+
+        const data = {
+            type,
+            verified,
+            ip,
+            date_time: helper.createAttendanceTime()
+        }
+
+        const result = await verifyMalpunMaba.insertOne(data)
+
+        console.log(`verifyMalpunMabaLog's data was inserted with the _id: ${result.insertedId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.verifyMalpunOutsiderLog = async(type, namaPanit, divisiPanit, namaTarget, ip , verifValue) => {
+    try {
+        const verifyMalpunOutsider = db.collection('mxm22-verifyMalpunOutsider-loggings')
+
+        let verified = ''
+
+        if(verifValue == 1){
+            verified = `${namaPanit} dari ${divisiPanit} telah VERIFIKASI pengunjung ${namaTarget}`
+        }else{
+            verified = `${namaPanit} dari ${divisiPanit} telah MEMBATALKAN VERIFIKASI pengunjung ${namaTarget}`
+        }
+
+        const data = {
+            type,
+            verified,
+            ip,
+            date_time: helper.createAttendanceTime()
+        }
+
+        const result = await verifyMalpunOutsider.insertOne(data)
+
+        console.log(`verifyMalpunOutsiderLog's data was inserted with the _id: ${result.insertedId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}

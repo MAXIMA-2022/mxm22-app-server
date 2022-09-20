@@ -1,4 +1,6 @@
 const MalpunDB = require('../models/malpun.model')
+const PanitDB = require('../../user/model/panitia.model')
+const DivisiDB = require('../../user/model/divisi.model')
 const MhsDB = require('../../user/model/mahasiswa.model')
 const logging = require('../../loggings/controllers/loggings.controllers')
 const address = require('address')
@@ -30,6 +32,14 @@ transporter.use('compile', hbs(hbsOption))
 
 exports.getAllData = async(req, res) => {
     try {
+        const authorizedDiv = ['D01', 'D02', 'D10', 'D13', 'D15']
+        const division = req.division
+
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }
         const result = await MalpunDB.query()
         return res.status(200).send(result)
     } 
@@ -40,6 +50,15 @@ exports.getAllData = async(req, res) => {
 
 exports.getSpecificData = async(req, res) => {
     try {
+        const authorizedDiv = ['D01', 'D02', 'D10', 'D13', 'D15']
+        const division = req.division
+
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }
+
         const nim = req.decoded_nim
 
         const cekRegNo = await MalpunDB.query().where({ nim })
@@ -85,7 +104,6 @@ exports.regisMalpunMhs = async(req, res) =>{
 
         const data = await MhsDB.query().where({ nim })
         
-
         const option = {
             from: "Maxima 2022 <noreply@gmail.com>",
             to: `${data[0].email}`,
@@ -100,7 +118,8 @@ exports.regisMalpunMhs = async(req, res) =>{
         })
 
         await MalpunDB.query().insert({
-            nim: newNim
+            nim: newNim,
+            timeVerified: 0
         }) 
 
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
@@ -113,6 +132,17 @@ exports.regisMalpunMhs = async(req, res) =>{
 
 exports.updateVerifyMaba = async(req, res) => {
     const { nim } = req.params
+
+    const ip = address.ip()
+
+    const getMhs = await MhsDB.query().where({ nim })
+    const namaMhs = getMhs[0].name
+    
+    const nimPanit = req.decoded_nim
+    const data = await PanitDB.query().where({ nim: nimPanit })
+    const namaPanit = data[0].name
+    const div = await DivisiDB.query().where({ divisiId: data[0].divisiID })
+    const divPanit = div[0].name
     
     try{
         if(nim === null || nim === ':nim'){
@@ -122,7 +152,7 @@ exports.updateVerifyMaba = async(req, res) => {
         }
 
         const { verified } = req.body
-        const authorizedDiv = ['D01', 'D02', 'D13', 'D14']
+        const authorizedDiv = ['D01', 'D02', 'D10', 'D15']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -143,12 +173,67 @@ exports.updateVerifyMaba = async(req, res) => {
                 message: 'Value hanya boleh angka 0 atau 1 saja!' 
             })
         }
+        const today = new Date()
+
+        const hour = `${today.getUTCHours()}`.padStart(2, '0')
+        const minute = `${today.getUTCMinutes()}`.padStart(2, '0')
+        const second = `${today.getUTCSeconds()}`.padStart(2, '0')
+
+        const timeVerified = `${hour}:${minute}:${second}`
 
         await MalpunDB.query().update({
-            verified
+            verified,
+            timeVerified
         }).where({ nim })
+
+        logging.verifyMalpunMabaLog('verifyMalpun/Maba', namaPanit, divPanit, nim, ip, verified)
         return res.status(200).send({ message: 'Data berhasil diupdate' })
     }
+    catch (err) {
+        return res.status(500).send({ message: err.message })
+    }
+}
+
+exports.resendEmail = async (req,res) => {
+    try {
+        const authorizedDiv = ['D01', 'D02']
+        const division = req.division
+
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }        
+        
+        let { email } = req.body
+        
+        if(email.length === 0 || email === []){
+            return res.status(404).send({ 
+                message: 'Email kosong!' 
+            }) 
+        }
+
+        if (email && email.length === undefined)
+            email = [email]
+        
+        for(let i = 0; i < email.length; i++){
+            const option = {
+                from: "Maxima 2022 <noreply@gmail.com>",
+                to: `${email[i]}`,
+                subject: "[You\’ve got your Ticket, Maximers]",
+                text: "Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima.",
+                template: 'index'
+            }
+    
+            transporter.sendMail(option, (err, info) => {
+                if(err) console.error(err)
+                console.log(`Email terkirim : ${option.to}`)
+            })
+        }
+
+        return res.status(200).send({ message: 'Email berhasil terkirim' })
+
+    } 
     catch (err) {
         return res.status(500).send({ message: err.message })
     }

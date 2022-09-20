@@ -1,4 +1,6 @@
 const MalpunOutDB = require('../models/malpunOutsider.model')
+const PanitDB = require('../../user/model/panitia.model')
+const DivisiDB = require('../../user/model/divisi.model')
 const MhsDB = require('../../user/model/mahasiswa.model')
 const logging = require('../../loggings/controllers/loggings.controllers')
 const address = require('address')
@@ -6,6 +8,14 @@ const address = require('address')
 
 exports.getAllDataOuts = async(req, res) => {
     try {
+        const authorizedDiv = ['D01', 'D02', 'D10', 'D13', 'D15']
+        const division = req.division
+
+        if(!authorizedDiv.includes(division)){
+            return res.status(403).send({
+                message: "Divisi anda tidak punya otoritas yang cukup!"
+            })
+        }
         const result = await MalpunOutDB.query()
         return res.status(200).send(result)
     } 
@@ -33,7 +43,8 @@ exports.regisMalpunOuts = async(req, res) => {
      try { 
         await MalpunOutDB.query().insert({
             name,
-            email
+            email,
+            timeVerified: 0
         }) 
         
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
@@ -47,6 +58,17 @@ exports.regisMalpunOuts = async(req, res) => {
 
 exports.updateVerifyOuts = async(req, res) => {
     const { id } = req.params
+
+    const getOuts = await MalpunOutDB.query().where({ id })
+    const namaOuts = getOuts[0].name
+    
+    const nimPanit = req.decoded_nim
+    const data = await PanitDB.query().where({ nim: nimPanit })
+    const namaPanit = data[0].name
+    const div = await DivisiDB.query().where({ divisiId: data[0].divisiID })
+    const divPanit = div[0].name
+
+    const ip = address.ip()
 
     try{
         if(id === null || id === ':id'){
@@ -78,10 +100,20 @@ exports.updateVerifyOuts = async(req, res) => {
             })
         }
 
+        const today = new Date()
+
+        const hour = `${today.getUTCHours()}`.padStart(2, '0')
+        const minute = `${today.getUTCMinutes()}`.padStart(2, '0')
+        const second = `${today.getUTCSeconds()}`.padStart(2, '0')
+
+        const timeVerified = `${hour}:${minute}:${second}`
+
         await MalpunOutDB.query().update({
-            verified
+            verified,
+            timeVerified
         }).where({ id })
 
+        logging.verifyMalpunOutsiderLog('verifyMalpun/Outsider', namaPanit, divPanit, namaOuts, ip, verified)
         return res.status(200).send({ message: 'Data berhasil diupdate' })
     }
     catch (err) {

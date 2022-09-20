@@ -195,7 +195,7 @@ exports.createStateReg = async(req, res) => {
                         message: 'Kamu tidak dapat mendaftar pada lebih dari 1 STATE pada hari yang sama!' 
                     })
                 }
-                    
+        
             }
         }
         

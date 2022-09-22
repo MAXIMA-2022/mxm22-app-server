@@ -33,7 +33,7 @@ transporter.use('compile', hbs(hbsOption))
 
 exports.getAllData = async(req, res) => {
     try {
-        const authorizedDiv = ['D01', 'D02', 'D10', 'D12', 'D14']
+        const authorizedDiv = ['D01', 'D02', 'D04', 'D10', 'D12', 'D13', 'D14']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -154,7 +154,7 @@ exports.updateVerifyMaba = async(req, res) => {
         }
 
         const { verified } = req.body
-        const authorizedDiv = ['D01', 'D02', 'D10', 'D14']
+        const authorizedDiv = ['D01', 'D02', 'D04', 'D10', 'D13', 'D14']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){

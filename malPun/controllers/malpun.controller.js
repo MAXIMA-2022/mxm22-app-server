@@ -40,25 +40,23 @@ exports.getAllData = async(req, res) => {
                 message: "Divisi anda tidak punya otoritas yang cukup!"
             })
         }
+
         const result = await MalpunDB.query()
+        for(let i = 0; i < result.length; i++){
+            const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
+
+            result[i].name = nMhs[0].name
+        }
+
         return res.status(200).send(result)
     } 
     catch (err) {
-        return res.status(500).send({ message: err.message })
+        return res.status(500).send({ message: err.message }) 
     }
 }
 
 exports.getSpecificData = async(req, res) => {
     try {
-        const authorizedDiv = ['D01', 'D02', 'D10', 'D13', 'D15']
-        const division = req.division
-
-        if(!authorizedDiv.includes(division)){
-            return res.status(403).send({
-                message: "Divisi anda tidak punya otoritas yang cukup!"
-            })
-        }
-
         const nim = req.decoded_nim
 
         const cekRegNo = await MalpunDB.query().where({ nim })
@@ -67,6 +65,9 @@ exports.getSpecificData = async(req, res) => {
                  message: 'Anda belum mendaftar Malam Puncak' 
             })
         }
+
+        const mhsName = await MhsDB.query().select('name').where({ nim: cekRegNo[0].nim })
+        cekRegNo[0].name = mhsName[0].name
 
         return res.status(200).send(cekRegNo)  
     } 
@@ -174,12 +175,17 @@ exports.updateVerifyMaba = async(req, res) => {
             })
         }
         const today = new Date()
+        let timeVerified = ''
 
-        const hour = `${today.getUTCHours()}`.padStart(2, '0')
-        const minute = `${today.getUTCMinutes()}`.padStart(2, '0')
-        const second = `${today.getUTCSeconds()}`.padStart(2, '0')
+        if(verified == 1){
+            const hour = `${today.getUTCHours()}`.padStart(2, '0')
+            const minute = `${today.getUTCMinutes()}`.padStart(2, '0')
+            const second = `${today.getUTCSeconds()}`.padStart(2, '0')
 
-        const timeVerified = `${hour}:${minute}:${second}`
+            timeVerified = `${hour}:${minute}:${second}`
+        }
+        else
+            timeVerified = '00:00:00';
 
         await MalpunDB.query().update({
             verified,

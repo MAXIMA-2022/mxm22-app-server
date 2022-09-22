@@ -29,6 +29,7 @@ exports.readAllRegistration = async(req, res) => {
 
 exports.readSpecificRegistration = async(req, res) => {
     const { nim } = req.params
+    
     try{
         let result = await sRegisDB.query().where({ nim })
 

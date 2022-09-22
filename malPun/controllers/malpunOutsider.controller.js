@@ -108,12 +108,17 @@ exports.updateVerifyOuts = async(req, res) => {
         }
 
         const today = new Date()
+        let timeVerified = ''
 
-        const hour = `${today.getUTCHours()}`.padStart(2, '0')
-        const minute = `${today.getUTCMinutes()}`.padStart(2, '0')
-        const second = `${today.getUTCSeconds()}`.padStart(2, '0')
+        if(verified == 1){
+            const hour = `${today.getUTCHours()}`.padStart(2, '0')
+            const minute = `${today.getUTCMinutes()}`.padStart(2, '0')
+            const second = `${today.getUTCSeconds()}`.padStart(2, '0')
 
-        const timeVerified = `${hour}:${minute}:${second}`
+            timeVerified = `${hour}:${minute}:${second}`
+        }
+        else
+            timeVerified = '00:00:00';
 
         await MalpunOutDB.query().update({
             verified,

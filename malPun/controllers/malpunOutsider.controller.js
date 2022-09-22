@@ -17,6 +17,13 @@ exports.getAllDataOuts = async(req, res) => {
             })
         }
         const result = await MalpunOutDB.query()
+        for (let i = 0; i < result.length; i++) {
+            if(result[i].nim === null || result[i].nim === 0){
+                result[i].nim = '0'
+            }
+            
+        }
+
         return res.status(200).send(result)
     } 
     catch (err) {

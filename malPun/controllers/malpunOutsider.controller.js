@@ -51,7 +51,7 @@ exports.regisMalpunOuts = async(req, res) => {
         await MalpunOutDB.query().insert({
             name,
             email,
-            timeVerified: 0
+            timeVerified: null
         }) 
         
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
@@ -118,7 +118,7 @@ exports.updateVerifyOuts = async(req, res) => {
             timeVerified = `${hour}:${minute}:${second}`
         }
         else
-            timeVerified = '00:00:00';
+            timeVerified = null;
 
         await MalpunOutDB.query().update({
             verified,

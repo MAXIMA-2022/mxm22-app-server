@@ -120,7 +120,7 @@ exports.regisMalpunMhs = async(req, res) =>{
 
         await MalpunDB.query().insert({
             nim: newNim,
-            timeVerified: 0
+            timeVerified: null
         }) 
 
         return res.status(200).send({ message: 'Registrasi Malam Puncak Berhasil' })
@@ -185,7 +185,7 @@ exports.updateVerifyMaba = async(req, res) => {
             timeVerified = `${hour}:${minute}:${second}`
         }
         else
-            timeVerified = '00:00:00';
+            timeVerified = null;
 
         await MalpunDB.query().update({
             verified,

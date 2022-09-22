@@ -3,12 +3,13 @@ const PanitDB = require('../../user/model/panitia.model')
 const DivisiDB = require('../../user/model/divisi.model')
 const MhsDB = require('../../user/model/mahasiswa.model')
 const logging = require('../../loggings/controllers/loggings.controllers')
+const helper = require('../../helpers/helper')
 const address = require('address')
 
 
 exports.getAllDataOuts = async(req, res) => {
     try {
-        const authorizedDiv = ['D01', 'D02', 'D10', 'D13', 'D15']
+        const authorizedDiv = ['D01', 'D02', 'D10', 'D12', 'D14']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -85,7 +86,7 @@ exports.updateVerifyOuts = async(req, res) => {
         }
 
         const { verified } = req.body
-        const authorizedDiv = ['D01', 'D02', 'D13', 'D14']
+        const authorizedDiv = ['D01', 'D02', 'D10', 'D14']
         const division = req.division
 
         if(!authorizedDiv.includes(division)){
@@ -111,11 +112,7 @@ exports.updateVerifyOuts = async(req, res) => {
         let timeVerified = ''
 
         if(verified == 1){
-            const hour = `${today.getUTCHours()}`.padStart(2, '0')
-            const minute = `${today.getUTCMinutes()}`.padStart(2, '0')
-            const second = `${today.getUTCSeconds()}`.padStart(2, '0')
-
-            timeVerified = `${hour}:${minute}:${second}`
+            timeVerified = helper.createAttendanceTime()
         }
         else
             timeVerified = null;

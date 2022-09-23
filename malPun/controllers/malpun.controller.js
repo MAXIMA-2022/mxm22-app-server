@@ -10,6 +10,7 @@ const hbs = require('nodemailer-express-handlebars')
 const path = require('path')
 
 
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth:{
@@ -42,11 +43,17 @@ exports.getAllData = async(req, res) => {
             })
         }
 
+        const mentoring = require('../../mentoring')
+        
         const result = await MalpunDB.query()
         for(let i = 0; i < result.length; i++){
             const nMhs = await MhsDB.query().select('name').where({ nim: result[i].nim })
 
             result[i].name = nMhs[0].name
+            if(mentoring.includes(result[i].nim) == true)
+                result[i].mentoring = 1
+            else
+                result[i].mentoring = 0
         }
 
         return res.status(200).send(result)

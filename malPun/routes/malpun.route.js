@@ -31,6 +31,7 @@ module.exports = function(app){
     app.post(
         '/api/malpun/resendEmail',
         middleware.verifyJWT, middleware.isPanitia,
+        validation.resendEmail, validation.runValidation,
         malpunController.resendEmail
     )
 }

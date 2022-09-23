@@ -9,6 +9,11 @@ exports.regisMalpunOutsValidation = [
   check('email').notEmpty().withMessage('Email tidak boleh kosong')
 ]
 
+exports.resendEmail = [
+  check('email').notEmpty().withMessage('Email tidak boleh kosong'),
+  check('nim').notEmpty().withMessage('NIM tidak boleh kosong')
+]
+
 
 exports.runValidation = (req, res, next) => {
     const errors = validationResult(req).errors

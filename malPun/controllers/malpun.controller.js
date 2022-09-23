@@ -208,31 +208,42 @@ exports.resendEmail = async (req,res) => {
             })
         }        
         
-        let { email } = req.body
+        const { 
+            email, 
+            nim 
+        } = req.body
         
-        if(email.length === 0 || email === []){
+        const checkingNim = await MhsDB.query().where({ nim })
+        if(checkingNim.length === 0){
+            return res.status(404).send({
+                message : 'NIM ' + nim + ' tidak ditemukan!'
+            })
+        }
+
+        const cekData = await MalpunDB.query().where({ nim })
+        if(cekData.length === 0 || cekData === []){
             return res.status(404).send({ 
-                message: 'Email kosong!' 
+                message: 'NIM ' + nim + ' belum mendaftar Malam Puncak!' 
             }) 
         }
 
-        if (email && email.length === undefined)
-            email = [email]
-        
-        for(let i = 0; i < email.length; i++){
-            const option = {
-                from: "Maxima 2022 <noreply@gmail.com>",
-                to: `${email[i]}`,
-                subject: "[You\’ve got your Ticket, Maximers]",
-                text: "Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima.",
-                template: 'index'
-            }
-    
-            transporter.sendMail(option, (err, info) => {
-                if(err) console.error(err)
-                console.log(`Email terkirim : ${option.to}`)
-            })
+        await MhsDB.query().update({
+            email
+        }).where({ nim })
+
+
+        const option = {
+            from: "Maxima 2022 <noreply@gmail.com>",
+            to: `${email}`,
+            subject: "[You\’ve got your Ticket, Maximers]",
+            text: "Hai Maximers,\n\nSelamat kamu berhasil mendaftar acara Malam Puncak Maxima.",
+            template: 'index'
         }
+
+        transporter.sendMail(option, (err, info) => {
+            if(err) console.error(err)
+            console.log(`Email terkirim : ${option.to}`)
+        })
 
         return res.status(200).send({ message: 'Email berhasil terkirim' })
 

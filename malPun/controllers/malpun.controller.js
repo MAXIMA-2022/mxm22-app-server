@@ -43,7 +43,7 @@ exports.getAllData = async(req, res) => {
             })
         }
 
-        const mentoring = require('../../mentoring')
+        const mentoring = require('../dataFile/mentoring')
         
         const result = await MalpunDB.query()
         for(let i = 0; i < result.length; i++){

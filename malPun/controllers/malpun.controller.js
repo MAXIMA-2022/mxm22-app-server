@@ -44,6 +44,7 @@ exports.getAllData = async(req, res) => {
         }
 
         const mentoring = require('../dataFile/mentoring')
+        const dataKp = require('../dataFile/kp')
         
         const result = await MalpunDB.query()
         for(let i = 0; i < result.length; i++){
@@ -54,6 +55,11 @@ exports.getAllData = async(req, res) => {
                 result[i].mentoring = 1
             else
                 result[i].mentoring = 0
+
+            if(dataKp.includes(result[i].nim) == true)
+                result[i].kp = 1
+            else
+                result[i].kp = 0
         }
 
         return res.status(200).send(result)

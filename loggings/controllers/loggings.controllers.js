@@ -231,18 +231,21 @@ exports.verifyMalpunMabaLog = async(type, namaPanit, divisiPanit, nimTarget, ip 
     try {
         const verifyMalpunMaba = db.collection('mxm22-verifyMalpunMaba-loggings')
 
-        let verified = ''
+        let value = ''
 
         if(verifValue == 1){
-            verified = `${namaPanit} dari ${divisiPanit} telah VERIFIKASI mahasiswa ${nimTarget}`
+            value = `VERIFIED`
         }else{
-            verified = `${namaPanit} dari ${divisiPanit} telah MEMBATALKAN VERIFIKASI mahasiswa ${nimTarget}`
+            value = `UNVERIFIED`
         }
 
         const data = {
             type,
-            verified,
+            verified: namaPanit,
+            divisiPanit,
             ip,
+            nim : nimTarget,
+            value,
             date_time: helper.createAttendanceTime()
         }
 
@@ -258,18 +261,21 @@ exports.verifyMalpunOutsiderLog = async(type, namaPanit, divisiPanit, namaTarget
     try {
         const verifyMalpunOutsider = db.collection('mxm22-verifyMalpunOutsider-loggings')
 
-        let verified = ''
+        let value = ''
 
         if(verifValue == 1){
-            verified = `${namaPanit} dari ${divisiPanit} telah VERIFIKASI pengunjung ${namaTarget}`
+            value = `VERIFIED`
         }else{
-            verified = `${namaPanit} dari ${divisiPanit} telah MEMBATALKAN VERIFIKASI pengunjung ${namaTarget}`
+            value = `UNVERIFIED`
         }
 
         const data = {
             type,
-            verified,
+            verified: namaPanit,
+            divisiPanit,
             ip,
+            nama : namaTarget,
+            value,
             date_time: helper.createAttendanceTime()
         }
 

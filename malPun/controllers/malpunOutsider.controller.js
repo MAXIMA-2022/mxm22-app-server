@@ -36,6 +36,7 @@ exports.getAllDataOuts = async(req, res) => {
 exports.regisMalpunOuts = async(req, res) => {
     const { 
         name,
+        nim,
         email
     } = req.body
     
@@ -51,6 +52,7 @@ exports.regisMalpunOuts = async(req, res) => {
      try { 
         await MalpunOutDB.query().insert({
             name,
+            nim,
             email,
             timeVerified: null
         }) 

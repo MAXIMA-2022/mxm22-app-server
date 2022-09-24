@@ -55,6 +55,15 @@ exports.presensi = async (req, res, next) => {
     next()
 }
 
+exports.malpunMABA = async(req, res, next) => {
+    req.toggleID = 22
+    next()
+}
+
+exports.malpunOUTSIDER = async(req, res, next) => {
+    req.toggleID = 23
+    next()
+}
 
 exports.checkToggle = async (req, res, next) => {
     try {

@@ -1,6 +1,7 @@
 const malpunController = require('../controllers/malpun.controller')
 const middleware = require ('../../user/middleware/user.middleware')
 const validation = require('../validation/validation')
+const toggle = require('../../toggle/middleware/toggle.middleware')
 
 module.exports = function(app){
     app.get(
@@ -17,6 +18,7 @@ module.exports = function(app){
 
     app.post(
         '/api/malpun/regis',
+        toggle.malpunMABA, toggle.checkToggle,
         middleware.verifyJWT, middleware.isMahasiswa,
         validation.malpunMhsValidation, validation.runValidation,
         malpunController.regisMalpunMhs 

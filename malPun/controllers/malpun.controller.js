@@ -149,9 +149,6 @@ exports.updateVerifyMaba = async(req, res) => {
     const { nim } = req.params
 
     const ip = address.ip()
-
-    const getMhs = await MhsDB.query().where({ nim })
-    const namaMhs = getMhs[0].name
     
     const nimPanit = req.decoded_nim
     const data = await PanitDB.query().where({ nim: nimPanit })
